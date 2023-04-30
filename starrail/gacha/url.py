@@ -1,8 +1,9 @@
-import logging
 from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
-logger = logging.getLogger(__file__)
+from starrail.utils import loggings
+
+logger = loggings.get_logger(__file__)
 QueryDictType = Dict[str, List[str]]
 
 

@@ -1,0 +1,4 @@
+easydict
+pandas
+requests
+setuptools

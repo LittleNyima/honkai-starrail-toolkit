@@ -30,7 +30,7 @@ def export_config(cfg, skip_keys=[]):
         if key in cfg:
             cfg.pop(key)
     with open(config_path, 'w', encoding='utf-8') as fcfg:
-        json.dump(cfg, fcfg, indent=2)
+        json.dump(cfg, fcfg, indent=2, ensure_ascii=False)
 
 
 def init_config(cli: bool = False):
@@ -38,6 +38,8 @@ def init_config(cli: bool = False):
         configuration.update(cli_defaults)
     else:
         configuration.update(gui_defaults)
+
+    os.makedirs(configuration.cache_dir, exist_ok=True)
 
     if os.path.isfile(configuration.config_path):
         with open(configuration.config_path, encoding='utf-8') as fcfg:
