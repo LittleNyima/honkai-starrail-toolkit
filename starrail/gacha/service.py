@@ -59,6 +59,7 @@ def export_gacha_type(api_template: str, gacha_type: GachaType):
 
 
 def export_gacha_from_api(api_url, export):
+    assert api_url, 'API URL should be provided, auto-detect is coming soon'
     response, code = fetch_json(api_url)
     valid = check_response(response, code)
     if not valid:
@@ -80,14 +81,17 @@ def export_gacha_from_api(api_url, export):
 
     fileio.export_as_sql(manager, manager.cache_path)
 
+    manager.log_stats()
+
     export_hooks = dict(
         csv=fileio.export_as_csv,
         html=fileio.export_as_html,
         json=fileio.export_as_json,
+        md=fileio.export_as_md,
         xlsx=fileio.export_as_xlsx,
     )
     if 'all' in export:
-        export = ['csv', 'json', 'xlsx']  # html
+        export = ['csv', 'json', 'md', 'xlsx']  # html
 
     timestamp = datetime.now().strftime('%Y%d%m%H%M%S')
 

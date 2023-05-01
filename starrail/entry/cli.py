@@ -15,12 +15,12 @@ def parse_args():
         description='Honkai: Star Rail Toolkit',
     )
     parser.add_argument(
-        'api', type=str,
+        '--api', type=str,
         help='URL of the gacha api, please refer to README.md for details.',
     )
     parser.add_argument(
         '--export', nargs='+', type=str,
-        choices=['all', 'json', 'xlsx', 'csv'],  # TODO: html
+        choices=['all', 'json', 'xlsx', 'csv', 'md'],  # TODO: html
         help='Types of expected export formats.',
     )
 

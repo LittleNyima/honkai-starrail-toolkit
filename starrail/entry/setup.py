@@ -1,5 +1,31 @@
-from starrail.utils.loggings import setup_logging
+import platform
+
+from starrail.utils.loggings import get_logger, setup_logging
+
+logger = get_logger(__file__)
+
+
+def display_platform_info():
+    logger.info(f'PLATFORM:     {platform.platform()}')
+    logger.info(f'VERSION:      {platform.version()}')
+    logger.info(f'ARCHITECTURE: {platform.architecture()}')
+    logger.info(f'MACHINE:      {platform.machine()}')
+    logger.info(f'NODE:         {platform.node()}')
+    logger.info(f'PROCESSOR:    {platform.processor()}')
+    logger.info(f'SYSTEM:       {platform.system()}')
+    logger.info(f'UNAME:        {platform.uname()}')
+
+
+def display_python_info():
+    logger.info(f'PYTHON_BRANCH:         {platform.python_branch()}')
+    logger.info(f'PYTHON_BUILD:          {platform.python_build()}')
+    logger.info(f'PYTHON_COMPILER:       {platform.python_compiler()}')
+    logger.info(f'PYTHON_IMPLEMENTATION: {platform.python_implementation()}')
+    logger.info(f'PYTHON_REVISION:       {platform.python_revision()}')
+    logger.info(f'PYTHON_VERSION:        {platform.python_version()}')
 
 
 def setup():
     setup_logging()
+    display_platform_info()
+    display_python_info()

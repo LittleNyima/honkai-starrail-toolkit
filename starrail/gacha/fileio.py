@@ -50,5 +50,31 @@ def export_as_csv(manager: GachaDataManager, output_path: str) -> None:
     df.to_csv(output_path, encoding='utf-8')
 
 
+def export_as_md(manager: GachaDataManager, output_path: str) -> None:
+    md = '# Gacha Report\n\n'
+    for gacha_type in GachaType:
+        md += f'## {gacha_type.name}\n\n'
+        md += '| Type | Count | Basic Prob. | True Prob. | Since Last |\n'
+        md += '| ---- | ----- | ----------- | ---------- | ---------- |\n'
+        stats = manager.gacha[gacha_type.value].stats
+        for item in stats:
+            rtype = item['rank_type']
+            count = item['count']
+            basic = item['basic_prob']
+            compr = item['compr_prob']
+            since_last = item['since_last']
+            md += f'|{rtype}|{count}|{basic}|{compr}|{since_last}|\n'
+        md += '\n'
+        if stats[0]['attempts']:
+            attempt_string = ' '.join(stats[0]['attempts'])
+            average = stats[0]['average']
+            md += 'History of 5-star gacha attempts: '
+            md += f'**{attempt_string}**'
+            md += '\n\n'
+            md += f'Average gacha per 5-star: **{average}**\n\n'
+    with open(output_path, 'w', encoding='utf-8') as fout:
+        fout.write(md)
+
+
 def export_as_html(manager: GachaDataManager, output_path: str) -> None:
     raise NotImplementedError

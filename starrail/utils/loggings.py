@@ -7,7 +7,7 @@ from starrail import package_path
 def setup_logging():
     format = (
         '%(asctime)s %(name)s Line %(lineno)d - '
-        '[%(levelname)8s] %(message)s'
+        '[%(levelname)s] %(message)s'
     )
     formatter = logging.Formatter(format)
 
