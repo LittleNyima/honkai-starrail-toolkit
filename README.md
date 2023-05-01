@@ -7,7 +7,7 @@
 Starrail Toolkit
 
 - 主分支版本：0.2.0
-- 开发分支版本：0.2.0
+- 开发分支版本：0.2.1
 - PyPI 版本：0.2.0
 ```
 </div>
@@ -32,7 +32,7 @@ Starrail Toolkit
 
 - Markdown 结果示例：
 
-  <img src="https://s1.ax1x.com/2023/05/02/p9GJMhn.png" alt="markdown" style="max-width: 60%" />
+  <img src="https://s1.ax1x.com/2023/05/02/p9GYNKf.png" alt="markdown" style="max-width: 60%" />
 
 ## 安装方式
 

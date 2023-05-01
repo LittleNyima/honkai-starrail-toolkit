@@ -93,7 +93,7 @@ def export_gacha_from_api(api_url, export):
     if 'all' in export:
         export = ['csv', 'json', 'md', 'xlsx']  # html
 
-    timestamp = datetime.now().strftime('%Y%d%m%H%M%S')
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
 
     for format in export:
         logger.info(f'Exporting gacha data as {format} format')
