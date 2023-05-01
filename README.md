@@ -28,11 +28,11 @@ Starrail Toolkit
 
 - Excel 结果示例（为保护隐私已隐藏部分信息）
 
-  ![xlsx](https://s1.ax1x.com/2023/05/02/p9GJKts.md.png)
+  <img src="https://s1.ax1x.com/2023/05/02/p9GJKts.png" alt="xlsx" style="max-width: 60%" />
 
 - Markdown 结果示例：
 
-  ![markdown](https://s1.ax1x.com/2023/05/02/p9GJMhn.md.png)
+  <img src="https://s1.ax1x.com/2023/05/02/p9GJMhn.png" alt="markdown" style="max-width: 60%" />
 
 ## 安装方式
 
@@ -50,7 +50,7 @@ pip install starrail-toolkit --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simp
 
 ### 获取抽卡查询 API URL
 
-请参考[【这个教程】](docs/how-to-get-api-url)获取查询链接。
+请参考[【这个教程】](docs/how-to-get-api-url.md)获取查询链接。
 
 由此可以获得一个形如 `https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog?xxxxx` 的 URL，后续步骤使用的就是这个 URL。注意：API URL 会在一定时间后过期，过期后需要重新获取。
 
