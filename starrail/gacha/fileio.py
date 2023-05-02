@@ -2,6 +2,7 @@ import json
 
 import pandas as pd
 
+import starrail.utils.babelfish as babelfish
 from starrail.gacha.database import DatabaseFactory
 from starrail.gacha.parse import GachaDataManager
 from starrail.gacha.type import GachaType
@@ -51,13 +52,10 @@ def export_as_csv(manager: GachaDataManager, output_path: str) -> None:
 
 
 def export_as_md(manager: GachaDataManager, output_path: str) -> None:
-    md = '# Gacha Report\n\n'
+    md = f'# {babelfish.gacha_report()}\n\n'
     for gacha_type in GachaType:
-        md += f'## {gacha_type.name}\n\n'
-        md += (
-            '| Type | Count | Basic Prob. | True Prob. | Since Last |\n'
-            '| ---- | ----- | ----------- | ---------- | ---------- |\n'
-        )
+        md += f'## {babelfish.translate(gacha_type.name)}\n\n'
+        md += babelfish.markdown_thead()
         stats = manager.gacha[gacha_type.value].stats
         for item in stats:
             rtype = item['rank_type']
@@ -70,24 +68,20 @@ def export_as_md(manager: GachaDataManager, output_path: str) -> None:
         if stats[0]['attempts']:
             attempt_string = ' '.join(stats[0]['attempts'])
             average = stats[0]['average']
-            md += 'History of 5-star gacha attempts: '
-            md += f'**{attempt_string}**'
-            md += '\n\n'
-            md += f'Average gacha per 5-star: **{average}**\n\n'
+            md += f'{babelfish.history_of_5_stars()}: '
+            md += f'**{attempt_string}**\n\n'
+            md += f'{babelfish.average_gacha_per_5_star()}: **{average}**\n\n'
     with open(output_path, 'w', encoding='utf-8') as fout:
         fout.write(md)
 
 
 def export_as_html(manager: GachaDataManager, output_path: str) -> None:
-    title = f'Gacha Report for Honkai: Star Rail Player {manager.uid}'
-    content = '<h1>Gacha Report</h1>\n'
+    title = f'{babelfish.gacha_title(manager.uid)}'
+    content = f'<h1>{babelfish.gacha_report()}</h1>\n'
     for gacha_type in GachaType:
-        content += f'<h2>{gacha_type.name}</h2>\n'
-        table = (
-            '<table><thead><tr><th>Type</th><th>Count</th>'
-            '<th>Basic Prob.</th><th>True Prob.</th><th>Since Last</th>'
-            '</tr></thead><tbody>\n'
-        )
+        content += f'<h2>{babelfish.translate(gacha_type.name)}</h2>\n'
+        thead = babelfish.html_thead()
+        table = f'<table><thead><tr>{thead}</tr></thead><tbody>\n'
         stats = manager.gacha[gacha_type.value].stats
         for item in stats:
             rtype = item['rank_type']
@@ -104,9 +98,10 @@ def export_as_html(manager: GachaDataManager, output_path: str) -> None:
         if stats[0]['attempts']:
             attempt_string = ' '.join(stats[0]['attempts'])
             average = stats[0]['average']
-            content += '<p>History of 5-star gacha attempts: '
+            content += f'<p>{babelfish.history_of_5_stars()}: '
             content += f'<b>{attempt_string}</b></p>\n'
-            content += f'<p>Average gacha per 5-star: <b>{average}</b></p>\n'
+            content += f'<p>{babelfish.average_gacha_per_5_star()}: '
+            content += f'<b>{average}</b></p>\n'
     style = (
         '<style type="text/css">'
         r'html {font-family: sans-serif;} '

@@ -4,7 +4,7 @@ import os
 from starrail import package_path
 
 
-def setup_logging():
+def setup_logging(log_level):
     format = (
         '%(asctime)s %(name)s Line %(lineno)d - '
         '[%(levelname)s] %(message)s'
@@ -14,7 +14,7 @@ def setup_logging():
     stream = logging.StreamHandler()
     stream.setFormatter(formatter)
     logging.getLogger().addHandler(stream)
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(log_level)
 
 
 def get_logger(name):

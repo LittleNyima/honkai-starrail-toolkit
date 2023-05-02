@@ -26,8 +26,8 @@ def display_python_info():
     logger.info(f'PYTHON_VERSION:        {platform.python_version()}')
 
 
-def setup():
-    setup_logging()
+def setup(log_level):
+    setup_logging(log_level)
     init_config()
     display_platform_info()
     display_python_info()
