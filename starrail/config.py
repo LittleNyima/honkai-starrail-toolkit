@@ -7,19 +7,9 @@ from easydict import EasyDict
 userroot = os.path.abspath(os.path.expanduser('~'))
 
 configuration = EasyDict(
-    cache_dir=None,
-    config_path=None,
-    check_update=True,
-)
-
-cli_defaults = EasyDict(
     cache_dir=os.path.join(userroot, '.starrail'),
     config_path=os.path.join(userroot, '.starrail', 'config.json'),
-)
-
-gui_defaults = EasyDict(
-    cache_dir='',
-    config_path='',
+    check_update=True,
 )
 
 
@@ -33,11 +23,7 @@ def export_config(cfg, skip_keys=[]):
         json.dump(cfg, fcfg, indent=2, ensure_ascii=False)
 
 
-def init_config(cli: bool = False):
-    if cli:
-        configuration.update(cli_defaults)
-    else:
-        configuration.update(gui_defaults)
+def init_config():
 
     os.makedirs(configuration.cache_dir, exist_ok=True)
 

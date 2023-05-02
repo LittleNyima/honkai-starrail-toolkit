@@ -91,7 +91,7 @@ def export_gacha_from_api(api_url, export):
         xlsx=fileio.export_as_xlsx,
     )
     if 'all' in export:
-        export = ['csv', 'json', 'md', 'xlsx']  # html
+        export = ['csv', 'html', 'json', 'md', 'xlsx']
 
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
 

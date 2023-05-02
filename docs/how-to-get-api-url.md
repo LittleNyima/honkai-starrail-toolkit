@@ -1,14 +1,14 @@
 # 抽卡分析链接获取教程
 
-链接获取方式根据平台会有所不同。
-
 ## Windows 平台
 
-施工中，目前可以参考**[这篇图文教程](https://game.xiaomi.com/viewpoint/1439459001_1661508721405_100)**的方法。本项目未来会支持自动检测 api 地址，敬请期待:soon:
+**[@Ricardo-Riley](https://github.com/Ricardo-Riley)** 提供的方法：在游戏目录 `Star Rail\Game\StarRail_Data\webCaches\Cache\Cache_Data\data_2` 文本搜索 `https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog`，查找最后匹配的链接，可以得到url 地址。
+
+施工中，目前可以参考[这篇图文教程](https://mp.weixin.qq.com/s/CzSTvRDJ3C3SVDQKPcLvVA)的方法。本项目未来会支持自动检测 api 地址，敬请期待:soon:
 
 ## iOS、iPadOS 平台
 
->  注：iOS 和 iPadOS 平台的获取方式与原神相同，如果文字版的教程感觉比较繁琐，可以参考**提瓦特小助手的视频版教程**：[视频版教程见此链接](https://mp.weixin.qq.com/s/WZAIySGAUpNZM_Gb5AaumQ)，或者**这篇图文教程**：[图文教程链接](https://game.xiaomi.com/viewpoint/1439459001_1661508721405_100)。
+>  注：iOS 和 iPadOS 平台的获取方式与原神相同，如果文字版的教程感觉比较繁琐，可以参考**星穹铁道工坊的视频版教程**：[视频版教程见此链接](https://mp.weixin.qq.com/s/CzSTvRDJ3C3SVDQKPcLvVA)。
 
 1. 前往 App Store 下载名为 **Stream** 的网络抓包工具（请注意甄别，应当是下图中的这个，不要下载到错误的软件）
 
@@ -32,4 +32,4 @@
 
 ## Android 平台
 
-施工中，目前可以参考**[这篇图文教程](https://game.xiaomi.com/viewpoint/1439459001_1661508721405_100)**的方法。
+施工中，目前可以参考[**这篇图文教程**](https://game.xiaomi.com/viewpoint/1439459001_1661508721405_100)的方法。

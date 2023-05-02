@@ -1,5 +1,6 @@
 import platform
 
+from starrail.config import init_config
 from starrail.utils.loggings import get_logger, setup_logging
 
 logger = get_logger(__file__)
@@ -13,7 +14,7 @@ def display_platform_info():
     logger.info(f'NODE:         {platform.node()}')
     logger.info(f'PROCESSOR:    {platform.processor()}')
     logger.info(f'SYSTEM:       {platform.system()}')
-    logger.info(f'UNAME:        {platform.uname()}')
+    logger.info(f'RELEASE:      {platform.release()}')
 
 
 def display_python_info():
@@ -27,5 +28,6 @@ def display_python_info():
 
 def setup():
     setup_logging()
+    init_config()
     display_platform_info()
     display_python_info()

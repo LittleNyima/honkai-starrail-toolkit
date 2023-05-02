@@ -54,8 +54,10 @@ def export_as_md(manager: GachaDataManager, output_path: str) -> None:
     md = '# Gacha Report\n\n'
     for gacha_type in GachaType:
         md += f'## {gacha_type.name}\n\n'
-        md += '| Type | Count | Basic Prob. | True Prob. | Since Last |\n'
-        md += '| ---- | ----- | ----------- | ---------- | ---------- |\n'
+        md += (
+            '| Type | Count | Basic Prob. | True Prob. | Since Last |\n'
+            '| ---- | ----- | ----------- | ---------- | ---------- |\n'
+        )
         stats = manager.gacha[gacha_type.value].stats
         for item in stats:
             rtype = item['rank_type']
@@ -77,4 +79,52 @@ def export_as_md(manager: GachaDataManager, output_path: str) -> None:
 
 
 def export_as_html(manager: GachaDataManager, output_path: str) -> None:
-    raise NotImplementedError
+    title = f'Gacha Report for Honkai: Star Rail Player {manager.uid}'
+    content = '<h1>Gacha Report</h1>\n'
+    for gacha_type in GachaType:
+        content += f'<h2>{gacha_type.name}</h2>\n'
+        table = (
+            '<table><thead><tr><th>Type</th><th>Count</th>'
+            '<th>Basic Prob.</th><th>True Prob.</th><th>Since Last</th>'
+            '</tr></thead><tbody>\n'
+        )
+        stats = manager.gacha[gacha_type.value].stats
+        for item in stats:
+            rtype = item['rank_type']
+            count = item['count']
+            basic = item['basic_prob']
+            compr = item['compr_prob']
+            since_last = item['since_last']
+            table += (
+                f'<tr><td>{rtype}</td><td>{count}</td><td>{basic}</td>'
+                f'<td>{compr}</td><td>{since_last}</td></tr>\n'
+            )
+        table += '</tbody></table>\n'
+        content += table
+        if stats[0]['attempts']:
+            attempt_string = ' '.join(stats[0]['attempts'])
+            average = stats[0]['average']
+            content += '<p>History of 5-star gacha attempts: '
+            content += f'<b>{attempt_string}</b></p>\n'
+            content += f'<p>Average gacha per 5-star: <b>{average}</b></p>\n'
+    style = (
+        '<style type="text/css">'
+        r'html {font-family: sans-serif;} '
+        r'body {margin: 10px;} '
+        r'table {border-collapse: collapse; border-spacing: 0;'
+        r'       empty-cells: show; border: 1px solid #cbcbcb;} '
+        r'td, th {padding: 0; border-left: 1px solid #cbcbcb;'
+        r'        border-width: 0 0 0 1px; font-size: inherit;'
+        r'        margin: 0; overflow: visible; padding: .5em 1em;} '
+        r'thead {background-color: #e0e0e0; color: #000;'
+        r'       text-align: left; vertical-align: bottom; }'
+        r'tr:nth-child(odd) td {background-color: transparent;} '
+        r'tr:nth-child(even) td {background-color: #f2f2f2;} '
+        '</style>'
+    )
+    html = (
+        f'<html lang="zh"><head><title>{title}</title><meta charset="UTF-8">'
+        f'{style}</head><body>{content}</body></html>'
+    )
+    with open(output_path, 'w', encoding='utf-8') as fout:
+        fout.write(html)

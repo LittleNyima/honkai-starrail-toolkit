@@ -1,7 +1,6 @@
 import argparse
 
 from starrail.config import configuration as cfg
-from starrail.config import init_config
 from starrail.entry.setup import setup
 from starrail.gacha.service import export_gacha_from_api
 from starrail.utils import loggings
@@ -20,7 +19,7 @@ def parse_args():
     )
     parser.add_argument(
         '--export', nargs='+', type=str,
-        choices=['all', 'json', 'xlsx', 'csv', 'md'],  # TODO: html
+        choices=['all', 'csv', 'html', 'json', 'md', 'xlsx'],
         help='Types of expected export formats.',
     )
 
@@ -30,7 +29,6 @@ def parse_args():
 def cli_entry():
     setup()
     args = parse_args()
-    init_config(cli=True)
     logger.info(args)
     logger.info(cfg)
     export_gacha_from_api(api_url=args.api, export=args.export)
