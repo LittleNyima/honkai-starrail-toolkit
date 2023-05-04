@@ -64,7 +64,7 @@ def export_gacha_from_api(api_url, export):
     valid = check_response(response, code)
     if not valid:
         logger.fatal('Error while checking response from api URL, exitting')
-        raise ValueError('Invalid api URL, please check your input')
+        raise ValueError('Invalid or expired api, please check your input')
 
     api_template = get_url_template(api_url)
 

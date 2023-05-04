@@ -1,4 +1,5 @@
 import argparse
+import traceback
 
 from starrail.config import configuration as cfg
 from starrail.entry.setup import setup
@@ -45,3 +46,12 @@ def cli_entry():
     logger.info(args)
     logger.info(cfg)
     export_gacha_from_api(api_url=args.api, export=args.export)
+
+
+if __name__ == '__main__':
+    try:
+        cli_entry()
+    except Exception:
+        traceback.print_exc()
+    finally:
+        input('Press `Enter` to exit.')
