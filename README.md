@@ -3,24 +3,25 @@
 <div align="center">
 <img src="https://s1.ax1x.com/2023/04/30/p98Cv26.png" alt="logo" />
 </div>
+
 ## 开发状态
 
 | 主分支版本 | 开发分支版本 | PyPI 版本 |
 | :--------: | :----------: | :-------: |
-|   0.3.0    |    0.3.1     |   0.3.0   |
+|   0.4.0    |    0.4.0     |   0.4.0   |
 
 - [x] 支持命令行导出 csv、xlsx、json 格式抽卡记录
 - [x] 支持命令行显示抽卡报告
 - [x] 支持导出 markdown 格式抽卡报告
 - [x] 支持导出网页版抽卡报告
 - [x] 支持中英文多语言导出
-- [ ] 支持 Windows 平台游戏中自动检测 API URL*（已实现完成，等待测试中）*
+- [x] 支持 Windows 平台游戏中自动检测 API URL
 - [ ] 实现用户界面并编译到 Windows 与 macOS 平台
 - [ ] 支持自动检查更新
 
 ## 安装方式
 
-目前仅提供命令行版本，用户交互界面版本正在开发中。
+目前仅提供命令行版本（*我会尽快编译一个可以直接下载运行的应用程序版本*），用户交互界面版本正在开发中。
 
 ### 命令行安装
 
@@ -46,7 +47,9 @@ python setup.py install
 
 请参考[【这个教程】](docs/how-to-get-api-url.md)获取查询链接。
 
-由此可以获得一个形如 `https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog?xxxxx` 的 URL，后续步骤使用的就是这个 URL。注意：API URL 会在一定时间后过期，过期后需要重新获取。
+由此可以获得一个形如 `https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog?xxxxx` 的 URL，后续步骤使用的就是这个 URL。注意：API URL 会在一定时间（大约 24 小时）后过期，过期后需要重新获取。
+
+**注：若为 Windows 平台，可以使用本工具自动检测 API URL。**首先登陆游戏，进入抽卡查询页面，当显示出一页抽卡查询结果后，运行本工具，即可检测到抽卡查询 URL。如果需要切换账号，建议使用上述教程中的方法获取每个账号的 API URL，以便精确控制导出的账号。
 
 ### 导出抽卡记录
 
@@ -60,7 +63,7 @@ hksr --api https://api-takumi.mihoyo.com/xxx
 
 **参数说明：**
 
-- `--api`：（必选）API URL 地址。*注：未来将支持自动获取 API URL，届时本参数将变为可选。*
+- `--api`：（Windows 平台可选）API URL 地址。若为 Windows 平台，可以不填这个参数，而使用自动检测功能。
 - `--export`：（可选）导出格式选项。默认为导出全部格式，若仅需导出部分格式，可以替换对应参数。目前支持的格式有 `csv`、`html`、`json`、`md`、`xlsx`。例如，若只需要 json 与 xlsx 格式数据，可以替换为 `--export json xlsx`。
 - `--locale`：（可选）控制输出语言。默认为输出简体中文，可选值为 `en`（英语）、`chs`（简体中文）。
 - `--log-level`：（可选）日志等级。控制日志的输出等级，默认为 `DEBUG`。若感觉输出的日志过多影响观感，建议将日志等级更改为 `INFO`，例如：`--log-level INFO`。（注意：若设置的日志等级过高，可能导致基本的信息无法显示，例如导出进度、导出位置、命令行版抽卡报告等）从高到低的可选值为 `CRITICAL`、`ERROR`、`WARNING`、`INFO`、`DEBUG`。

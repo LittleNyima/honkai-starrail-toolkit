@@ -19,7 +19,7 @@ def parse_args():
         help='URL of the gacha api, please refer to README.md for details.',
     )
     parser.add_argument(
-        '--export', nargs='+', type=str,
+        '--export', nargs='+', type=str, default=['all'],
         choices=['all', 'csv', 'html', 'json', 'md', 'xlsx'],
         help='Types of expected export formats.',
     )
@@ -42,7 +42,7 @@ def parse_args():
 
 def cli_entry():
     args = parse_args()
-    setup(log_level=args.log_level)
+    setup(log_level=args.log_level, locale=args.locale)
     logger.info(args)
     logger.info(cfg)
     export_gacha_from_api(api_url=args.api, export=args.export)

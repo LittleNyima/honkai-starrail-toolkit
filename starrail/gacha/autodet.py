@@ -26,7 +26,7 @@ def detect_game_install_path():
     logger.info('Detecting game install path')
     winreg = lazyload('winreg')
     with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_key_cn) as rk:
-        install_path = rk.QueryValueEx(rk, 'InstallPath')[0]
+        install_path = winreg.QueryValueEx(rk, 'InstallPath')[0]
     config_path = os.path.join(install_path, 'config.ini')
     parser = configparser.ConfigParser()
     parser.read(config_path)
@@ -114,7 +114,7 @@ def detect_api_url():
         cache_path = get_cache_path(game_install_path)
         return get_api_from_cache(cache_path)
     else:
-        logger.warn(
+        logger.error(
             'Auto-detect API URL is only supported on Windows '
             'platform, aborting.',
         )

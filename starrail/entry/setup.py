@@ -1,6 +1,7 @@
 import platform
 
 from starrail.config import init_config
+from starrail.utils.babelfish.locale import setup_locale
 from starrail.utils.loggings import get_logger, setup_logging
 
 logger = get_logger(__file__)
@@ -26,8 +27,9 @@ def display_python_info():
     logger.info(f'PYTHON_VERSION:        {platform.python_version()}')
 
 
-def setup(log_level):
+def setup(log_level, locale):
     setup_logging(log_level)
+    setup_locale(locale)
     init_config()
     display_platform_info()
     display_python_info()

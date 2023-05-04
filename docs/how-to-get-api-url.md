@@ -4,7 +4,7 @@
 
 **[@Ricardo-Riley](https://github.com/Ricardo-Riley)** 提供的方法：在游戏目录 `Star Rail\Game\StarRail_Data\webCaches\Cache\Cache_Data\data_2` 文本搜索 `https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog`，查找最后匹配的链接，可以得到url 地址。
 
-施工中，目前可以参考[这篇图文教程](https://mp.weixin.qq.com/s/CzSTvRDJ3C3SVDQKPcLvVA)的方法。本项目未来会支持自动检测 api 地址，敬请期待:soon:
+施工中，目前可以参考[这篇图文教程](https://mp.weixin.qq.com/s/CzSTvRDJ3C3SVDQKPcLvVA)的方法。本项目现已实现自动检测 API URL，可以参考项目说明中的方法使用。
 
 ## iOS、iPadOS 平台
 

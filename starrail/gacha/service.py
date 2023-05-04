@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 
 import starrail.gacha.fileio as fileio
+from starrail.gacha.autodet import detect_api_url
 from starrail.gacha.fetch import fetch_json
 from starrail.gacha.parse import GachaDataManager
 from starrail.gacha.type import GachaType
@@ -59,7 +60,8 @@ def export_gacha_type(api_template: str, gacha_type: GachaType):
 
 
 def export_gacha_from_api(api_url, export):
-    assert api_url, 'API URL should be provided, auto-detect is coming soon'
+    if not api_url:
+        api_url = detect_api_url()
     response, code = fetch_json(api_url)
     valid = check_response(response, code)
     if not valid:

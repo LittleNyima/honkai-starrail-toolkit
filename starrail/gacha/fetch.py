@@ -28,4 +28,4 @@ def fetch_json(url):  # no typing annotations to pass mypy check
             return payload, r.status_code
     except Exception:
         traceback.print_exc()
-    return None, r.status_code
+    return None, -1
