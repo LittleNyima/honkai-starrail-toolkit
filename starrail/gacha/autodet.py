@@ -17,7 +17,7 @@ reg_key_cn = reg_key_prefix + '崩坏：星穹铁道'
 api_pattern = re.compile(r'https://.+/api/getGachaLog.+game_biz=hkrpg.+')
 
 
-@functools.lru_cache
+@functools.lru_cache()
 def lazyload(module_name):
     return importlib.import_module(module_name)
 

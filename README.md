@@ -8,7 +8,7 @@
 
 | 主分支版本 | 开发分支版本 | PyPI 版本 |
 | :--------: | :----------: | :-------: |
-|   0.4.0    |    0.4.0     |   0.4.0   |
+|   0.4.0    |    0.4.1     |   0.4.1   |
 
 - [x] 支持命令行导出 csv、xlsx、json 格式抽卡记录
 - [x] 支持命令行显示抽卡报告
@@ -28,7 +28,7 @@
 Python 用户可以直接使用 pip 安装本工具：
 
 ```shell
-pip install starrail-toolkit --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple
+python3 -m pip install starrail-toolkit --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 从源码安装
@@ -38,7 +38,7 @@ pip install starrail-toolkit --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simp
 ```shell
 git clone git@github.com:LittleNyima/honkai-starrail-toolkit.git
 cd honkai-starrail-toolkit
-python setup.py install
+python3 setup.py install
 ```
 
 ## 使用指南
@@ -49,7 +49,7 @@ python setup.py install
 
 由此可以获得一个形如 `https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog?xxxxx` 的 URL，后续步骤使用的就是这个 URL。注意：API URL 会在一定时间（大约 24 小时）后过期，过期后需要重新获取。
 
-**注：若为 Windows 平台，可以使用本工具自动检测 API URL。**首先登陆游戏，进入抽卡查询页面，当显示出一页抽卡查询结果后，运行本工具，即可检测到抽卡查询 URL。如果需要切换账号，建议使用上述教程中的方法获取每个账号的 API URL，以便精确控制导出的账号。
+**注：若为 Windows 平台，可以使用本工具自动检测 API URL。** 首先登陆游戏，进入抽卡查询页面，当显示出一页抽卡查询结果后，运行本工具，即可检测到抽卡查询 URL。如果需要切换账号，建议使用上述教程中的方法获取每个账号的 API URL，以便精确控制导出的账号。
 
 ### 导出抽卡记录
 
@@ -58,7 +58,10 @@ python setup.py install
 可以使用如下命令导出：
 
 ```shell
+# 非 Windows 平台
 hksr --api https://api-takumi.mihoyo.com/xxx
+# Windows 平台无需 --api 参数
+hksr
 ```
 
 **参数说明：**
@@ -67,6 +70,12 @@ hksr --api https://api-takumi.mihoyo.com/xxx
 - `--export`：（可选）导出格式选项。默认为导出全部格式，若仅需导出部分格式，可以替换对应参数。目前支持的格式有 `csv`、`html`、`json`、`md`、`xlsx`。例如，若只需要 json 与 xlsx 格式数据，可以替换为 `--export json xlsx`。
 - `--locale`：（可选）控制输出语言。默认为输出简体中文，可选值为 `en`（英语）、`chs`（简体中文）。
 - `--log-level`：（可选）日志等级。控制日志的输出等级，默认为 `DEBUG`。若感觉输出的日志过多影响观感，建议将日志等级更改为 `INFO`，例如：`--log-level INFO`。（注意：若设置的日志等级过高，可能导致基本的信息无法显示，例如导出进度、导出位置、命令行版抽卡报告等）从高到低的可选值为 `CRITICAL`、`ERROR`、`WARNING`、`INFO`、`DEBUG`。
+
+本项目目前正处于快速迭代阶段，使用方式可能会发生改变，更新时请留意本部分关于使用方式的说明。
+
+### Troubleshooting
+
+- 遇到 `PermissionError: [Errno 13] Permission denied`：应该是因为缓存文件被占用，建议退出游戏后重试。
 
 ## 导出结果示例
 
