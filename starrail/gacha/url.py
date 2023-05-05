@@ -65,6 +65,7 @@ def get_url_template(url: str) -> str:
     parse = urlparse(url)
     query_dict = parse_qs(parse.query)
     query_dict = get_clean_query_dict(query_dict)
+    pop_if_exist(query_dict, 'begin_id')
     pop_if_exist(query_dict, 'end_id')
     pop_if_exist(query_dict, 'gacha_type')
     pop_if_exist(query_dict, 'page')
