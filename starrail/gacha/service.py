@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime
 
 import starrail.gacha.fileio as fileio
@@ -40,7 +41,11 @@ def check_response(payload, code):
     return True
 
 
-def export_gacha_type(api_template: str, gacha_type: GachaType):
+def export_gacha_type(
+    api_template: str,
+    gacha_type: GachaType,
+    request_interval: float,
+):
     r = []
     end_id = '0'
     for page in integers():
@@ -51,6 +56,7 @@ def export_gacha_type(api_template: str, gacha_type: GachaType):
         )
         logger.debug(f'Requesting {api_url}')
         response, code = fetch_json(api_url)
+        time.sleep(request_interval)
         if not check_response(response, code):
             break
         data_list = response['data']['list']
@@ -59,7 +65,7 @@ def export_gacha_type(api_template: str, gacha_type: GachaType):
     return r
 
 
-def export_gacha_from_api(api_url, export):
+def export_gacha_from_api(api_url, export, request_interval):
     if not api_url:
         api_url = detect_api_url()
     response, code = fetch_json(api_url)
@@ -76,7 +82,11 @@ def export_gacha_from_api(api_url, export):
     manager.log_stats()
 
     for gacha_type in GachaType:
-        records = export_gacha_type(api_template, gacha_type)
+        records = export_gacha_type(
+            api_template,
+            gacha_type,
+            request_interval,
+        )
         manager.add_records(gacha_type.value, records)
         manager.gacha[gacha_type.value].sort()
         logger.info(f'Finish downloading records of {gacha_type.name}')

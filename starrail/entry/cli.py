@@ -36,6 +36,10 @@ def parse_args():
         choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
         help='Controlling the level of logging output.',
     )
+    parser.add_argument(
+        '--request-interval', type=float, default=0.1,
+        help='Minimum interval (seconds) between two requests.',
+    )
 
     return parser.parse_args()
 
@@ -45,7 +49,11 @@ def cli_entry():
     setup(log_level=args.log_level, locale=args.locale)
     logger.info(args)
     logger.info(cfg)
-    export_gacha_from_api(api_url=args.api, export=args.export)
+    export_gacha_from_api(
+        api_url=args.api,
+        export=args.export,
+        request_interval=args.request_interval,
+    )
 
 
 if __name__ == '__main__':

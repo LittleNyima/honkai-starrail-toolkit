@@ -61,7 +61,7 @@ class GachaDataList:
                 count='0',
                 basic_prob='',
                 compr_prob='',
-                since_last='0',
+                since_last='',
                 attempts=[],
                 average='',
             )
@@ -102,8 +102,8 @@ class GachaDataManager:
         self.gacha = self.load_cache(uid)
 
     def load_cache(self, uid: str):
-        cache_dir = cfg.cache_dir
-        self.cache_path = os.path.join(cache_dir, f'{uid}.sqlite3')
+        db_dir = cfg.db_dir
+        self.cache_path = os.path.join(db_dir, f'{uid}.sqlite3')
         if os.path.isfile(self.cache_path):
             return parse_cache_from_sql(self.cache_path)
         return init_empty_gacha_record()
