@@ -1,7 +1,7 @@
 # 《崩坏：星穹铁道》工具箱
 
 <div align="center">
-<img src="https://s1.ax1x.com/2023/05/06/p9a1R0K.md.png" alt="logo" style="max-height: 200px" />
+<img src="https://s1.ax1x.com/2023/05/06/p9atspD.png" alt="logo" />
 </div>
 
 
