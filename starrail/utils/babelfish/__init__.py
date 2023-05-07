@@ -7,5 +7,6 @@ gacha_title = dictionary.gacha_title
 history_of_5_stars = dictionary.history_of_5_stars
 html_thead = dictionary.html_thead
 markdown_thead = dictionary.markdown_thead
+ui_title = dictionary.ui_title
 
 __all__ = ['translate']

@@ -46,3 +46,8 @@ markdown_thead = _MS(
         '| ---- | ---- | ------ | ------- | ---- |\n'
     ),
 )
+
+ui_title = _MS(
+    en='Honkai: Star Rail Toolkit',
+    zhs='崩坏：星穹铁道工具箱',
+)
