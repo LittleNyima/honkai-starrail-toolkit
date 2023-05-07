@@ -3,10 +3,10 @@ from PySide6.QtCore import QEasingCurve, Qt, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QFrame, QHBoxLayout, QWidget
 from qfluentwidgets import NavigationInterface, NavigationItemPosition
-# from qfluentwidgets import FluentIcon
 from qframelesswindow import FramelessWindow
 
 from starrail.gui.common.stylesheet import StyleSheet
+from starrail.gui.interfaces.home import HomeInterface
 from starrail.gui.widgets.title_bar import CustomTitleBar
 from starrail.utils import babelfish
 
@@ -55,6 +55,8 @@ class StarRailToolkit(FramelessWindow):
         self.stackWidget = StackedWidget(self)
         self.navigationInterface = NavigationInterface(self, True, True)
 
+        self.homeInterface = HomeInterface(self)
+
         self.initLayout()
         self.initNavigation()
         self.initWindow()
@@ -77,7 +79,24 @@ class StarRailToolkit(FramelessWindow):
         self.titleBar.raise_()
 
     def initNavigation(self):
-        pass
+        self.addSubInterface(
+            self.homeInterface,
+            'homeInterface',
+            qfluentwidgets.FluentIcon.HOME,
+            'Home',
+            NavigationItemPosition.TOP,
+        )
+
+        self.navigationInterface.setDefaultRouteKey(
+            self.homeInterface.objectName(),
+        )
+        self.stackWidget.currentWidgetChanged.connect(
+            lambda w: self.navigationInterface.setCurrentItem(w.objectName()),
+        )
+        self.navigationInterface.setCurrentItem(
+            self.homeInterface.objectName(),
+        )
+        self.stackWidget.setCurrentIndex(0)
 
     def addSubInterface(
         self,
@@ -103,11 +122,11 @@ class StarRailToolkit(FramelessWindow):
         self.stackWidget.setCurrentWidget(widget, not triggerByUser)
 
     def initWindow(self):
-        self.resize(960, 780)
-        self.setMinimumWidth(760)
+        self.resize(960, 640)
+        self.setMinimumSize(960, 600)
         self.setWindowIcon(QIcon('resources/images/logo.jpg'))
         self.setWindowTitle(babelfish.ui_title())
-        self.titleBar.setAttribute(Qt.WA_StyledBackground)
+        self.titleBar.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
 
         desktop = QApplication.screens()[0].availableGeometry()
         w, h = desktop.width(), desktop.height()
