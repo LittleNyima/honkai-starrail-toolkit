@@ -5,8 +5,12 @@ from PySide6.QtWidgets import QApplication, QFrame, QHBoxLayout, QWidget
 from qfluentwidgets import NavigationInterface, NavigationItemPosition
 from qframelesswindow import FramelessWindow
 
+from starrail.gui.common.icon import Icon
 from starrail.gui.common.stylesheet import StyleSheet
+from starrail.gui.interfaces.gacha_sync import GachaSyncInterface
 from starrail.gui.interfaces.home import HomeInterface
+from starrail.gui.interfaces.setting import SettingInterface
+from starrail.gui.interfaces.users import UsersInterface
 from starrail.gui.widgets.title_bar import CustomTitleBar
 from starrail.utils import babelfish
 
@@ -56,6 +60,17 @@ class StarRailToolkit(FramelessWindow):
         self.navigationInterface = NavigationInterface(self, True, True)
 
         self.homeInterface = HomeInterface(self)
+        self.usersInterface = UsersInterface(
+            babelfish.ui_users(),
+            babelfish.ui_users_desc(),
+            self,
+        )
+        self.gachaSyncInterface = GachaSyncInterface(
+            babelfish.ui_gacha_sync(),
+            babelfish.ui_gacha_sync_desc(),
+            self,
+        )
+        self.settingInterface = SettingInterface(self)
 
         self.initLayout()
         self.initNavigation()
@@ -85,6 +100,32 @@ class StarRailToolkit(FramelessWindow):
             qfluentwidgets.FluentIcon.HOME,
             'Home',
             NavigationItemPosition.TOP,
+        )
+
+        self.navigationInterface.addSeparator()
+
+        self.addSubInterface(
+            self.gachaSyncInterface,
+            'gachaSyncInterface',
+            qfluentwidgets.FluentIcon.SYNC,
+            'Gacha Sync',
+            NavigationItemPosition.TOP,
+        )
+
+        self.addSubInterface(
+            self.usersInterface,
+            'usersInterface',
+            Icon.USER,
+            'Users',
+            NavigationItemPosition.BOTTOM,
+        )
+
+        self.addSubInterface(
+            self.settingInterface,
+            'settingInterface',
+            qfluentwidgets.FluentIcon.SETTING,
+            'Settings',
+            NavigationItemPosition.BOTTOM,
         )
 
         self.navigationInterface.setDefaultRouteKey(
