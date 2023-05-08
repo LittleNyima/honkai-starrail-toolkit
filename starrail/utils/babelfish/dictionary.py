@@ -59,8 +59,11 @@ ui_gacha_count = _MS(en='Count', zhs='数量')
 ui_gacha_since_last = _MS(en='Since Last', zhs='距上次')
 ui_gacha_sync = _MS(en='Sync Gacha Data', zhs='抽卡数据同步')
 ui_gacha_sync_desc = _MS(
-    en='Let\'s fetch something!',
-    zhs='让我看看谁又歪了？',
+    en=(
+        'First query warp record in the game, then close the game and click '
+        'the sync button.'
+    ),
+    zhs='先在游戏里查询一次抽卡记录，然后退出游戏，点击同步按钮。',
 )
 ui_gacha_true_prob = _MS(en='True Prob.', zhs='综合概率')
 ui_gacha_type = _MS(en='Type', zhs='星级')
