@@ -45,6 +45,7 @@ configuration = Configuration(
     locale='zhs',
     log_level='DEBUG',
     theme_mode='LIGHT',
+    uid='',
 )
 configuration.set_skip_keys(
     'skip_keys', 'no_flush',

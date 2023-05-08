@@ -9,7 +9,7 @@ lookup_table = dict(
     LIGHT_CONE=_MS(en='Light Cone Event Warp', zhs='光锥跃迁'),
 )
 
-# Pre-defined vocabularies
+# === BEGIN OF PRE-DEFINED VOCABULARIES ===
 
 average_gacha_per_5_star = _MS(
     en='Average gacha per 5-star',
@@ -42,11 +42,28 @@ markdown_thead = _MS(
     ),
 )
 ui_about = _MS(en='About', zhs='关于')
+ui_downloading_gacha = _MS(
+    en='Downloading page {page} of type {name}',
+    zhs='正在导出{name}的第{page}页',
+)
+ui_extract_api_fail = _MS(
+    en='Extracting API URL failed. Please retry after exiting the game.',
+    zhs='提取 API URL 失败，请关闭游戏或重新查询抽卡信息后重试。',
+)
+ui_extracting_api_url = _MS(
+    en='Extracting API URL',
+    zhs='正在提取 API URL',
+)
+ui_gacha_basic_prob = _MS(en='Basic Prob.', zhs='基础概率')
+ui_gacha_count = _MS(en='Count', zhs='数量')
+ui_gacha_since_last = _MS(en='Since Last', zhs='距上次')
 ui_gacha_sync = _MS(en='Sync Gacha Data', zhs='抽卡数据同步')
 ui_gacha_sync_desc = _MS(
     en='Let\'s fetch something!',
     zhs='让我看看谁又歪了？',
 )
+ui_gacha_true_prob = _MS(en='True Prob.', zhs='综合概率')
+ui_gacha_type = _MS(en='Type', zhs='星级')
 ui_get_started = _MS(en='Get Started', zhs='开始使用')
 ui_get_started_desc = _MS(
     en='Learning how to use the toolkit.',
@@ -57,9 +74,13 @@ ui_github_repo_desc = _MS(
     en='This project is open-resource, licenced under GPLv3. View code here.',
     zhs='本项目代码开源，以 GPLv3 分发。点此查看源代码。',
 )
+ui_no_data = _MS(en='No Data', zhs='暂无数据')
 ui_open_docs = _MS(en='Open Documentations', zhs='打开帮助页面')
 ui_open_issues = _MS(en='Open Issue Page', zhs='打开反馈页面')
 ui_personalization = _MS(en='Personalization', zhs='个性化')
+ui_save_data = _MS(en='Save As', zhs='保存数据')
+ui_save_success = _MS(en='Data Save Success', zhs='保存成功')
+ui_save_success_msg = _MS(en='Data is saved to {}', zhs='数据已保存到{}')
 ui_send_feedback = _MS(en='Send Feedback', zhs='提交反馈')
 ui_send_feedback_desc = _MS(
     en='Feedback is welcome if you encounter problems or have suggestions.',
@@ -67,7 +88,24 @@ ui_send_feedback_desc = _MS(
 )
 ui_settings = _MS(en='Settings', zhs='设置')
 ui_sync = _MS(en='Sync Data', zhs='同步数据')
+ui_sync_gacha_fail = _MS(
+    en='Synchronization Failed',
+    zhs='同步失败',
+)
+ui_sync_gacha_initial = _MS(
+    en='Initializing...',
+    zhs='正在初始化同步线程',
+)
+ui_sync_gacha_success = _MS(
+    en='Synchronization Success',
+    zhs='同步成功',
+)
+ui_synchronizing_gacha = _MS(
+    en='Synchronizing...',
+    zhs='正在同步抽卡数据',
+)
 ui_title = _MS(en='Honkai: Star Rail Toolkit', zhs='崩坏：星穹铁道工具箱')
+ui_traceback = _MS(en='Traceback', zhs='报错信息')
 ui_troubleshooting = _MS(en='TroubleShooting', zhs='常见问题')
 ui_troubleshooting_desc = _MS(
     en='Click here to view FAQ.',
@@ -79,3 +117,5 @@ ui_welcome = _MS(
     en='Welcome to HKSR Toolkit!',
     zhs='欢迎登车！',
 )
+
+# === END OF PRE-DEFINED VOCABULARIES ===

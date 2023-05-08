@@ -1,0 +1,12 @@
+#frame {
+    border: 1px solid rgba(255, 255, 255, 13);
+    border-radius: 5px;
+    background-color: transparent;
+}
+
+#titleLabel {
+    font: 14px 'Segoe UI Light', 'Microsoft YaHei';
+    background-color: transparent;
+    font-weight: 700;
+    color: white;
+}

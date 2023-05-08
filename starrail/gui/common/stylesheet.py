@@ -9,6 +9,7 @@ class StyleSheet(StyleSheetBase, Enum):
     BASE_INTERFACE = 'base_interface'
     HOME_INTERFACE = 'home_interface'
     LINK_CARD = 'link_card'
+    RESULT_TABLE_WIDGET = 'result_table_widget'
     SETTING_INTERFACE = 'setting_interface'
     STAR_RAIL_TOOLKIT = 'star_rail_toolkit'
 
