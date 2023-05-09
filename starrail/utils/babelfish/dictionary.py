@@ -44,10 +44,20 @@ markdown_thead = _MS(
     ),
 )
 ui_about = _MS(en='About', zhs='关于')
+ui_about_this = _MS(en='About This Application', zhs='关于本软件')
 ui_cancel_update = _MS(en='Cancel Update', zhs='暂不更新')
+ui_check_update = _MS(en='Check Update', zhs='检查更新')
 ui_check_update_fail = _MS(
     en='Check update failed. Please check your network connection.',
     zhs='检查更新失败，请检查你的网络连接并重试。（不重试也行，但是你可能没联网）',
+)
+ui_copyright = _MS(
+    en='Copyright © {} LittleNyima.',
+    zhs='版权所有 © {} LittleNyima。',
+)
+ui_current_version = _MS(
+    en='Current version: {}.',
+    zhs='当前版本：{}。',
 )
 ui_downloading_gacha = _MS(
     en='Downloading page {page} of type {name}',
@@ -92,6 +102,8 @@ ui_not_good = _MS(en='No', zhs='不好')
 ui_ooops = _MS(en='OOOPS!', zhs='出错了！')
 ui_open_docs = _MS(en='Open Documentations', zhs='打开帮助页面')
 ui_open_issues = _MS(en='Open Issue Page', zhs='打开反馈页面')
+ui_open_repo = _MS(en='Open GitHub Repo', zhs='打开代码仓库')
+ui_open_troubleshooting = _MS(en='Open Troubleshooting', zhs='打开常见问题')
 ui_personalization = _MS(en='Personalization', zhs='个性化')
 ui_save_data = _MS(en='Save As', zhs='保存数据')
 ui_save_success = _MS(en='Data Save Success', zhs='保存成功')
@@ -148,5 +160,6 @@ ui_welcome = _MS(
     en='Welcome to HKSR Toolkit!',
     zhs='欢迎登车！',
 )
+ui_welcome = _MS(en='Welcome', zhs='欢迎页面')
 
 # === END OF PRE-DEFINED VOCABULARIES ===

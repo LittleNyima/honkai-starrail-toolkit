@@ -5,9 +5,12 @@ from starrail.gacha.fetch import fetch_json
 user = 'LittleNyima'
 repo = 'honkai-starrail-toolkit'
 branch = 'master'
-cdn_templ = fr'https://cdn.jsdelivr.net/gh/{user}/{repo}@{branch}/'
-# version = fr'{cdn_templ}releases/version.txt'
-distribution = fr'{cdn_templ}releases/dist.json'
+cdn_templ = dict(
+    gitee=fr'https://gitee.com/{user}/{repo}-mirror/raw/{branch}/',
+    github=fr'https://raw.githubusercontent.com/{user}/{repo}/{branch}/',
+    jsdelivr=fr'https://cdn.jsdelivr.net/gh/{user}/{repo}@{branch}/',
+)
+# jsdelivr is deprecated due to untimely synchronization
 
 
 """
@@ -23,12 +26,14 @@ Distribution JSON Format:
 """
 
 
-def get_distribution():
+def get_distribution(cdn_type):
+    distribution = fr'{cdn_templ[cdn_type]}releases/dist.json'
     return fetch_json(distribution)
 
 
 def check_update():
-    payload, _ = get_distribution()
-    if payload is not None:
-        return easydict.EasyDict(payload)
+    for cdn_type in ['github', 'gitee']:
+        payload, _ = get_distribution(cdn_type)
+        if payload is not None:
+            return easydict.EasyDict(payload)
     return None

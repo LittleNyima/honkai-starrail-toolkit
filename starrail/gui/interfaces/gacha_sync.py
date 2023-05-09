@@ -6,7 +6,7 @@ from typing import List
 
 import qfluentwidgets as qfw
 from PySide6 import QtWidgets
-from PySide6.QtCore import QEvent, QObject, Qt, QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import QLabel, QTableWidgetItem, QVBoxLayout
 
 import starrail.gacha.service as service
@@ -177,11 +177,6 @@ class ResultTableWidget(QtWidgets.QWidget):
         for idx0, row in enumerate(data):
             for idx1, item in enumerate(row):
                 self.table.setItem(idx0, idx1, QTableWidgetItem(item))
-
-    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
-        if event is QEvent.Type.Scroll:
-            self.parent().eventFilter(watched, event)
-        return super().eventFilter(watched, event)
 
 
 class GachaSyncInterface(BaseInterface):

@@ -1,6 +1,5 @@
-Release v0.5.3
- * 带有用户界面的第一个发行版
- * 支持自动检测 API URL
- * 支持抽卡记录导出与简单的抽卡分析
- * 支持导出csv、html、json、md、xlsx等格式的抽卡报告
- * 支持自动检查更新
+Release v0.5.4
+ * 弃用了更新不及时的 jsdelivr cdn
+ * 使用 GitHub 与 Gitee 双 cdn 进行版本检查
+ * 汉化了侧边栏
+ * 在关于页面增加了手动版本检查和几个按钮

@@ -1,9 +1,13 @@
+from functools import partial
+
 import qfluentwidgets as qfw
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QLabel, QWidget
 from qfluentwidgets import FluentIcon
 
+from starrail import __version__
 from starrail.gui.common.stylesheet import StyleSheet
+from starrail.gui.common.utils import checkUpdate
 from starrail.utils import babelfish
 
 
@@ -33,6 +37,22 @@ class SettingInterface(qfw.ScrollArea):
             babelfish.ui_get_started_desc(),
             self.aboutGroup,
         )
+        self.troubleshootingCard = qfw.HyperlinkCard(
+            'https://www.baidu.com',
+            babelfish.ui_open_troubleshooting(),
+            FluentIcon.HELP,
+            babelfish.ui_troubleshooting(),
+            babelfish.ui_troubleshooting_desc(),
+            self.aboutGroup,
+        )
+        self.openSourceCard = qfw.HyperlinkCard(
+            babelfish.constants.REPO_URL,
+            babelfish.ui_open_repo(),
+            FluentIcon.GITHUB,
+            babelfish.ui_github_repo(),
+            babelfish.ui_github_repo_desc(),
+            self.aboutGroup,
+        )
         self.feedbackCard = qfw.HyperlinkCard(
             babelfish.constants.ISSUE_URL,
             babelfish.ui_open_issues(),
@@ -40,6 +60,19 @@ class SettingInterface(qfw.ScrollArea):
             babelfish.ui_send_feedback(),
             babelfish.ui_send_feedback_desc(),
             self.aboutGroup,
+        )
+        self.aboutCard = qfw.PrimaryPushSettingCard(
+            babelfish.ui_check_update(),
+            FluentIcon.INFO,
+            babelfish.ui_about_this(),
+            (
+                f'{babelfish.ui_copyright(2023)} '
+                f'{babelfish.ui_current_version(__version__)}'
+            ),
+            self.aboutGroup,
+        )
+        self.aboutCard.button.clicked.connect(
+            partial(checkUpdate, parent=self),
         )
 
         self.__initWidget()
@@ -62,7 +95,10 @@ class SettingInterface(qfw.ScrollArea):
         self.settingLabel.move(36, 30)
 
         self.aboutGroup.addSettingCard(self.getStartCard)
+        self.aboutGroup.addSettingCard(self.troubleshootingCard)
+        self.aboutGroup.addSettingCard(self.openSourceCard)
         self.aboutGroup.addSettingCard(self.feedbackCard)
+        self.aboutGroup.addSettingCard(self.aboutCard)
 
         self.expandLayout.setSpacing(28)
         self.expandLayout.setContentsMargins(36, 10, 36, 0)
