@@ -28,4 +28,7 @@ def get_distribution():
 
 
 def check_update():
-    return easydict.EasyDict(get_distribution())
+    payload, _ = get_distribution()
+    if payload is not None:
+        return easydict.EasyDict(payload)
+    return None

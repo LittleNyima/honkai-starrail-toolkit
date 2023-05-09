@@ -1,5 +1,6 @@
-Release v0.5.2
+Release v0.5.3
  * 带有用户界面的第一个发行版
  * 支持自动检测 API URL
  * 支持抽卡记录导出与简单的抽卡分析
  * 支持导出csv、html、json、md、xlsx等格式的抽卡报告
+ * 支持自动检查更新

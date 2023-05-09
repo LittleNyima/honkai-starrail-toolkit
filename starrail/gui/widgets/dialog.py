@@ -42,9 +42,10 @@ class CheckUpdateDialog(mask_dialog_base.MaskDialogBase):
 
         self.buttonGroup.setMinimumWidth(200)
         self.widget.setFixedSize(
-            max(self.contentLabel.width(), self.titleLabel.width()) + 48,
+            max(self.contentLabel.width(), self.titleLabel.width(), 150) + 48,
             self.contentLabel.y() + self.contentLabel.height() + 105,
         )
+        self.__adjustText()
 
     def __setupUi(self, title, content, parent):
         self.title = title

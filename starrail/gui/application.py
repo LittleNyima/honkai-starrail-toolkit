@@ -1,3 +1,5 @@
+import traceback
+
 import qfluentwidgets
 from PySide6.QtCore import QEasingCurve, Qt, Signal
 from PySide6.QtGui import QIcon
@@ -199,6 +201,7 @@ class StarRailToolkit(FramelessWindow):
                     dialog.show()
                     dialog.raise_()
             except Exception:
+                traceback.print_exc()
                 dialog = CheckUpdateDialog(
                     title=babelfish.ui_ooops(),
                     content=babelfish.ui_check_update_fail(),

@@ -1,8 +1,8 @@
 {
-  "version": "0.5.2",
+  "version": "0.5.3",
   "dist": {
     "GitHub_dist": "https://github.com/LittleNyima/honkai-starrail-toolkit/releases",
     "netdisk_dist": ""
   },
-  "changelog": "Release v0.5.2\n * 带有用户界面的第一个发行版\n * 支持自动检测 API URL\n * 支持抽卡记录导出与简单的抽卡分析\n * 支持导出csv、html、json、md、xlsx等格式的抽卡报告"
+  "changelog": "Release v0.5.3\n * 带有用户界面的第一个发行版\n * 支持自动检测 API URL\n * 支持抽卡记录导出与简单的抽卡分析\n * 支持导出csv、html、json、md、xlsx等格式的抽卡报告\n * 支持自动检查更新"
 }

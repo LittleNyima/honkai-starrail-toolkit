@@ -50,7 +50,7 @@ def cli_check_update():
     if cfg.check_update:
         try:
             latest = check_update()
-            logger.info('Check Update:\n')
+            logger.info('Check Update:')
             logger.info(f' * Current version is {__version__}')
             logger.info(f' * Latest release version is {latest.version}')
             if digital_version(__version__) < digital_version(latest.version):
