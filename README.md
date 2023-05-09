@@ -17,16 +17,18 @@
 - [x] 支持导出网页版抽卡报告
 - [x] 支持中英文多语言导出
 - [x] 支持 Windows 平台游戏中自动检测 API URL
-- [ ] 实现用户界面并编译到 Windows 与 macOS 平台
+- [x] 实现用户界面并编译到 Windows 平台
 - [x] 支持自动检查更新
-
-***BREAKING：目前用户界面的第一个版本已经实现完成，稍后将会编译到 Windows 平台，界面预览：***
-
-![gui_preview](https://s1.ax1x.com/2023/05/08/p90QWex.png)
 
 ## 安装方式
 
-目前仅提供命令行版本（*我会尽快编译一个可以直接下载运行的应用程序版本*），用户交互界面版本正在开发中。
+### 下载可执行程序
+
+目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouy.com/i3GIq0v3hbbe)，两种途径的内容相同，可以自行选择下载方式。
+
+***BREAKING：目前用户界面的第一个版本已经实现完成，界面预览：***
+
+![gui_preview](https://s1.ax1x.com/2023/05/08/p90QWex.png)
 
 ### 命令行安装
 
@@ -46,7 +48,7 @@ cd honkai-starrail-toolkit
 python3 setup.py install
 ```
 
-## 使用指南
+##  命令行使用指南
 
 ### 获取抽卡查询 API URL
 
