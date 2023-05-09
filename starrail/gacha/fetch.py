@@ -22,10 +22,21 @@ def fetch_json(url):  # no typing annotations to pass mypy check
     try:
         r = requests.get(url)
         if 200 <= r.status_code < 300:
-            content = r.content.decode('utf-8')
+            content = r.content.decode('utf-8', errors='ignore')
             payload = json.loads(content)
             logger.debug(json.dumps(payload, ensure_ascii=False, indent=2))
             return payload, r.status_code
+    except Exception:
+        traceback.print_exc()
+    return None, -1
+
+
+def fetch_text(url):
+    try:
+        r = requests.get(url)
+        if 200 <= r.status_code < 300:
+            content = r.content.decode('utf-8', errors='ignore')
+            return content, r.status_code
     except Exception:
         traceback.print_exc()
     return None, -1

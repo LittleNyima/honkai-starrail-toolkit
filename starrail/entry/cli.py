@@ -1,10 +1,12 @@
 import argparse
 import traceback
 
+from starrail import __version__, digital_version
 from starrail.config import configuration as cfg
 from starrail.entry.setup import setup
 from starrail.gacha.service import export_gacha_from_api
-from starrail.utils import loggings
+from starrail.utils import babelfish, loggings
+from starrail.utils.auto_update import check_update
 
 logger = loggings.get_logger(__file__)
 
@@ -44,11 +46,37 @@ def parse_args():
     return parser.parse_args()
 
 
+def cli_check_update():
+    if cfg.check_update:
+        try:
+            latest = check_update()
+            logger.info('Check Update:\n')
+            logger.info(f' * Current version is {__version__}')
+            logger.info(f' * Latest release version is {latest.version}')
+            if digital_version(__version__) < digital_version(latest.version):
+                cmd = 'pip install starrail-toolkit -U --force-reinstall'
+                logger.info('New version of package is available.')
+                logger.info(
+                    f'If you use cli, please update with pip: `f{cmd}`',
+                )
+                logger.info('If you use GUI, please download executables:')
+                for name, url in latest.dist.items():
+                    logger.info(f' * {babelfish.translate(name)}: {url}')
+            else:
+                logger.info('No update is required.')
+        except Exception:
+            logger.warning(
+                'Check update failed. '
+                'Please check your network connection.',
+            )
+
+
 def cli_entry():
     args = parse_args()
     setup(log_level=args.log_level, locale=args.locale)
     logger.info(args)
     logger.info(cfg)
+    cli_check_update()
     export_gacha_from_api(
         api_url=args.api,
         export=args.export,

@@ -5,14 +5,18 @@ from PySide6.QtWidgets import QApplication, QFrame, QHBoxLayout, QWidget
 from qfluentwidgets import NavigationInterface, NavigationItemPosition
 from qframelesswindow import FramelessWindow
 
+from starrail import __version__, digital_version
+from starrail.config import configuration as cfg
 from starrail.gui.common.icon import Icon
 from starrail.gui.common.stylesheet import StyleSheet
 from starrail.gui.interfaces.gacha_sync import GachaSyncInterface
 from starrail.gui.interfaces.home import HomeInterface
 from starrail.gui.interfaces.setting import SettingInterface
 from starrail.gui.interfaces.users import UsersInterface
+from starrail.gui.widgets.dialog import CheckUpdateDialog
 from starrail.gui.widgets.title_bar import CustomTitleBar
 from starrail.utils import babelfish
+from starrail.utils.auto_update import check_update
 
 
 class StackedWidget(QFrame):
@@ -85,8 +89,6 @@ class StarRailToolkit(FramelessWindow):
 
         self.widgetLayout.addWidget(self.stackWidget)
         self.widgetLayout.setContentsMargins(0, 48, 0, 0)
-
-        # signalBus.switchToSampleCard.connect(self.switchToSample)
 
         self.navigationInterface.displayModeChanged.connect(
             self.titleBar.raise_,
@@ -178,3 +180,30 @@ class StarRailToolkit(FramelessWindow):
     def resizeEvent(self, _):
         self.titleBar.move(46, 0)
         self.titleBar.resize(self.width() - 46, self.titleBar.height())
+
+    def afterShow(self):
+        self.checkUpdate()
+
+    def checkUpdate(self):
+        if cfg.check_update:
+            try:
+                latest = check_update()
+                current = digital_version(__version__)
+                if current < digital_version(latest.version):
+                    dialog = CheckUpdateDialog(
+                        title=babelfish.ui_update_available(),
+                        content=babelfish.ui_update_desc(latest.changelog),
+                        parent=self,
+                        dist=latest.dist,
+                    )
+                    dialog.show()
+                    dialog.raise_()
+            except Exception:
+                dialog = CheckUpdateDialog(
+                    title=babelfish.ui_ooops(),
+                    content=babelfish.ui_check_update_fail(),
+                    parent=self,
+                    dist=None,
+                )
+                dialog.show()
+                dialog.raise_()

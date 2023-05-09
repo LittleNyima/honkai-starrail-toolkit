@@ -7,6 +7,8 @@ lookup_table = dict(
     DEPARTURE=_MS(en='Departure Warp', zhs='始发跃迁'),
     CHARACTER=_MS(en='Character Event Warp', zhs='角色跃迁'),
     LIGHT_CONE=_MS(en='Light Cone Event Warp', zhs='光锥跃迁'),
+    GitHub_dist=_MS(en='GitHub Distribution', zhs='GitHub下载'),
+    netdisk_dist=_MS(en='Net Disk Distribution', zhs='网盘下载'),
 )
 
 # === BEGIN OF PRE-DEFINED VOCABULARIES ===
@@ -42,6 +44,11 @@ markdown_thead = _MS(
     ),
 )
 ui_about = _MS(en='About', zhs='关于')
+ui_cancel_update = _MS(en='Cancel Update', zhs='暂不更新')
+ui_check_update_fail = _MS(
+    en='Check update failed. Please check your network connection.',
+    zhs='检查更新失败，请检查你的网络连接并重试。（不重试也行，但是你可能没联网）',
+)
 ui_downloading_gacha = _MS(
     en='Downloading page {page} of type {name}',
     zhs='正在导出{name}的第{page}页',
@@ -54,6 +61,9 @@ ui_extracting_api_url = _MS(
     en='Extracting API URL',
     zhs='正在提取 API URL',
 )
+ui_fine = _MS(en='Fine', zhs='好')
+ui_fine1 = _MS(en='Fine', zhs='好的')
+ui_fine2 = _MS(en='Fine', zhs='好吧')
 ui_gacha_basic_prob = _MS(en='Basic Prob.', zhs='基础概率')
 ui_gacha_count = _MS(en='Count', zhs='数量')
 ui_gacha_since_last = _MS(en='Since Last', zhs='距上次')
@@ -78,6 +88,8 @@ ui_github_repo_desc = _MS(
     zhs='本项目代码开源，以 GPLv3 分发。点此查看源代码。',
 )
 ui_no_data = _MS(en='No Data', zhs='暂无数据')
+ui_not_good = _MS(en='No', zhs='不好')
+ui_ooops = _MS(en='OOOPS!', zhs='出错了！')
 ui_open_docs = _MS(en='Open Documentations', zhs='打开帮助页面')
 ui_open_issues = _MS(en='Open Issue Page', zhs='打开反馈页面')
 ui_personalization = _MS(en='Personalization', zhs='个性化')
@@ -113,6 +125,22 @@ ui_troubleshooting = _MS(en='TroubleShooting', zhs='常见问题')
 ui_troubleshooting_desc = _MS(
     en='Click here to view FAQ.',
     zhs='点此查看常见问题解答。（目前还没写，所以会跳转到百度）',
+)
+ui_update_available = _MS(
+    en='New Version is Available',
+    zhs='检查到新版本',
+)
+ui_update_desc = _MS(
+    en=(
+        'New Version of Honkai: Star Rail Toolkit is available. '
+        'CHANGELOG: {}\n Please update to the latest version to experience '
+        'the latest features. If the connectivity of GitHub is not good, '
+        'it is recommended to download from the network disk distribution.'
+    ),
+    zhs=(
+        '崩坏：星穹铁道工具箱有新的可用版本，更新日志：{}\n 请更新到最新版本以使用全新'
+        '功能。如果你对GitHub的连接不稳定，请从网盘下载最新版本。'
+    ),
 )
 ui_users = _MS(en='Users', zhs='用户管理')
 ui_users_desc = _MS(en='Multi-user management', zhs='如果有多个账号可以用这个切换')

@@ -2,4 +2,6 @@ easydict
 pandas
 prettytable
 PTable
+PySide6_Fluent_Widgets
+requests
 setuptools

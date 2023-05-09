@@ -7,6 +7,7 @@ class StyleSheet(StyleSheetBase, Enum):
     """ Style sheet  """
 
     BASE_INTERFACE = 'base_interface'
+    CHECK_UPDATE_DIALOG = 'check_update_dialog'
     HOME_INTERFACE = 'home_interface'
     LINK_CARD = 'link_card'
     RESULT_TABLE_WIDGET = 'result_table_widget'

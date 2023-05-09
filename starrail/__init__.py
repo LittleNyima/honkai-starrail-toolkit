@@ -1,6 +1,6 @@
 import os
 
-from .version import __version__
+from .version import __version__, digital_version
 
 package_path = os.path.dirname(__file__)
 
@@ -22,4 +22,4 @@ def _welcome():
 _welcome()
 
 
-__all__ = ['__version__', 'package_path']
+__all__ = ['__version__', 'digital_version', 'package_path']

@@ -30,6 +30,7 @@ def gui_entry():
 
     window = StarRailToolkit()
     window.show()
+    window.afterShow()
 
     sys.exit(app.exec())
 
