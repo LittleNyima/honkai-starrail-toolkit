@@ -72,7 +72,7 @@ class SettingInterface(qfw.ScrollArea):
             self.aboutGroup,
         )
         self.aboutCard.button.clicked.connect(
-            partial(checkUpdate, parent=self),
+            partial(checkUpdate, parent=self.parent()),
         )
 
         self.__initWidget()

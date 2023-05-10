@@ -49,7 +49,7 @@ configuration = Configuration(
 )
 configuration.set_skip_keys(
     'skip_keys', 'no_flush',
-    'cache_dir', 'config_path',
+    'cache_dir', 'config_path', 'db_dir',
 )
 
 
