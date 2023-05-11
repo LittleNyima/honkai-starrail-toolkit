@@ -9,7 +9,7 @@
 
 | 主分支版本 | 开发分支版本 | PyPI 版本 |
 | :--------: | :----------: | :-------: |
-|   0.5.4    |    0.5.4     |   0.5.4   |
+|   0.5.4    |    0.5.6     |   0.5.6   |
 
 目前第一阶段开发已完成，历史开发计划见[该页面](docs/history-dev-plan.md)。
 
@@ -37,7 +37,7 @@
 Python 用户可以直接使用 pip 安装本工具：
 
 ```shell
-python3 -m pip install starrail-toolkit --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple
+python3 -m pip install starrail-toolkit --force-reinstall --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 从源码安装

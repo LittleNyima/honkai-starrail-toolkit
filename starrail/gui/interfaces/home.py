@@ -36,7 +36,7 @@ class BannerWidget(QWidget):
             FluentIcon.HELP,
             babelfish.ui_troubleshooting(),
             babelfish.ui_troubleshooting_desc(),
-            'https://www.baidu.com',
+            babelfish.constants.TROUBLESHOOTING_URL,
         )
 
         self.linkCardView.addCard(

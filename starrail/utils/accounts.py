@@ -30,6 +30,8 @@ class AccountRecord:
             )
 
     def flush(self):
+        dirname = os.path.dirname(self._path)
+        os.makedirs(dirname, exist_ok=True)
         with open(self._path, 'w', encoding='utf-8') as f:
             json.dump(
                 dict(meta=self.meta, accounts=self.accounts), f,

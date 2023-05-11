@@ -144,7 +144,7 @@ ui_traceback = _MS(en='Traceback', zhs='报错信息')
 ui_troubleshooting = _MS(en='TroubleShooting', zhs='常见问题')
 ui_troubleshooting_desc = _MS(
     en='Click here to view FAQ.',
-    zhs='点此查看常见问题解答。（目前还没写，所以会跳转到百度）',
+    zhs='点此查看常见问题解答。',
 )
 ui_update_available = _MS(
     en='New Version is Available',

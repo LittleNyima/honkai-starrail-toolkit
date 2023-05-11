@@ -51,7 +51,7 @@ class SettingInterface(qfw.ScrollArea):
             self.aboutGroup,
         )
         self.troubleshootingCard = qfw.HyperlinkCard(
-            'https://www.baidu.com',
+            babelfish.constants.TROUBLESHOOTING_URL,
             babelfish.ui_open_troubleshooting(),
             FluentIcon.HELP,
             babelfish.ui_troubleshooting(),
