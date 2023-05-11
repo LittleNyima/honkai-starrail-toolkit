@@ -41,15 +41,14 @@ configuration = Configuration(
     cache_dir=os.path.join(userroot, '.starrail'),
     db_dir=os.path.join(userroot, '.starrail', 'database'),
     config_path=os.path.join(userroot, '.starrail', 'config.json'),
+    account_record_path=os.path.join(userroot, '.starrail', 'accounts.json'),
     check_update=True,
     locale='zhs',
     log_level='DEBUG',
-    theme_mode='LIGHT',
-    uid='',
 )
 configuration.set_skip_keys(
     'skip_keys', 'no_flush',
-    'cache_dir', 'config_path', 'db_dir',
+    'cache_dir', 'config_path', 'db_dir', 'account_record_path',
 )
 
 

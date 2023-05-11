@@ -9,6 +9,7 @@ from starrail.gacha.parse import GachaDataManager
 from starrail.gacha.type import GachaType
 from starrail.gacha.url import get_api_url, get_url_template
 from starrail.utils import loggings
+from starrail.utils.accounts import account_record
 
 logger = loggings.get_logger(__file__)
 
@@ -92,6 +93,8 @@ def export_gacha_from_api(api_url, export, request_interval):
         logger.info(f'Finish downloading records of {gacha_type.name}')
 
     fileio.export_as_sql(manager, manager.cache_path)
+
+    account_record.update_timestamp(uid)
 
     manager.log_stats()
 

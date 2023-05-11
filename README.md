@@ -14,9 +14,13 @@
 目前第一阶段开发已完成，历史开发计划见[该页面](docs/history-dev-plan.md)。
 
 - [ ] 支持更多的可设置选项
-- [ ] 支持夜间模式
+- [x] 支持夜间模式
 - [ ] 支持多用户切换
 - [ ] 美化抽卡导出页面
+
+## 常见问题解答
+
+关于程序使用过程中存在的问题，可以参考[本链接](docs/troubleshooting.md)获得解答。若问题无法解决，欢迎[提出反馈](https://github.com/LittleNyima/honkai-starrail-toolkit/issues)。
 
 ## 安装方式
 
@@ -50,7 +54,7 @@ python3 setup.py install
 
 ### 获取抽卡查询 API URL
 
-请参考[【这个教程】](docs/how-to-get-api-url.md)获取查询链接。
+请参考[这个教程](docs/how-to-get-api-url.md)获取查询链接。
 
 由此可以获得一个形如 `https://api-takumi.mihoyo.com/common/gacha_record/api/getGachaLog?xxxxx` 的 URL，后续步骤使用的就是这个 URL。注意：API URL 会在一定时间（大约 24 小时）后过期，过期后需要重新获取。
 
@@ -92,3 +96,7 @@ hksr
 ## 安全提醒
 
 本仓库代码完全开源，且用户数据全部保存在本地，**本项目不会上传任何用户数据**。本项目仅在该 GitHub 仓库及 PyPI 进行分发，请仔细甄别下载到的程序，防止遭遇恶意程序。
+
+## Credits
+
+本仓库用户界面部分基于 [**zhiyiYo/PyQt-Fluent-Widgets**](https://github.com/zhiyiYo/PyQt-Fluent-Widgets) 实现，缓存解析部分参考了 [**sunfkny/genshin-gacha-export**](https://github.com/sunfkny/genshin-gacha-export)。

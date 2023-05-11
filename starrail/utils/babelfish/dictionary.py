@@ -131,6 +131,14 @@ ui_synchronizing_gacha = _MS(
     en='Synchronizing...',
     zhs='正在同步抽卡数据',
 )
+ui_theme_mode = _MS(en='Theme Mode', zhs='应用主题')
+ui_theme_mode_auto = _MS(en='Auto', zhs='跟随系统设置')
+ui_theme_mode_dark = _MS(en='Dark', zhs='深色')
+ui_theme_mode_light = _MS(en='Light', zhs='浅色')
+ui_theme_mode_settings_desc = _MS(
+    en='Changing the appearance of application',
+    zhs='改变应用外观',
+)
 ui_title = _MS(en='Honkai: Star Rail Toolkit', zhs='崩坏：星穹铁道工具箱')
 ui_traceback = _MS(en='Traceback', zhs='报错信息')
 ui_troubleshooting = _MS(en='TroubleShooting', zhs='常见问题')

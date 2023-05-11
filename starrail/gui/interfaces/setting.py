@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QLabel, QWidget
 from qfluentwidgets import FluentIcon
 
 from starrail import __version__
+from starrail.gui.common.config import qcfg
 from starrail.gui.common.stylesheet import StyleSheet
 from starrail.gui.common.utils import checkUpdate
 from starrail.utils import babelfish
@@ -22,9 +23,21 @@ class SettingInterface(qfw.ScrollArea):
 
         self.settingLabel = QLabel(babelfish.ui_settings(), self)
 
-        # self.personalGroup = qfw.SettingCardGroup(
-        #     babelfish.ui_personalization(), self.scrollWidget,
-        # )
+        self.personalGroup = qfw.SettingCardGroup(
+            babelfish.ui_personalization(), self.scrollWidget,
+        )
+        self.themeModeCard = qfw.OptionsSettingCard(
+            qcfg.themeMode,
+            FluentIcon.BRUSH,
+            babelfish.ui_theme_mode(),
+            babelfish.ui_theme_mode_settings_desc(),
+            [
+                babelfish.ui_theme_mode_light(),
+                babelfish.ui_theme_mode_dark(),
+                babelfish.ui_theme_mode_auto(),
+            ],
+            self.personalGroup,
+        )
 
         self.aboutGroup = qfw.SettingCardGroup(
             babelfish.ui_about(), self.scrollWidget,
@@ -94,6 +107,8 @@ class SettingInterface(qfw.ScrollArea):
     def __initLayout(self):
         self.settingLabel.move(36, 30)
 
+        self.personalGroup.addSettingCard(self.themeModeCard)
+
         self.aboutGroup.addSettingCard(self.getStartCard)
         self.aboutGroup.addSettingCard(self.troubleshootingCard)
         self.aboutGroup.addSettingCard(self.openSourceCard)
@@ -102,8 +117,8 @@ class SettingInterface(qfw.ScrollArea):
 
         self.expandLayout.setSpacing(28)
         self.expandLayout.setContentsMargins(36, 10, 36, 0)
-        # self.expandLayout.addWidget(self.personalGroup)
+        self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.aboutGroup)
 
     def __connectSignalToSlot(self):
-        pass
+        qfw.qconfig.themeChanged.connect(qfw.setTheme)

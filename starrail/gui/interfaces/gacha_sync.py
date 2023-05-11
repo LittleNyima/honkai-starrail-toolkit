@@ -10,12 +10,11 @@ from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import QLabel, QTableWidgetItem, QVBoxLayout
 
 import starrail.gacha.service as service
-from starrail.config import configuration as cfg
 from starrail.gacha.type import GachaType
 from starrail.gui.common.stylesheet import StyleSheet
-from starrail.gui.common.utils import get_current_uid
 from starrail.gui.interfaces.base import BaseInterface
 from starrail.utils import babelfish, loggings
+from starrail.utils.accounts import account_record, get_latest_uid
 
 AF = Qt.AlignmentFlag
 logger = loggings.get_logger(__file__)
@@ -224,7 +223,7 @@ class GachaSyncInterface(BaseInterface):
         self.syncToolTip = None
         self.saveThread = None
 
-        self.uid = get_current_uid()
+        self.uid = get_latest_uid()
         logger.info(f'Detected current uid: {self.uid}')
         if self.uid:
             self.updateTableDisplay()
@@ -321,7 +320,7 @@ class GachaSyncInterface(BaseInterface):
         logger.info('[GUI] Gacha data synchronization success')
 
         self.uid = uid
-        cfg.uid = uid
+        account_record.update_timestamp(uid)
 
         self.syncToolTip.setTitle(babelfish.ui_sync_gacha_success())
         self.syncToolTip.setContent('')

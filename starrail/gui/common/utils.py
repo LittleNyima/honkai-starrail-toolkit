@@ -1,26 +1,14 @@
-import os
 import traceback
 
 from starrail import __version__, digital_version
-from starrail.config import configuration as cfg
+from starrail.gui.common.config import qcfg
 from starrail.gui.widgets.dialog import CheckUpdateDialog
 from starrail.utils import babelfish
 from starrail.utils.auto_update import check_update
 
 
-def get_current_uid():
-    if cfg.uid:
-        return cfg.uid
-    if os.path.isdir(cfg.db_dir):
-        dbs = os.listdir(cfg.db_dir)
-        dbs = [db.split('.')[0] for db in dbs if db.endswith('.sqlite3')]
-        if dbs:
-            return sorted(dbs)[0]
-    return ''
-
-
 def checkUpdate(parent):
-    if cfg.check_update:
+    if qcfg.get(qcfg.check_update):
         try:
             latest = check_update()
             current = digital_version(__version__)
