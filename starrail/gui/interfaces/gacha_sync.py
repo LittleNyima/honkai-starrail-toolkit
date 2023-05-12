@@ -59,7 +59,8 @@ class GachaSyncThread(QThread):
             logger.debug(f'Requesting {api_url}')
             response, code = service.fetch_json(api_url)
             time.sleep(request_interval)
-            if not service.check_response(response, code):
+            _, should_stop = service.check_response(response, code)
+            if should_stop:
                 break
             data_list = response['data']['list']
             r.extend(data_list)
@@ -70,7 +71,7 @@ class GachaSyncThread(QThread):
         self.logAndUpdateState(babelfish.ui_extracting_api_url())
         api_url = service.detect_api_url()
         response, code = service.fetch_json(api_url)
-        valid = service.check_response(response, code)
+        valid, _ = service.check_response(response, code)
         if not valid:
             self.syncFailSignal.emit(babelfish.ui_extract_api_fail())
             raise ValueError(babelfish.ui_extract_api_fail())

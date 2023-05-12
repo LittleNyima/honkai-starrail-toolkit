@@ -52,7 +52,6 @@ class AccountRecord:
 
 
 account_record = AccountRecord(cfg.account_record_path)
-account_record.flush()
 
 
 def get_latest_uid():

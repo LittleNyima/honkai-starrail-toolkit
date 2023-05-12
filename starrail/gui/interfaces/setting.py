@@ -1,7 +1,5 @@
-from functools import partial
-
 import qfluentwidgets as qfw
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLabel, QWidget
 from qfluentwidgets import FluentIcon
 
@@ -13,8 +11,6 @@ from starrail.utils import babelfish
 
 
 class SettingInterface(qfw.ScrollArea):
-
-    checkUpdateSig = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -84,9 +80,7 @@ class SettingInterface(qfw.ScrollArea):
             ),
             self.aboutGroup,
         )
-        self.aboutCard.button.clicked.connect(
-            partial(checkUpdate, parent=self.parent()),
-        )
+        self.aboutCard.button.clicked.connect(self.checkUpdateAction)
 
         self.__initWidget()
         self.__initLayout()
@@ -122,3 +116,6 @@ class SettingInterface(qfw.ScrollArea):
 
     def __connectSignalToSlot(self):
         qfw.qconfig.themeChanged.connect(qfw.setTheme)
+
+    def checkUpdateAction(self):
+        checkUpdate(parent=self.parent(), show_success=True)

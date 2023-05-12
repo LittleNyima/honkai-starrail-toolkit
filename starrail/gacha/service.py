@@ -22,24 +22,28 @@ def integers():
 
 
 def check_response(payload, code):
+    # returns: is_valid, should_stop
     if payload is None or not 200 <= code < 300:
         logger.info(f'Whether payload is None: {payload is None}')
         logger.info(f'Status code: {code}')
-        return False
-    if 'data' not in payload or 'list' not in payload['data']:
-        logger.info(f'Whether payload contains `data`: {"data" in payload}')
+        return False, True
+    if (
+        'data' not in payload
+        or not payload['data']
+        or 'list' not in payload['data']
+    ):
         logger.info(
-            f'Whether payload data contains `list`:'
-            f'{"list" in payload["data"]}',
+            'data is not in payload or data is null or data.list is '
+            'missing',
         )
-        return False
+        return False, True
     if not payload['data']['list']:
         logger.info(
-            f'Length of payload.data.list: '
-            f'{len(payload["data"]["list"])}',
+            f'Length of payload.data.list: {len(payload["data"]["list"])}.'
+            'It is valid, but reaches the end of gacha record list.',
         )
-        return False
-    return True
+        return True, True
+    return True, False
 
 
 def export_gacha_type(
@@ -58,7 +62,8 @@ def export_gacha_type(
         logger.debug(f'Requesting {api_url}')
         response, code = fetch_json(api_url)
         time.sleep(request_interval)
-        if not check_response(response, code):
+        _, should_stop = check_response(response, code)
+        if should_stop:
             break
         data_list = response['data']['list']
         r.extend(data_list)
@@ -70,7 +75,7 @@ def export_gacha_from_api(api_url, export, request_interval):
     if not api_url:
         api_url = detect_api_url()
     response, code = fetch_json(api_url)
-    valid = check_response(response, code)
+    valid, _ = check_response(response, code)
     if not valid:
         logger.fatal('Error while checking response from api URL, exitting')
         raise ValueError('Invalid or expired api, please check your input')

@@ -51,6 +51,10 @@ ui_check_update_fail = _MS(
     en='Check update failed. Please check your network connection.',
     zhs='检查更新失败，请检查你的网络连接并重试。（不重试也行，但是你可能没联网）',
 )
+ui_check_update_success = _MS(
+    en='Check update finished',
+    zhs='检查更新完成',
+)
 ui_copyright = _MS(
     en='Copyright © {} LittleNyima.',
     zhs='版权所有 © {} LittleNyima。',
@@ -96,6 +100,10 @@ ui_github_repo = _MS(en='GitHub Repo', zhs='开源代码')
 ui_github_repo_desc = _MS(
     en='This project is open-resource, licenced under GPLv3. View code here.',
     zhs='本项目代码开源，以 GPLv3 分发。点此查看源代码。',
+)
+ui_is_latest_version = _MS(
+    en='Your application is the latest version.',
+    zhs='已经是最新版本啦',
 )
 ui_no_data = _MS(en='No Data', zhs='暂无数据')
 ui_not_good = _MS(en='No', zhs='不好')

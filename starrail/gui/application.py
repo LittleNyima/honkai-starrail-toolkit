@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QApplication, QFrame, QHBoxLayout, QWidget
 from qfluentwidgets import NavigationInterface, NavigationItemPosition
 from qframelesswindow import FramelessWindow
 
+from starrail.gui.common.config import qcfg
 from starrail.gui.common.icon import Icon
 from starrail.gui.common.stylesheet import StyleSheet
 from starrail.gui.common.utils import checkUpdate
@@ -179,4 +180,5 @@ class StarRailToolkit(FramelessWindow):
         self.titleBar.resize(self.width() - 46, self.titleBar.height())
 
     def afterShow(self):
-        checkUpdate(self)
+        if qcfg.get(qcfg.check_update):
+            checkUpdate(self)
