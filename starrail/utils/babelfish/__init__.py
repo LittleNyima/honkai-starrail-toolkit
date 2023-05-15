@@ -68,6 +68,5 @@ ui_update_desc = dictionary.ui_update_desc
 ui_users = dictionary.ui_users
 ui_users_desc = dictionary.ui_users_desc
 ui_welcome = dictionary.ui_welcome
-ui_welcome = dictionary.ui_welcome
 
 __all__ = ['constants', 'translate']

@@ -176,6 +176,5 @@ ui_welcome = _MS(
     en='Welcome to HKSR Toolkit!',
     zhs='欢迎登车！',
 )
-ui_welcome = _MS(en='Welcome', zhs='欢迎页面')
 
 # === END OF PRE-DEFINED VOCABULARIES ===

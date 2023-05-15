@@ -13,6 +13,16 @@ def find_pair_bracket(content, left):
     return -1
 
 
+def check_duplicate(vocabularies):
+    contains = set()
+    for voc in vocabularies:
+        name = voc.split('=')[0].strip()
+        if name not in contains:
+            contains.add(name)
+        else:
+            print(f'[WARNING] {name} is duplicate')
+
+
 def sort_dictionary(dictionary_path):
     with open(dictionary_path, encoding='utf-8') as d:
         content = d.read()
@@ -32,6 +42,8 @@ def sort_dictionary(dictionary_path):
     new_content = content[:leftmost].strip() + '\n\n'
     new_content += '\n'.join(vocabularies) + '\n\n'
     new_content += content[rightmost+1:].strip() + '\n'
+
+    check_duplicate(vocabularies)
 
     with open(dictionary_path, 'w', encoding='utf-8') as d:
         d.write(new_content)

@@ -3,7 +3,7 @@
 <div align="center">
 <img src="https://s1.ax1x.com/2023/05/06/p9atspD.png" alt="logo" />
 </div>
-
+***<u>由于最近事情比较多，开发工作和 BUG 修复暂时推迟，仅进行日常维护，5.18 之后将恢复正常开发</u>***
 
 ## 开发状态
 
