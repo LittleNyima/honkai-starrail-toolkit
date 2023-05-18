@@ -59,7 +59,8 @@ class GachaSyncThread(QThread):
             logger.debug(f'Requesting {api_url}')
             response, code = service.fetch_json(api_url)
             time.sleep(request_interval)
-            _, should_stop = service.check_response(response, code)
+            _, should_stop, msg = service.check_response(response, code)
+            logger.info(f'check_response: {msg}')
             if should_stop:
                 break
             data_list = response['data']['list']
@@ -71,16 +72,14 @@ class GachaSyncThread(QThread):
         self.logAndUpdateState(babelfish.ui_extracting_api_url())
         api_url = service.detect_api_url()
         response, code = service.fetch_json(api_url)
-        valid, _ = service.check_response(response, code)
+        valid, _, msg = service.check_response(response, code)
+        logger.info(f'check_response (api): {msg}')
         if not valid:
             self.syncFailSignal.emit(babelfish.ui_extract_api_fail())
-            raise ValueError(babelfish.ui_extract_api_fail())
+            raise ValueError(babelfish.ui_extract_api_fail_with_msg(msg))
 
         api_template = service.get_url_template(api_url)
-
-        uid = response['data']['list'][0]['uid']
-        manager = service.GachaDataManager(uid)
-        manager.log_stats()
+        record_cache = dict()
 
         for gacha_type in service.GachaType:
             records = self.exportGachaType(
@@ -88,7 +87,24 @@ class GachaSyncThread(QThread):
                 gacha_type,
                 0.15,
             )
-            manager.add_records(gacha_type.value, records)
+            record_cache[gacha_type.value] = records
+            logger.info(f'Finish downloading records of {gacha_type.name}')
+
+        uid = service.deduce_uid(record_cache)
+        if not uid:
+            logger.critical(
+                'Cannot deduce uid from records, there may be no '
+                'record. Please check and try again.',
+            )
+            raise ValueError(babelfish.ui_deduce_uid_fail())
+        manager = service.GachaDataManager(uid)
+        logger.info(f'Successfully connected to cache of uid {uid}')
+        manager.log_stats()
+
+        for gacha_type in service.GachaType:
+            manager.add_records(
+                gacha_type.value, record_cache[gacha_type.value],
+            )
             manager.gacha[gacha_type.value].sort()
 
         service.fileio.export_as_sql(manager, manager.cache_path)
@@ -337,11 +353,12 @@ class GachaSyncInterface(BaseInterface):
     def syncFailSlot(self, message: str):
         logger.info(f'[GUI] Gacha data sync fail with message {message}')
 
-        self.syncToolTip.setTitle(babelfish.ui_sync_gacha_fail())
-        self.syncToolTip.setContent('')
-        self.syncToolTip.setState(True)
-        self.syncToolTip = None
-        self.syncThread = None
+        if self.syncToolTip is not None:
+            self.syncToolTip.setTitle(babelfish.ui_sync_gacha_fail())
+            self.syncToolTip.setContent('')
+            self.syncToolTip.setState(True)
+            self.syncToolTip = None
+            self.syncThread = None
 
         qfw.InfoBar.error(
             title=babelfish.ui_sync_gacha_fail(),

@@ -63,6 +63,10 @@ ui_current_version = _MS(
     en='Current version: {}.',
     zhs='当前版本：{}。',
 )
+ui_deduce_uid_fail = _MS(
+    en='Fail to deduce uid. There may be no record. Please check.',
+    zhs='检测 UID 失败，账号可能没有抽卡记录，请重试。',
+)
 ui_downloading_gacha = _MS(
     en='Downloading page {page} of type {name}',
     zhs='正在导出{name}的第{page}页',
@@ -70,6 +74,10 @@ ui_downloading_gacha = _MS(
 ui_extract_api_fail = _MS(
     en='Extracting API URL failed. Please retry after exiting the game.',
     zhs='提取 API URL 失败，请关闭游戏或重新查询抽卡信息后重试。',
+)
+ui_extract_api_fail_with_msg = _MS(
+    en='Extracting API URL failed. Failed with: {}',
+    zhs='提取 API URL 失败，遇到的问题：{}',
 )
 ui_extracting_api_url = _MS(
     en='Extracting API URL',

@@ -1,3 +1,4 @@
+import json
 import os
 import time
 from datetime import datetime
@@ -22,28 +23,21 @@ def integers():
 
 
 def check_response(payload, code):
-    # returns: is_valid, should_stop
-    if payload is None or not 200 <= code < 300:
-        logger.info(f'Whether payload is None: {payload is None}')
-        logger.info(f'Status code: {code}')
-        return False, True
-    if (
-        'data' not in payload
-        or not payload['data']
-        or 'list' not in payload['data']
-    ):
-        logger.info(
-            'data is not in payload or data is null or data.list is '
-            'missing',
-        )
-        return False, True
-    if not payload['data']['list']:
-        logger.info(
-            f'Length of payload.data.list: {len(payload["data"]["list"])}.'
-            'It is valid, but reaches the end of gacha record list.',
-        )
-        return True, True
-    return True, False
+    # returns: is_valid, should_stop, massage
+    resp = json.dumps(payload, ensure_ascii=False)
+    if payload is None:  # check payload
+        return False, True, f'Payload is None, response: {resp}'
+    elif not 200 <= code < 300:  # check request
+        return False, True, f'Request fail, code: {code}, response: {resp}'
+    elif 'data' not in payload:  # check data
+        return False, True, f'data is not in payload, response: {resp}'
+    elif not payload['data']:  # check data empty or null
+        return False, True, f'data is empty or None, response: {resp}'
+    elif 'list' not in payload['data']:  # check field
+        return False, True, f'data.list is missing, response: {resp}'
+    elif not payload['data']['list']:  # check data list
+        return True, True, 'valid but reaching the end of list'
+    return True, False, 'ok'
 
 
 def export_gacha_type(
@@ -62,7 +56,8 @@ def export_gacha_type(
         logger.debug(f'Requesting {api_url}')
         response, code = fetch_json(api_url)
         time.sleep(request_interval)
-        _, should_stop = check_response(response, code)
+        _, should_stop, msg = check_response(response, code)
+        logger.info(f'check_response: {msg}')
         if should_stop:
             break
         data_list = response['data']['list']
@@ -71,21 +66,26 @@ def export_gacha_type(
     return r
 
 
+def deduce_uid(record_cache):
+    for gacha_type in GachaType:
+        records = record_cache[gacha_type.value]
+        if records:
+            return records[0]['uid']
+    return ''
+
+
 def export_gacha_from_api(api_url, export, request_interval):
     if not api_url:
         api_url = detect_api_url()
     response, code = fetch_json(api_url)
-    valid, _ = check_response(response, code)
+    valid, _, msg = check_response(response, code)
+    logger.info(f'check_response (api): {msg}')
     if not valid:
         logger.fatal('Error while checking response from api URL, exitting')
         raise ValueError('Invalid or expired api, please check your input')
 
     api_template = get_url_template(api_url)
-
-    uid = response['data']['list'][0]['uid']
-    manager = GachaDataManager(uid)
-    logger.info(f'Successfully connected to cache of uid {uid}')
-    manager.log_stats()
+    record_cache = dict()
 
     for gacha_type in GachaType:
         records = export_gacha_type(
@@ -93,14 +93,27 @@ def export_gacha_from_api(api_url, export, request_interval):
             gacha_type,
             request_interval,
         )
-        manager.add_records(gacha_type.value, records)
-        manager.gacha[gacha_type.value].sort()
+        record_cache[gacha_type.value] = records
         logger.info(f'Finish downloading records of {gacha_type.name}')
+
+    uid = deduce_uid(record_cache)
+    if not uid:
+        logger.fatal(
+            'Cannot deduce uid from records, there may be no gacha '
+            'record. Please check your account and try again.',
+        )
+        raise ValueError('Cannot deduce uid from records')
+    manager = GachaDataManager(uid)
+    logger.info(f'Successfully connected to cache of uid {uid}')
+    manager.log_stats()
+
+    for gacha_type in GachaType:
+        manager.add_records(gacha_type.value, record_cache[gacha_type.value])
+        manager.gacha[gacha_type.value].sort()
 
     fileio.export_as_sql(manager, manager.cache_path)
 
     account_record.update_timestamp(uid)
-
     manager.log_stats()
 
     export_hooks = dict(

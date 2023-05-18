@@ -116,19 +116,20 @@ class CheckUpdateDialog(mask_dialog_base.MaskDialogBase):
         self.ndButton.adjustSize()
 
     def __adjustText(self):
-        if self.isWindow():
-            if self.parent():
-                w = max(self.titleLabel.width(), self.parent().width())
-                chars = max(min(w / 9, 140), 30)
-            else:
-                chars = 100
-        else:
-            w = max(self.titleLabel.width(), self.window().width())
-            chars = max(min(w / 9, 100), 30)
+        # if self.isWindow():
+        #     if self.parent():
+        #         w = max(self.titleLabel.width(), self.parent().width())
+        #         chars = max(min(w / 9, 140), 30)
+        #     else:
+        #         chars = 100
+        # else:
+        #     w = max(self.titleLabel.width(), self.window().width())
+        #     chars = max(min(w / 9, 100), 30)
 
-        self.contentLabel.setText(
-            qfw.TextWrap.wrap(self.content, chars, False)[0],
-        )
+        # self.contentLabel.setText(
+        #     qfw.TextWrap.wrap(self.content, chars, False)[0],
+        # )
+        pass
 
     def onCancelClicked(self):
         self.reject()

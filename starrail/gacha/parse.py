@@ -61,7 +61,7 @@ class GachaDataList:
                 count='0',
                 basic_prob='',
                 compr_prob='',
-                since_last='',
+                since_last=f'{total_items}',
                 attempts=[],
                 average='',
             )
