@@ -1,8 +1,8 @@
 {
-  "version": "0.5.4",
+  "version": "0.5.8",
   "dist": {
     "GitHub_dist": "https://github.com/LittleNyima/honkai-starrail-toolkit/releases",
-    "netdisk_dist": "https://wwmg.lanzouy.com/i8l5L0v48e5i"
+    "netdisk_dist": "https://wwmg.lanzouy.com/ikFwo0wjorxg"
   },
-  "changelog": "Release v0.5.4\n * 弃用了更新不及时的 jsdelivr cdn\n * 使用 GitHub 与 Gitee 双 cdn 进行版本检查\n * 汉化了侧边栏\n * 在关于页面增加了手动版本检查和几个按钮"
+  "changelog": "Release v0.5.8\n * 重新绘制了用户管理界面的svg logo\n * 支持夜间模式主题\n * 优化了部分逻辑，修复已知问题"
 }

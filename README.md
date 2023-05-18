@@ -7,7 +7,7 @@
 
 | 主分支版本 | 开发分支版本 | PyPI 版本 | 发行版版本 |
 | :--------: | :----------: | :-------: | :--------: |
-|   0.5.8    |    0.5.8     |   0.5.8   |   0.5.4    |
+|   0.5.8    |    0.5.8     |   0.5.8   |   0.5.8    |
 
 目前第一阶段开发已完成，历史开发计划见[该页面](docs/history-dev-plan.md)。
 
@@ -26,7 +26,7 @@
 
 ### 下载可执行程序
 
-目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouy.com/i8l5L0v48e5i)，两种途径的内容相同，可以自行选择下载方式。
+目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouy.com/ikFwo0wjorxg)，两种途径的内容相同，可以自行选择下载方式。
 
 ***BREAKING：目前用户界面的第一个版本已经实现完成，界面预览：***
 
