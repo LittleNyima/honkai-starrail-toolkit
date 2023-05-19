@@ -5,6 +5,7 @@ from qfluentwidgets import FluentIconBase, Theme, getIconColor
 
 class Icon(FluentIconBase, Enum):
 
+    UNLOCK = 'Unlock'
     USER = 'User'
 
     def path(self, theme=Theme.AUTO):

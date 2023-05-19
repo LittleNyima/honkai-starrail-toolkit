@@ -12,6 +12,7 @@ from starrail.gui.common.utils import checkUpdate
 from starrail.gui.interfaces.gacha_sync import GachaSyncInterface
 from starrail.gui.interfaces.home import HomeInterface
 from starrail.gui.interfaces.setting import SettingInterface
+from starrail.gui.interfaces.unlock_fps import UnlockFpsInterface
 from starrail.gui.interfaces.users import UsersInterface
 from starrail.gui.widgets.title_bar import CustomTitleBar
 from starrail.utils import babelfish
@@ -62,14 +63,19 @@ class StarRailToolkit(FramelessWindow):
         self.navigationInterface = NavigationInterface(self, True, True)
 
         self.homeInterface = HomeInterface(self)
-        self.usersInterface = UsersInterface(
-            babelfish.ui_users(),
-            babelfish.ui_users_desc(),
-            self,
-        )
         self.gachaSyncInterface = GachaSyncInterface(
             babelfish.ui_gacha_sync(),
             babelfish.ui_gacha_sync_desc(),
+            self,
+        )
+        self.unlockFpsInterface = UnlockFpsInterface(
+            'unlock fps',
+            'unlock fps here',
+            self,
+        )
+        self.usersInterface = UsersInterface(
+            babelfish.ui_users(),
+            babelfish.ui_users_desc(),
             self,
         )
         self.settingInterface = SettingInterface(self)
@@ -109,6 +115,14 @@ class StarRailToolkit(FramelessWindow):
             'gachaSyncInterface',
             qfluentwidgets.FluentIcon.SYNC,
             babelfish.ui_gacha_sync(),
+            NavigationItemPosition.TOP,
+        )
+
+        self.addSubInterface(
+            self.unlockFpsInterface,
+            'unlockFpsInterface',
+            Icon.UNLOCK,
+            'unlock fps',
             NavigationItemPosition.TOP,
         )
 
