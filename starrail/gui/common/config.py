@@ -5,25 +5,57 @@ that one. The global configuration is read-only in graphic mode.
 """
 
 import os
+from enum import Enum
 from pathlib import Path
 
-import qfluentwidgets
-from qfluentwidgets import BoolValidator, ConfigItem
+import qfluentwidgets as qfw
+from PySide6.QtCore import QLocale
 
 userroot = os.path.abspath(os.path.expanduser('~'))
 
 
-class StarRailConfig(qfluentwidgets.QConfig):
+class Language(Enum):
+
+    AUTO = QLocale()
+    CHINESE_SIMPLIFIED = QLocale(
+        QLocale.Language.Chinese,
+        QLocale.Country.China,
+    )
+    ENGLISH = QLocale(
+        QLocale.Language.English,
+        QLocale.Country.UnitedStates,
+    )
+
+
+class LanguageSerializer(qfw.ConfigSerializer):
+
+    def serialize(self, language: Language):
+        return language.value.name() if language != Language.AUTO else 'auto'
+
+    def deserialize(self, value):
+        return Language(QLocale(value)) if value != 'auto' else Language.AUTO
+
+
+class StarRailConfig(qfw.QConfig):
 
     cache_dir = os.path.join(userroot, '.starrail')
     db_dir = os.path.join(userroot, '.starrail', 'database')
     config_path = os.path.join(userroot, '.starrail', 'qconfig.json')
 
-    check_update = ConfigItem(
+    locale = qfw.OptionsConfigItem(
+        group='StarRailToolkit',
+        name='Locale',
+        default=Language.AUTO,
+        validator=qfw.OptionsValidator(Language),
+        serializer=LanguageSerializer(),
+        restart=True,
+    )
+
+    check_update = qfw.ConfigItem(
         group='StarRailToolkit',
         name='CheckUpdate',
         default=True,
-        validator=BoolValidator(),
+        validator=qfw.BoolValidator(),
         restart=False,
     )
 
@@ -33,4 +65,5 @@ class StarRailConfig(qfluentwidgets.QConfig):
 
 
 qcfg = StarRailConfig(path=StarRailConfig.config_path)
-qfluentwidgets.qconfig.load(StarRailConfig.config_path)
+qfw.qconfig.load(StarRailConfig.config_path, qcfg)
+qcfg.set(qcfg.themeColor, '#ff0077dd')

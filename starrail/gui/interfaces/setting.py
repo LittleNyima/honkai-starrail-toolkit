@@ -14,6 +14,7 @@ class SettingInterface(qfw.ScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.initialParent = parent
         self.scrollWidget = QWidget()
         self.expandLayout = qfw.ExpandLayout(self.scrollWidget)
 
@@ -30,7 +31,19 @@ class SettingInterface(qfw.ScrollArea):
             [
                 babelfish.ui_theme_mode_light(),
                 babelfish.ui_theme_mode_dark(),
-                babelfish.ui_theme_mode_auto(),
+                babelfish.ui_auto(),
+            ],
+            self.personalGroup,
+        )
+        self.localeCard = qfw.OptionsSettingCard(
+            qcfg.locale,
+            qfw.FluentIcon.LANGUAGE,
+            babelfish.ui_locale(),
+            babelfish.ui_locale_setting_desc(),
+            [
+                babelfish.ui_auto(),
+                babelfish.ui_zhs(),
+                babelfish.ui_en(),
             ],
             self.personalGroup,
         )
@@ -102,6 +115,7 @@ class SettingInterface(qfw.ScrollArea):
         self.settingLabel.move(36, 30)
 
         self.personalGroup.addSettingCard(self.themeModeCard)
+        self.personalGroup.addSettingCard(self.localeCard)
 
         self.aboutGroup.addSettingCard(self.getStartCard)
         self.aboutGroup.addSettingCard(self.troubleshootingCard)
@@ -114,8 +128,20 @@ class SettingInterface(qfw.ScrollArea):
         self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.aboutGroup)
 
+    def __showRestartToolTip(self):
+        qfw.InfoBar.success(
+            title=babelfish.ui_setting_restart_title(),
+            content=babelfish.ui_setting_restart_content(),
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            duration=2000,
+            position=qfw.InfoBarPosition.TOP_RIGHT,
+            parent=self,
+        )
+
     def __connectSignalToSlot(self):
-        qfw.qconfig.themeChanged.connect(qfw.setTheme)
+        qcfg.themeChanged.connect(qfw.setTheme)
+        qcfg.appRestartSig.connect(self.__showRestartToolTip)
 
     def checkUpdateAction(self):
-        checkUpdate(parent=self.parent(), show_success=True)
+        checkUpdate(parent=self.initialParent, show_success=True)

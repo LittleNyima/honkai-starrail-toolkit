@@ -45,6 +45,7 @@ markdown_thead = _MS(
 )
 ui_about = _MS(en='About', zhs='关于')
 ui_about_this = _MS(en='About This Application', zhs='关于本软件')
+ui_auto = _MS(en='Auto', zhs='跟随系统设置')
 ui_cancel_update = _MS(en='Cancel Update', zhs='暂不更新')
 ui_check_update = _MS(en='Check Update', zhs='检查更新')
 ui_check_update_fail = _MS(
@@ -70,6 +71,10 @@ ui_deduce_uid_fail = _MS(
 ui_downloading_gacha = _MS(
     en='Downloading page {page} of type {name}',
     zhs='正在导出{name}的第{page}页',
+)
+ui_en = _MS(
+    en='English',
+    zhs='英语',
 )
 ui_extract_api_fail = _MS(
     en='Extracting API URL failed. Please retry after exiting the game.',
@@ -113,6 +118,8 @@ ui_is_latest_version = _MS(
     en='Your application is the latest version.',
     zhs='已经是最新版本啦',
 )
+ui_locale = _MS(en='Display Language', zhs='显示语言')
+ui_locale_setting_desc = _MS(en='Changing the display language', zhs='改变显示语言')
 ui_no_data = _MS(en='No Data', zhs='暂无数据')
 ui_not_good = _MS(en='No', zhs='不好')
 ui_ooops = _MS(en='OOOPS!', zhs='出错了！')
@@ -129,6 +136,11 @@ ui_send_feedback_desc = _MS(
     en='Feedback is welcome if you encounter problems or have suggestions.',
     zhs='如果你遇到问题，或对本项目有更多建议，欢迎提交反馈。',
 )
+ui_setting_restart_content = _MS(
+    en='Please restart to apply changes.',
+    zhs='请重启以应用新设置。',
+)
+ui_setting_restart_title = _MS(en='Success', zhs='设置成功')
 ui_settings = _MS(en='Settings', zhs='设置')
 ui_sync = _MS(en='Sync Data', zhs='同步数据')
 ui_sync_gacha_fail = _MS(
@@ -148,7 +160,6 @@ ui_synchronizing_gacha = _MS(
     zhs='正在同步抽卡数据',
 )
 ui_theme_mode = _MS(en='Theme Mode', zhs='应用主题')
-ui_theme_mode_auto = _MS(en='Auto', zhs='跟随系统设置')
 ui_theme_mode_dark = _MS(en='Dark', zhs='深色')
 ui_theme_mode_light = _MS(en='Light', zhs='浅色')
 ui_theme_mode_settings_desc = _MS(
@@ -183,6 +194,10 @@ ui_users_desc = _MS(en='Multi-user management', zhs='如果有多个账号可以
 ui_welcome = _MS(
     en='Welcome to HKSR Toolkit!',
     zhs='欢迎登车！',
+)
+ui_zhs = _MS(
+    en='Simplified Chinese',
+    zhs='简体中文',
 )
 
 # === END OF PRE-DEFINED VOCABULARIES ===

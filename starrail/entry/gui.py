@@ -11,6 +11,7 @@ try:
     from PySide6.QtWidgets import QApplication
 
     from starrail.gui.application import StarRailToolkit
+    from starrail.gui.common.config import qcfg
 except ImportError as e:
     logger.critical(
         'Graphic mode is defaultly not enabled. If you want to run the GUI, '
@@ -22,7 +23,7 @@ except ImportError as e:
 
 
 def gui_entry():
-    setup(log_level=cfg.log_level, locale=cfg.locale)
+    setup(log_level=cfg.log_level, locale=qcfg.locale.value.value.name())
 
     AA = Qt.ApplicationAttribute
     app = QApplication(sys.argv)

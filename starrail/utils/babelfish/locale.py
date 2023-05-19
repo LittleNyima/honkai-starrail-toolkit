@@ -10,8 +10,16 @@ class Locale:
     available_lang = {'en', 'zhs'}
 
 
+locale_mapping = {
+    'en_US': 'en',
+    'zh_CN': 'zhs',
+}
+
+
 def setup_locale(lang):
-    if lang not in Locale.available_lang:
+    if lang in locale_mapping:
+        lang = locale_mapping[lang]
+    elif lang not in Locale.available_lang:
         logger.warn(
             f'{lang} is not an available language, which may cause '
             'unexpected outputs',
