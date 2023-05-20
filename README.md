@@ -70,9 +70,9 @@ python3 setup.py install
 
 ```shell
 # 非 Windows 平台
-hksr --api https://api-takumi.mihoyo.com/xxx
+hksr gacha --api https://api-takumi.mihoyo.com/xxx
 # Windows 平台无需 --api 参数
-hksr
+hksr gacha
 ```
 
 **参数说明：**
@@ -82,6 +82,8 @@ hksr
 - `--locale`：（可选）控制输出语言。默认为输出简体中文，可选值为 `en`（英语）、`chs`（简体中文）。
 - `--log-level`：（可选）日志等级。控制日志的输出等级，默认为 `DEBUG`。若感觉输出的日志过多影响观感，建议将日志等级更改为 `INFO`，例如：`--log-level INFO`。（注意：若设置的日志等级过高，可能导致基本的信息无法显示，例如导出进度、导出位置、命令行版抽卡报告等）从高到低的可选值为 `CRITICAL`、`ERROR`、`WARNING`、`INFO`、`DEBUG`。
 - `--request-interval`：（可选）请求间隔。两次请求之间的最小间隔，默认为 `0.1`。若某些情况下因请求过于频繁导致 IP 被 ban，可以适度把这个值调大一点。
+
+**如果想要进一步了解命令行使用方法，请参考[命令行使用指南](docs/cli-guidance.md)。**
 
 本项目目前正处于快速迭代阶段，使用方式可能会发生改变，请及时更新程序，更新时请留意本部分关于使用方式的说明。
 

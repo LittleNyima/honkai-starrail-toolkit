@@ -11,19 +11,10 @@ from starrail.utils.auto_update import check_update
 logger = loggings.get_logger(__file__)
 
 
-def parse_args():
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog='hksr',
         description='Honkai: Star Rail Toolkit',
-    )
-    parser.add_argument(
-        '--api', type=str,
-        help='URL of the gacha api, please refer to README.md for details.',
-    )
-    parser.add_argument(
-        '--export', nargs='+', type=str, default=['all'],
-        choices=['all', 'csv', 'html', 'json', 'md', 'xlsx'],
-        help='Types of expected export formats.',
     )
     parser.add_argument(
         '--locale', type=str, default='zhs',
@@ -38,12 +29,35 @@ def parse_args():
         choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
         help='Controlling the level of logging output.',
     )
-    parser.add_argument(
+
+    subparsers = parser.add_subparsers(dest='command')
+
+    gacha = subparsers.add_parser('gacha')
+    gacha.add_argument(
+        '--api', type=str,
+        help='URL of the gacha api, please refer to README.md for details.',
+    )
+    gacha.add_argument(
+        '--export', nargs='+', type=str, default=['all'],
+        choices=['all', 'csv', 'html', 'json', 'md', 'xlsx'],
+        help='Types of expected export formats.',
+    )
+    gacha.add_argument(
         '--request-interval', type=float, default=0.1,
         help='Minimum interval (seconds) between two requests.',
     )
 
-    return parser.parse_args()
+    unlock = subparsers.add_parser('unlock')
+    unlock.add_argument(
+        '--fps', type=int, default=120,
+        help='Target FPS of the game',
+    )
+    unlock.add_argument(
+        '--reset', action='store_true',
+        help='Reset FPS to the initial value',
+    )
+
+    return parser
 
 
 def cli_check_update():
@@ -63,7 +77,7 @@ def cli_check_update():
                 for name, url in latest.dist.items():
                     logger.info(f' * {babelfish.translate(name)}: {url}')
             else:
-                logger.info('No update is required.')
+                logger.info('Your program is the latest version.')
         except Exception:
             logger.warning(
                 'Check update failed. '
@@ -72,16 +86,23 @@ def cli_check_update():
 
 
 def cli_entry():
-    args = parse_args()
+    parser = get_parser()
+    args = parser.parse_args()
     setup(log_level=args.log_level, locale=args.locale)
     logger.info(args)
     logger.info(cfg)
     cli_check_update()
-    export_gacha_from_api(
-        api_url=args.api,
-        export=args.export,
-        request_interval=args.request_interval,
-    )
+
+    if args.command == 'gacha':
+        export_gacha_from_api(
+            api_url=args.api,
+            export=args.export,
+            request_interval=args.request_interval,
+        )
+    elif args.command == 'unlock':
+        pass
+    else:
+        parser.print_help()
 
 
 if __name__ == '__main__':
