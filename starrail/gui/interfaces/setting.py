@@ -21,31 +21,39 @@ class SettingInterface(qfw.ScrollArea):
         self.settingLabel = QLabel(babelfish.ui_settings(), self)
 
         self.personalGroup = qfw.SettingCardGroup(
-            babelfish.ui_personalization(), self.scrollWidget,
+            title=babelfish.ui_personalization(),
+            parent=self.scrollWidget,
         )
         self.themeModeCard = qfw.OptionsSettingCard(
-            qcfg.themeMode,
-            FluentIcon.BRUSH,
-            babelfish.ui_theme_mode(),
-            babelfish.ui_theme_mode_settings_desc(),
-            [
+            configItem=qcfg.themeMode,
+            icon=FluentIcon.BRUSH,
+            title=babelfish.ui_theme_mode(),
+            content=babelfish.ui_theme_mode_settings_desc(),
+            texts=[
                 babelfish.ui_theme_mode_light(),
                 babelfish.ui_theme_mode_dark(),
                 babelfish.ui_auto(),
             ],
-            self.personalGroup,
+            parent=self.personalGroup,
         )
         self.localeCard = qfw.OptionsSettingCard(
-            qcfg.locale,
-            qfw.FluentIcon.LANGUAGE,
-            babelfish.ui_locale(),
-            babelfish.ui_locale_setting_desc(),
-            [
+            configItem=qcfg.locale,
+            icon=qfw.FluentIcon.LANGUAGE,
+            title=babelfish.ui_locale(),
+            content=babelfish.ui_locale_setting_desc(),
+            texts=[
                 babelfish.ui_auto(),
                 babelfish.ui_zhs(),
                 babelfish.ui_en(),
             ],
-            self.personalGroup,
+            parent=self.personalGroup,
+        )
+        self.checkUpdateCard = qfw.SwitchSettingCard(
+            icon=qfw.FluentIcon.UPDATE,
+            title=babelfish.ui_check_update_at_start(),
+            content=babelfish.ui_check_update_at_start_desc(),
+            configItem=qcfg.check_update,
+            parent=self.personalGroup,
         )
 
         self.aboutGroup = qfw.SettingCardGroup(
@@ -116,6 +124,7 @@ class SettingInterface(qfw.ScrollArea):
 
         self.personalGroup.addSettingCard(self.themeModeCard)
         self.personalGroup.addSettingCard(self.localeCard)
+        self.personalGroup.addSettingCard(self.checkUpdateCard)
 
         self.aboutGroup.addSettingCard(self.getStartCard)
         self.aboutGroup.addSettingCard(self.troubleshootingCard)

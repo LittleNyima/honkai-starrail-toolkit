@@ -48,6 +48,14 @@ ui_about_this = _MS(en='About This Application', zhs='关于本软件')
 ui_auto = _MS(en='Auto', zhs='跟随系统设置')
 ui_cancel_update = _MS(en='Cancel Update', zhs='暂不更新')
 ui_check_update = _MS(en='Check Update', zhs='检查更新')
+ui_check_update_at_start = _MS(
+    en='Check Update at Application Start',
+    zhs='启动时自动检查更新',
+)
+ui_check_update_at_start_desc = _MS(
+    en='It\'s strongly recommended to turn this on to get the latest feature',
+    zhs='强烈建议打开检查更新，本app版本快速迭代中，会加入更多功能。',
+)
 ui_check_update_fail = _MS(
     en='Check update failed. Please check your network connection.',
     zhs='检查更新失败，请检查你的网络连接并重试。（不重试也行，但是你可能没联网）',
