@@ -49,7 +49,7 @@ def get_parser() -> argparse.ArgumentParser:
 
     unlock = subparsers.add_parser('unlock')
     unlock.add_argument(
-        '--fps', type=int, default=120,
+        '--fps', type=int,
         help='Target FPS of the game',
     )
     unlock.add_argument(
@@ -100,7 +100,7 @@ def cli_entry():
             request_interval=args.request_interval,
         )
     elif args.command == 'unlock':
-        pass
+        raise NotImplementedError
     else:
         parser.print_help()
 

@@ -1,12 +1,11 @@
 import configparser
-import functools
-import importlib
 import os
 import platform
 import re
 from urllib.parse import parse_qsl, urlparse
 
 from starrail.utils import loggings
+from starrail.utils.misc import lazy_import
 
 logger = loggings.get_logger(__file__)
 
@@ -17,14 +16,9 @@ reg_key_cn = reg_key_prefix + '崩坏：星穹铁道'
 api_pattern = re.compile(r'https://.+/api/getGachaLog.+game_biz=hkrpg.+')
 
 
-@functools.lru_cache()
-def lazyload(module_name):
-    return importlib.import_module(module_name)
-
-
 def detect_game_install_path():
     logger.info('Detecting game install path')
-    winreg = lazyload('winreg')
+    winreg = lazy_import('winreg')
     with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_key_cn) as rk:
         install_path = winreg.QueryValueEx(rk, 'InstallPath')[0]
     config_path = os.path.join(install_path, 'config.ini')
