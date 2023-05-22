@@ -5,6 +5,7 @@ from starrail import __version__, digital_version
 from starrail.config import configuration as cfg
 from starrail.entry.setup import setup
 from starrail.gacha.service import export_gacha_from_api
+from starrail.unlock.service import unlock_fps
 from starrail.utils import babelfish, loggings
 from starrail.utils.auto_update import check_update
 
@@ -100,7 +101,7 @@ def cli_entry():
             request_interval=args.request_interval,
         )
     elif args.command == 'unlock':
-        raise NotImplementedError
+        unlock_fps(fps=args.fps, reset=args.reset)
     else:
         parser.print_help()
 

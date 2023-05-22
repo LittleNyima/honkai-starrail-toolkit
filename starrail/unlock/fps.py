@@ -8,6 +8,7 @@ logger = loggings.get_logger(__file__)
 
 
 fps_reg_key_cn = 'Software\\miHoYo\\崩坏：星穹铁道'
+graphics_model = 'GraphicsSettings_Model_h2986158309'
 
 
 def set_fps(value):
@@ -20,17 +21,32 @@ def set_fps(value):
             0,
             winreg.KEY_ALL_ACCESS,
         ) as rk:
-            key_name = [
-                x for x in winreg.QueryValueEx(rk, '')[1]
-                if x.startswith('GraphicsSettings_Model')
-            ][0]
-            key = winreg.QueryValueEx(rk, key_name)[0]
-            reg_value = key.decode('utf-8')
-            json_data = json.loads(reg_value)
-            json_data['FPS'] = value
-            new_value = json.dumps(json_data).encode('utf-8')
-            winreg.SetValueEx(rk, key_name, 0, winreg.REG_BINARY, new_value)
+            settings = winreg.QueryValueEx(rk, graphics_model)
+            settings = settings[0].decode('utf-8').strip('\x00')
+            settings = json.loads(settings)
+            settings['FPS'] = value
+            settings = json.dumps(settings) + '\x00'
+            settings = settings.encode('utf-8')
+            winreg.SetValueEx(
+                rk,
+                graphics_model,
+                0,
+                winreg.REG_BINARY,
+                settings,
+            )
     else:
         logger.error(
             'Setting FPS is only supported on Windows platform, aborting.',
         )
+
+
+def safe_set_fps(value):
+    try:
+        set_fps(value)
+        return True
+    except Exception:
+        logger.fatal(
+            'Setting FPS is not success. Please first set FPS in '
+            'game for one time and try again.',
+        )
+        return False
