@@ -28,11 +28,11 @@ Distribution JSON Format:
 
 def get_distribution(cdn_type):
     distribution = fr'{cdn_templ[cdn_type]}releases/dist.json'
-    return fetch_json(distribution)
+    return fetch_json(distribution, timeout=5)
 
 
 def check_update():
-    for cdn_type in ['github', 'gitee']:
+    for cdn_type in ['gitee', 'github']:
         payload, _ = get_distribution(cdn_type)
         if payload is not None:
             return easydict.EasyDict(payload)

@@ -8,7 +8,7 @@ from starrail.utils import loggings
 logger = loggings.get_logger(__file__)
 
 
-def fetch_json(url):  # no typing annotations to pass mypy check
+def fetch_json(url, timeout=None):  # no typing annotations to pass mypy check
     """
     Fetches JSON content from a URL and returns it as a dictionary.
 
@@ -20,7 +20,7 @@ def fetch_json(url):  # no typing annotations to pass mypy check
     """
 
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=timeout)
         if 200 <= r.status_code < 300:
             content = r.content.decode('utf-8', errors='ignore')
             payload = json.loads(content)
