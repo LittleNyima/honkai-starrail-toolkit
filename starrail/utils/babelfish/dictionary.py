@@ -68,6 +68,10 @@ ui_copyright = _MS(
     en='Copyright © {} LittleNyima.',
     zhs='版权所有 © {} LittleNyima。',
 )
+ui_curr_fps = _MS(
+    en='Current FPS in Game Settings: {}.',
+    zhs='当前游戏设定帧率：{}。',
+)
 ui_current_version = _MS(
     en='Current version: {}.',
     zhs='当前版本：{}。',
@@ -99,6 +103,14 @@ ui_extracting_api_url = _MS(
 ui_fine = _MS(en='Fine', zhs='好')
 ui_fine1 = _MS(en='Fine', zhs='好的')
 ui_fine2 = _MS(en='Fine', zhs='好吧')
+ui_fps_is_already = _MS(
+    en='FPS is already {}~',
+    zhs='帧率已经是{}啦～',
+)
+ui_fps_is_set_to = _MS(
+    en='FPS is successfully set to {}.',
+    zhs='帧率已成功设置为{}。',
+)
 ui_gacha_basic_prob = _MS(en='Basic Prob.', zhs='基础概率')
 ui_gacha_count = _MS(en='Count', zhs='数量')
 ui_gacha_since_last = _MS(en='Since Last', zhs='距上次')
@@ -135,7 +147,13 @@ ui_open_docs = _MS(en='Open Documentations', zhs='打开帮助页面')
 ui_open_issues = _MS(en='Open Issue Page', zhs='打开反馈页面')
 ui_open_repo = _MS(en='Open GitHub Repo', zhs='打开代码仓库')
 ui_open_troubleshooting = _MS(en='Open Troubleshooting', zhs='打开常见问题')
+ui_operation_zone = _MS(en='Operations', zhs='操作区')
 ui_personalization = _MS(en='Personalization', zhs='个性化')
+ui_reset_fps = _MS(
+    en='Reset FPS',
+    zhs='重置帧率',
+)
+ui_reset_panel = _MS(en='Reset Panel', zhs='重置面板')
 ui_save_data = _MS(en='Save As', zhs='保存数据')
 ui_save_success = _MS(en='Data Save Success', zhs='保存成功')
 ui_save_success_msg = _MS(en='Data is saved to {}', zhs='数据已保存到{}')
@@ -144,12 +162,23 @@ ui_send_feedback_desc = _MS(
     en='Feedback is welcome if you encounter problems or have suggestions.',
     zhs='如果你遇到问题，或对本项目有更多建议，欢迎提交反馈。',
 )
+ui_set_fps_fail_with_msg = _MS(
+    en='Setting FPS failed. Failed with: {}',
+    zhs='设置帧率失败，遇到的问题：{}',
+)
+ui_setting_failure = _MS(
+    en='Error',
+    zhs='设置失败',
+)
+ui_setting_panel = _MS(en='Setting Panel', zhs='设置面板')
 ui_setting_restart_content = _MS(
     en='Please restart to apply changes.',
     zhs='请重启以应用新设置。',
 )
 ui_setting_restart_title = _MS(en='Success', zhs='设置成功')
+ui_setting_success = _MS(en='Success', zhs='设置成功')
 ui_settings = _MS(en='Settings', zhs='设置')
+ui_status_panel = _MS(en='Status Panel', zhs='状态面板')
 ui_sync = _MS(en='Sync Data', zhs='同步数据')
 ui_sync_gacha_fail = _MS(
     en='Synchronization Failed',
@@ -180,6 +209,17 @@ ui_troubleshooting = _MS(en='TroubleShooting', zhs='常见问题')
 ui_troubleshooting_desc = _MS(
     en='Click here to view FAQ.',
     zhs='点此查看常见问题解答。',
+)
+ui_unlock_fps = _MS(
+    en='Unlock FPS Settings',
+    zhs='解锁帧率',
+)
+ui_unlock_fps_desc = _MS(
+    en=(
+        'First set the frame rate in the game at least once, and then use the '
+        'functions of this interface.'
+    ),
+    zhs='首先至少在游戏中设置一次帧率，再使用本页面中的功能。',
 )
 ui_update_available = _MS(
     en='New Version is Available',

@@ -17,3 +17,25 @@ ToolBar > #subtitleLabel {
     background-color: transparent;
     color: rgb(95, 95, 95);
 }
+
+CardWidget {
+    background-color: transparent;
+}
+
+CardWidget > #card {
+    border: 1px solid rgb(234, 234, 234);
+    border-radius: 10px;
+    background-color: rgb(243, 243, 243);
+}
+
+CardWidget > #card QLabel {
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    color: black;
+}
+
+CardWidget > #titleLabel {
+    font: 14px 'Segoe UI Light', 'Microsoft YaHei';
+    font-weight: 700;
+    background-color: transparent;
+    color: black;
+}

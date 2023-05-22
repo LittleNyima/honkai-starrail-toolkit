@@ -201,7 +201,7 @@ class GachaSyncInterface(BaseInterface):
         super().__init__(title, subtitle, parent)
 
         # Buttons
-        self.buttonLayout = QtWidgets.QHBoxLayout()
+        self.buttonsCard = None
         self.syncButton = qfw.PrimaryPushButton(
             text=babelfish.ui_sync(),
             parent=self,
@@ -249,19 +249,17 @@ class GachaSyncInterface(BaseInterface):
         self.__initWidget()
 
     def __initWidget(self):
-        self.buttonLayout.setSpacing(0)
-        self.buttonLayout.setContentsMargins(0, 0, 0, 0)
-        self.buttonLayout.setAlignment(AF.AlignLeft)
-        self.buttonLayout.addWidget(self.syncButton)
-        self.buttonLayout.addSpacing(10)
-        self.buttonLayout.addWidget(self.saveButton)
+        self.buttonsCard = self.addCard(babelfish.ui_operation_zone())
+        self.buttonsCard.addWidget(self.syncButton)
+        self.buttonsCard.addSpacing(10)
+        self.buttonsCard.addWidget(self.saveButton)
+        self.buttonsCard.addStretch(1)
 
         self.tableLayout.addWidget(self.stellarTable)
         self.tableLayout.addWidget(self.departureTable)
         self.tableLayout.addWidget(self.characterTable)
         self.tableLayout.addWidget(self.lightConeTable)
 
-        self.vBoxLayout.addLayout(self.buttonLayout)
         self.vBoxLayout.addLayout(self.tableLayout)
 
     def resizeEvent(self, e):

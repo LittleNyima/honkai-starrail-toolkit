@@ -69,8 +69,8 @@ class StarRailToolkit(FramelessWindow):
             self,
         )
         self.unlockFpsInterface = UnlockFpsInterface(
-            'unlock fps',
-            'unlock fps here',
+            babelfish.ui_unlock_fps(),
+            babelfish.ui_unlock_fps_desc(),
             self,
         )
         self.usersInterface = UsersInterface(
