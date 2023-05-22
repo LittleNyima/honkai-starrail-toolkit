@@ -69,10 +69,11 @@ class UnlockFpsInterface(BaseInterface):
         self.statusCard.addStretch(1)
 
     def __initStatus(self):
-        self.currFpsfps = safe_get_fps()
+        self.currFps = safe_get_fps()
         self.__setCurrFPS(self.currFps)
 
     def __setCurrFPS(self, fps: int):
+        self.currFps = fps
         self.currFpsLabel.setText(babelfish.ui_curr_fps(fps))
 
     def __setFps(self, value):

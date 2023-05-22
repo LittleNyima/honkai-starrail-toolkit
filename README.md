@@ -10,7 +10,7 @@
 
 | 主分支版本 | 开发分支版本 | PyPI 版本 | 发行版版本 |
 | :--------: | :----------: | :-------: | :--------: |
-|   0.5.8    |    0.6.0     |   0.5.8   |   0.5.8    |
+|   0.6.0    |    0.6.0     |   0.6.0   |   0.6.0    |
 
 目前第一阶段开发已完成，历史开发计划见[该页面](docs/history-dev-plan.md)。
 
@@ -20,7 +20,7 @@
 - [ ] 支持手动设置 API URL
 - [x] 支持夜间模式
 - [ ] 支持多用户切换
-- [ ] 美化抽卡导出页面
+- [ ] 美化程序界面
 
 ## 常见问题解答
 
@@ -30,11 +30,13 @@
 
 ### 下载可执行程序
 
-目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouy.com/ikFwo0wjorxg)，两种途径的内容相同，可以自行选择下载方式。
+目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouy.com/iwDYF0x00q0f)，两种途径的内容相同，可以自行选择下载方式。
 
 ***BREAKING：目前用户界面的第一个版本已经实现完成，界面预览：***
 
-![gui_preview](https://s1.ax1x.com/2023/05/08/p90QWex.png)
+![gui preview gacha](https://s1.ax1x.com/2023/05/23/p9o7y3d.png)
+
+![gui preview unlock](https://s1.ax1x.com/2023/05/23/p9o76gA.png)
 
 ### 命令行安装
 

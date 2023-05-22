@@ -1,8 +1,8 @@
 {
-  "version": "0.5.8",
+  "version": "0.6.0",
   "dist": {
     "GitHub_dist": "https://github.com/LittleNyima/honkai-starrail-toolkit/releases",
-    "netdisk_dist": "https://wwmg.lanzouy.com/ikFwo0wjorxg"
+    "netdisk_dist": "https://wwmg.lanzouy.com/iwDYF0x00q0f"
   },
-  "changelog": "Release v0.5.8\n * 重新绘制了用户管理界面的svg logo\n * 支持夜间模式主题\n * 优化了部分逻辑，修复已知问题"
+  "changelog": "Release v0.6.0\n * 支持设置程序显示语言\n * 支持禁用自动检查更新\n * 支持解锁120帧\n * 美化程序界面\n * 修复了已知问题"
 }
