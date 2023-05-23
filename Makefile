@@ -11,4 +11,11 @@ clean:
 	@rm -f StarRailToolkit.spec
 	@rm -rf dist/
 	@rm -rf build/
-	@rm -rf starrail_toolkit.egg-info
+	@rm -rf starrail_toolkit.egg-info/
+
+.PHONY : publish
+publish: clean
+	python -m pip install .
+	python setup.py sdist bdist_wheel
+	ls dist
+	twine upload dist/*

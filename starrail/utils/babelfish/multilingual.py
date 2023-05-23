@@ -6,6 +6,9 @@ from starrail.utils.loggings import get_logger
 logger = get_logger(__file__)
 
 
+locale_fallback = ['zhs', 'en']
+
+
 class MultilingualString:
 
     def __init__(self, **kwargs: str):
@@ -17,4 +20,8 @@ class MultilingualString:
 
     def __call__(self, *args, **kwargs):
         lang = Locale.lang
+        if lang not in self.mapping:
+            for lang in locale_fallback:
+                if lang in self.mapping:
+                    break
         return self.mapping[lang].format(*args, **kwargs)

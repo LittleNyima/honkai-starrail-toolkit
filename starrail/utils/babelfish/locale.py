@@ -9,6 +9,8 @@ class Locale:
 
     available_lang = {'en', 'zhs'}
 
+    default_lang = 'zhs'
+
 
 locale_mapping = {
     'en_US': 'en',
@@ -24,4 +26,5 @@ def setup_locale(lang):
             f'{lang} is not an available language, which may cause '
             'unexpected outputs',
         )
+        logger.warn(f'Locale falls back to {Locale.default_lang}')
     Locale.lang = lang
