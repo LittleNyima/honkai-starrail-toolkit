@@ -8,6 +8,7 @@ from starrail.config import configuration as cfg
 from starrail.gacha.database import DatabaseFactory
 from starrail.gacha.type import GachaType
 from starrail.utils import loggings
+from starrail.utils.babelfish.dictionary import record_type_mapping
 
 logger = loggings.get_logger(__file__)
 
@@ -41,6 +42,34 @@ class GachaDataList:
 
     def tolist(self):
         return copy.deepcopy(self.data)
+
+    @property
+    def stats_v2(self):
+        character5 = character4 = lightcone5 = lightcone4 = lightcone3 = 0
+        for item in self.data:
+            item_type = item['item_type']
+            item_type = record_type_mapping.get(item_type, item_type)
+            rank_type = item['rank_type']
+            if item_type == 'character':
+                if rank_type == '5':
+                    character5 += 1
+                elif rank_type == '4':
+                    character4 += 1
+            elif item_type == 'lightcone':
+                if rank_type == '5':
+                    lightcone5 += 1
+                elif rank_type == '4':
+                    lightcone4 += 1
+                elif rank_type == '3':
+                    lightcone3 += 1
+        return dict(
+            character5=character5,
+            character4=character4,
+            lightcone5=lightcone5,
+            lightcone4=lightcone4,
+            lightcone3=lightcone3,
+            total=len(self.data),
+        )
 
     @property
     def stats(self):

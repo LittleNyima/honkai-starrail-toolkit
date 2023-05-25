@@ -11,6 +11,11 @@ lookup_table = dict(
     netdisk_dist=_MS(en='Net Disk Distribution', zhs='网盘下载'),
 )
 
+record_type_mapping = {
+    '角色': 'character',
+    '光锥': 'lightcone',
+}
+
 # === BEGIN OF PRE-DEFINED VOCABULARIES ===
 
 average_gacha_per_5_star = _MS(
@@ -43,9 +48,22 @@ markdown_thead = _MS(
         '| ---- | ---- | ------ | ------- | ---- |\n'
     ),
 )
+ui_3star_light_cone = _MS(en='Light Cone (3)', zhs='三星光锥')
+ui_4star_character = _MS(en='Character (4)', zhs='四星角色')
+ui_4star_light_cone = _MS(en='Light Cone (4)', zhs='四星光锥')
+ui_5star_character = _MS(en='Character (5)', zhs='五星角色')
+ui_5star_light_cone = _MS(en='Light Cone (5)', zhs='五星光锥')
 ui_about = _MS(en='About', zhs='关于')
 ui_about_this = _MS(en='About This Application', zhs='关于本软件')
+ui_arerage_warps_per_5star = _MS(
+    en='Average warps per 5 star',
+    zhs='五星平均抽数',
+)
 ui_auto = _MS(en='Auto', zhs='跟随系统设置')
+ui_average_warps_per_up = _MS(
+    en='Average warps per up',
+    zhs='UP 平均抽数',
+)
 ui_cancel_update = _MS(en='Cancel Update', zhs='暂不更新')
 ui_check_update = _MS(en='Check Update', zhs='检查更新')
 ui_check_update_at_start = _MS(
@@ -178,6 +196,10 @@ ui_setting_restart_content = _MS(
 ui_setting_restart_title = _MS(en='Success', zhs='设置成功')
 ui_setting_success = _MS(en='Success', zhs='设置成功')
 ui_settings = _MS(en='Settings', zhs='设置')
+ui_since_last_guarantee = _MS(
+    en='Since Last Guarantee',
+    zhs='保底已垫',
+)
 ui_status_panel = _MS(en='Status Panel', zhs='状态面板')
 ui_sync = _MS(en='Sync Data', zhs='同步数据')
 ui_sync_gacha_fail = _MS(
@@ -204,6 +226,7 @@ ui_theme_mode_settings_desc = _MS(
     zhs='改变应用外观',
 )
 ui_title = _MS(en='Honkai: Star Rail Toolkit', zhs='崩坏：星穹铁道工具箱')
+ui_total_warp = _MS(en='Total Warp', zhs='总抽数')
 ui_traceback = _MS(en='Traceback', zhs='报错信息')
 ui_troubleshooting = _MS(en='TroubleShooting', zhs='常见问题')
 ui_troubleshooting_desc = _MS(

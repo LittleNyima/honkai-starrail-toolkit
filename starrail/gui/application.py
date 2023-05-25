@@ -142,8 +142,8 @@ class StarRailToolkit(FramelessWindow):
             NavigationItemPosition.BOTTOM,
         )
 
-        self.navigationInterface.setDefaultRouteKey(
-            self.homeInterface.objectName(),
+        qfluentwidgets.qrouter.setDefaultRouteKey(
+            self.stackWidget, self.homeInterface.objectName(),
         )
         self.stackWidget.currentWidgetChanged.connect(
             lambda w: self.navigationInterface.setCurrentItem(w.objectName()),

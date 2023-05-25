@@ -1,0 +1,33 @@
+#legend > QLabel {
+    border-radius: 3px;
+    background-color: #2b2b2b;
+}
+
+#red {
+    color: #e52f2f;
+    border-bottom: 3px solid #e52f2f;
+}
+
+#orange {
+    color: #e56d2f;
+    border-bottom: 3px solid #e56d2f;
+}
+
+#green {
+    color: #4ae52f;
+    border-bottom: 3px solid #4ae52f;
+}
+
+#blue {
+    color: #2fa5e5;
+    border-bottom: 3px solid #2fa5e5;
+}
+
+#purple {
+    color: #b42fe5;
+    border-bottom: 3px solid #b42fe5;
+}
+
+QChartView {
+    background-color: transparent;
+}

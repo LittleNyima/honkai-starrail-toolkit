@@ -34,9 +34,9 @@
 
 目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouy.com/iwDYF0x00q0f)，两种途径的内容相同，可以自行选择下载方式。
 
-***BREAKING：目前用户界面的第一个版本已经实现完成，界面预览：***
+***BREAKING：目前用户界面正在优化中，预览如下图所示。***（注意：该版本尚未发布，所以 release 中仍然是旧版界面，且该界面正在调试过程中，可能会有一些问题，如果出现问题，请先下载旧版 release 使用。）
 
-![gui preview gacha](https://s1.ax1x.com/2023/05/23/p9o7y3d.png)
+![gui preview gacha](https://s1.ax1x.com/2023/05/25/p9HOzLQ.png)
 
 ![gui preview unlock](https://s1.ax1x.com/2023/05/23/p9o76gA.png)
 
@@ -109,4 +109,4 @@ hksr gacha
 
 ## Credits
 
-本仓库用户界面部分基于 [**zhiyiYo/PyQt-Fluent-Widgets**](https://github.com/zhiyiYo/PyQt-Fluent-Widgets) 实现，缓存解析部分参考了 [**sunfkny/genshin-gacha-export**](https://github.com/sunfkny/genshin-gacha-export)。
+本仓库用户界面部分基于 [**zhiyiYo/PyQt-Fluent-Widgets**](https://github.com/zhiyiYo/PyQt-Fluent-Widgets) 实现，缓存解析部分参考了 [**sunfkny/genshin-gacha-export**](https://github.com/sunfkny/genshin-gacha-export)，用户界面设计参考了 [**BoxCatTeam/SRCat**](https://github.com/BoxCatTeam/SRCat)。

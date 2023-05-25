@@ -45,7 +45,7 @@ class StarRailConfig(qfw.QConfig):
     locale = qfw.OptionsConfigItem(
         group='StarRailToolkit',
         name='Locale',
-        default=Language.AUTO,
+        default=Language.CHINESE_SIMPLIFIED,
         validator=qfw.OptionsValidator(Language),
         serializer=LanguageSerializer(),
         restart=True,
@@ -62,8 +62,10 @@ class StarRailConfig(qfw.QConfig):
     def __init__(self, path):
         super().__init__()
         self.file = Path(path)
+        if not self.file.exists():
+            self.set(self.themeColor, '#ff0077dd')
+            self.set(self.themeMode, qfw.Theme.DARK)
 
 
 qcfg = StarRailConfig(path=StarRailConfig.config_path)
 qfw.qconfig.load(StarRailConfig.config_path, qcfg)
-qcfg.set(qcfg.themeColor, '#ff0077dd')

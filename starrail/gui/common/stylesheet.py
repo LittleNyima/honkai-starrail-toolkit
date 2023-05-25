@@ -8,6 +8,7 @@ class StyleSheet(StyleSheetBase, Enum):
 
     BASE_INTERFACE = 'base_interface'
     CHECK_UPDATE_DIALOG = 'check_update_dialog'
+    GACHA_RECORD = 'gacha_record'
     HOME_INTERFACE = 'home_interface'
     LINK_CARD = 'link_card'
     RESULT_TABLE_WIDGET = 'result_table_widget'

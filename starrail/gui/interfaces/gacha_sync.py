@@ -1,24 +1,26 @@
-import json
 import os
 import time
 import traceback
-from typing import List
 
 import qfluentwidgets as qfw
-from PySide6 import QtWidgets
+from PySide6 import QtCharts, QtWidgets
 from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtWidgets import QLabel, QTableWidgetItem, QVBoxLayout
+from PySide6.QtGui import QPainter
+from PySide6.QtWidgets import QLabel, QVBoxLayout
 
 import starrail.gacha.service as service
 from starrail.gacha.type import GachaType
 from starrail.gui.common.stylesheet import StyleSheet
-from starrail.gui.interfaces.base import BaseInterface
+from starrail.gui.interfaces.base import BaseInterface, CardWidget
+from starrail.gui.widgets.pie_chart import SmartPieChart
 from starrail.utils import babelfish, loggings
 from starrail.utils.accounts import account_record, get_latest_uid
 
 AF = Qt.AlignmentFlag
 logger = loggings.get_logger(__file__)
 
+
+# = FUNCTIONS =
 
 class GachaSyncThread(QThread):
 
@@ -141,62 +143,217 @@ class RecordExportThread(QThread):
             hook(manager, export_path)
         self.saveSuccessSignal.emit(self.path)
 
+# = UI =
 
-class ResultTableWidget(QtWidgets.QWidget):
 
-    def __init__(self, title, parent=None):
-        super().__init__(parent=parent)
-        self.vBoxLayout = QVBoxLayout(self)
-        self.labelsLayout = qfw.FlowLayout()
+pie_chart_mapping = {
+    GachaType.CHARACTER: [
+        (babelfish.ui_5star_character(),  'red',    '#e52f2f'),
+        (babelfish.ui_4star_character(),  'orange', '#e56d2f'),
+        (babelfish.ui_4star_light_cone(), 'green',  '#4ae52f'),
+        (babelfish.ui_3star_light_cone(), 'blue',   '#2fa5e5'),
+    ],
+    GachaType.DEPARTURE: [
+        (babelfish.ui_5star_character(),  'red',    '#e52f2f'),
+        (babelfish.ui_4star_character(),  'orange', '#e56d2f'),
+        (babelfish.ui_4star_light_cone(), 'green',  '#4ae52f'),
+        (babelfish.ui_3star_light_cone(), 'blue',   '#2fa5e5'),
+    ],
+    GachaType.LIGHT_CONE: [
+        (babelfish.ui_5star_light_cone(), 'purple', '#b42fe5'),
+        (babelfish.ui_4star_character(),  'orange', '#e56d2f'),
+        (babelfish.ui_4star_light_cone(), 'green',  '#4ae52f'),
+        (babelfish.ui_3star_light_cone(), 'blue',   '#2fa5e5'),
+    ],
+    GachaType.STELLAR: [
+        (babelfish.ui_5star_character(),  'red',    '#e52f2f'),
+        (babelfish.ui_5star_light_cone(), 'purple', '#b42fe5'),
+        (babelfish.ui_4star_character(),  'orange', '#e56d2f'),
+        (babelfish.ui_4star_light_cone(), 'green',  '#4ae52f'),
+        (babelfish.ui_3star_light_cone(), 'blue',   '#2fa5e5'),
+    ],
+}
 
-        self.titleLabel = QLabel(title)
-        self.table = qfw.TableWidget(self)
 
-        self.__initWidgets()
-        self.__initTable()
+class GachaRecordUI:
 
-    def __initWidgets(self):
-        self.table.verticalHeader().hide()
-        self.table.setColumnCount(5)
-        self.table.setRowCount(3)
-        self.table.setHorizontalHeaderLabels([
-            babelfish.ui_gacha_type(), babelfish.ui_gacha_count(),
-            babelfish.ui_gacha_basic_prob(), babelfish.ui_gacha_true_prob(),
-            babelfish.ui_gacha_since_last(),
-        ])
-        self.table.setEnabled(False)
-        SM = QtWidgets.QAbstractItemView.ScrollMode
-        self.table.setHorizontalScrollMode(SM.ScrollPerPixel)
-        self.table.setVerticalScrollMode(SM.ScrollPerPixel)
+    def __init__(self, card: CardWidget, gachaType: GachaType):
+        self.card = card
+        self.gachaType = gachaType
+        self.mapping = pie_chart_mapping[gachaType]
 
-        self.labelsLayout.setContentsMargins(0, 0, 0, 10)
-        self.labelsLayout.setHorizontalSpacing(10)
-        self.labelsLayout.setVerticalSpacing(20)
+        self.chart = SmartPieChart(title='', showInner=True)
+        self.leftChartView = QtCharts.QChartView(
+            chart=self.chart,
+            parent=self.card,
+        )
+        self.middleView = QtWidgets.QWidget(parent=self.card)
+        self.rightView = QtWidgets.QWidget(parent=self.card)
 
-        self.vBoxLayout.setContentsMargins(10, 10, 0, 0)
-        self.vBoxLayout.addWidget(self.titleLabel)
-        self.vBoxLayout.addWidget(self.table)
-        self.vBoxLayout.addLayout(self.labelsLayout)
+        self.middleTopView = QtWidgets.QWidget(parent=self.card)
+        self.middleTopView.setObjectName('legend')
 
-        self.setFixedWidth(580)
-        self.setObjectName('frame')
-        self.titleLabel.setObjectName('titleLabel')
-        self.table.setObjectName('table')
-        StyleSheet.RESULT_TABLE_WIDGET.apply(self)
+        self.infoHBox0 = QtWidgets.QHBoxLayout()
+        self.infoLeftLabel0 = QLabel(
+            text=babelfish.ui_total_warp(),
+            parent=self.card,
+        )
+        self.infoRightLabel0 = QLabel(text='', parent=self.card)
+        self.infoHBox1 = QtWidgets.QHBoxLayout()
+        self.infoLeftLabel1 = QLabel(
+            text=babelfish.ui_since_last_guarantee(),
+            parent=self.card,
+        )
+        self.infoRightLabel1 = QLabel(text='', parent=self.card)
+        self.infoHBox2 = QtWidgets.QHBoxLayout()
+        self.infoLeftLabel2 = QLabel(
+            text=babelfish.ui_average_warps_per_up(),
+            parent=self.card,
+        )
+        self.infoRightLabel2 = QLabel(text='', parent=self.card)
+        self.infoHBox3 = QtWidgets.QHBoxLayout()
+        self.infoLeftLabel3 = QLabel(
+            text=babelfish.ui_arerage_warps_per_5star(),
+            parent=self.card,
+        )
+        self.infoRightLabel3 = QLabel(text='', parent=self.card)
 
-    def __initTable(self):
-        self.setTableData([
-            ['5'] + [babelfish.ui_no_data()] * 4,
-            ['4'] + [babelfish.ui_no_data()] * 4,
-            ['3'] + [babelfish.ui_no_data()] * 4,
-        ])
+        self.middleVBox = QVBoxLayout(self.middleView)
+        self.middleTopVBox = QVBoxLayout(self.middleTopView)
+        self.middleBottomVBox = QVBoxLayout()
 
-    def setTableData(self, data: List[List[str]]):
-        # data: 3x5
-        logger.debug(f'[GUI] {data}')
-        for idx0, row in enumerate(data):
-            for idx1, item in enumerate(row):
-                self.table.setItem(idx0, idx1, QTableWidgetItem(item))
+        self.__initLegend()
+        self.__initLayout()
+        self.__initWidget()
+
+        StyleSheet.apply(StyleSheet.GACHA_RECORD, self.card)
+
+    def __initLegend(self):
+        self.legendHBox0 = QtWidgets.QHBoxLayout()
+        self.legendHBox1 = QtWidgets.QHBoxLayout()
+        self.legendTopLeft = QLabel(
+            text=self.mapping[0][0], parent=self.card,
+        )
+        self.legendTopLeft.setObjectName(self.mapping[0][1])
+        self.legendTopRight = QLabel(
+            text=self.mapping[1][0], parent=self.card,
+        )
+        self.legendTopRight.setObjectName(self.mapping[1][1])
+        self.legendBottomLeft = QLabel(
+            text=self.mapping[2][0], parent=self.card,
+        )
+        self.legendBottomLeft.setObjectName(self.mapping[2][1])
+        self.legendBottomRight = QLabel(
+            text=self.mapping[3][0], parent=self.card,
+        )
+        self.legendBottomRight.setObjectName(self.mapping[3][1])
+
+        if self.gachaType == GachaType.STELLAR:
+            self.legendHBox2 = QtWidgets.QHBoxLayout()
+            self.legendBottomBottom = QLabel(
+                text=self.mapping[4][0], parent=self.card,
+            )
+            self.legendBottomBottom.setObjectName(self.mapping[4][1])
+
+    def __initLayout(self):
+        self.leftChartView.setRenderHint(QPainter.RenderHint.Antialiasing)
+        # self.leftChartView.setEnabled(False)
+
+        self.middleVBox.setContentsMargins(0, 0, 0, 0)
+        self.middleTopVBox.setContentsMargins(0, 0, 0, 0)
+        self.middleBottomVBox.setContentsMargins(0, 0, 0, 0)
+
+        self.leftChartView.setFixedSize(250, 200)
+        self.middleView.setFixedWidth(300)
+
+        self.legendTopLeft.setAlignment(AF.AlignCenter)
+        self.legendTopLeft.setFixedHeight(30)
+        self.legendTopRight.setAlignment(AF.AlignCenter)
+        self.legendTopRight.setFixedHeight(30)
+        self.legendBottomLeft.setAlignment(AF.AlignCenter)
+        self.legendBottomLeft.setFixedHeight(30)
+        self.legendBottomRight.setAlignment(AF.AlignCenter)
+        self.legendBottomRight.setFixedHeight(30)
+
+        if self.gachaType == GachaType.STELLAR:
+            self.legendBottomBottom.setAlignment(AF.AlignCenter)
+            self.legendBottomBottom.setFixedHeight(30)
+
+    def __initWidget(self):
+        self.card.addWidget(self.leftChartView)
+        self.card.addSpacing(10)
+        self.card.addWidget(self.middleView)
+        self.card.addSpacing(10)
+        self.card.addWidget(self.rightView)
+
+        self.middleVBox.addWidget(self.middleTopView)
+        self.middleTopVBox.addLayout(self.legendHBox0)
+        self.middleTopVBox.addLayout(self.legendHBox1)
+
+        self.middleVBox.addLayout(self.middleBottomVBox)
+        self.middleBottomVBox.addLayout(self.infoHBox0)
+        self.middleBottomVBox.addLayout(self.infoHBox1)
+        self.middleBottomVBox.addLayout(self.infoHBox2)
+        self.middleBottomVBox.addLayout(self.infoHBox3)
+
+        self.legendHBox0.addWidget(self.legendTopLeft)
+        self.legendHBox0.addWidget(self.legendTopRight)
+        self.legendHBox1.addWidget(self.legendBottomLeft)
+        self.legendHBox1.addWidget(self.legendBottomRight)
+
+        self.infoHBox0.addWidget(self.infoLeftLabel0)
+        self.infoHBox0.addStretch(1)
+        self.infoHBox0.addWidget(self.infoRightLabel0)
+        self.infoHBox1.addWidget(self.infoLeftLabel1)
+        self.infoHBox1.addStretch(1)
+        self.infoHBox1.addWidget(self.infoRightLabel1)
+        self.infoHBox2.addWidget(self.infoLeftLabel2)
+        self.infoHBox2.addStretch(1)
+        self.infoHBox2.addWidget(self.infoRightLabel2)
+        self.infoHBox3.addWidget(self.infoLeftLabel3)
+        self.infoHBox3.addStretch(1)
+        self.infoHBox3.addWidget(self.infoRightLabel3)
+
+        if self.gachaType == GachaType.STELLAR:
+            self.middleTopVBox.addLayout(self.legendHBox2)
+            self.legendHBox2.addWidget(self.legendBottomBottom)
+
+    def updateRecord(
+        self, character5: int, character4: int, lightCone5: int,
+        lightCone4: int, lightCone3: int, total: int,
+        sinceLast: int, averageUp: float, average5: float,
+        startTime: str, endTime: str, fiveStars: list,
+    ):
+        m = self.mapping
+        self.chart.clear()
+        if self.gachaType in [GachaType.CHARACTER, GachaType.DEPARTURE]:
+            data = (character5, character4, lightCone4, lightCone3)
+        elif self.gachaType == GachaType.LIGHT_CONE:
+            data = (lightCone5, character4, lightCone4, lightCone3)
+            self.chart.add_slice(m[0][0], lightCone5, m[0][2])
+            self.chart.add_slice(m[1][0], character4, m[1][2])
+            self.chart.add_slice(m[2][0], lightCone4, m[2][2])
+            self.chart.add_slice(m[3][0], lightCone3, m[3][2])
+            self.legendTopLeft.setText(f'{lightCone5} {m[0][0]}')
+            self.legendTopRight.setText(f'{character4} {m[1][0]}')
+            self.legendBottomLeft.setText(f'{lightCone4} {m[2][0]}')
+            self.legendBottomRight.setText(f'{lightCone3} {m[3][0]}')
+        else:
+            data = (character5, lightCone5, character4, lightCone4)
+            self.chart.add_slice(m[4][0], lightCone3, m[4][2])
+            self.legendBottomRight.setText(f'{lightCone3} {m[4][0]}')
+        self.chart.add_slice(m[0][0], data[0], m[0][2])
+        self.chart.add_slice(m[1][0], data[1], m[1][2])
+        self.chart.add_slice(m[2][0], data[2], m[2][2])
+        self.chart.add_slice(m[3][0], data[3], m[3][2])
+        self.legendTopLeft.setText(f'{data[0]} {m[0][0]}')
+        self.legendTopRight.setText(f'{data[1]} {m[1][0]}')
+        self.legendBottomLeft.setText(f'{data[2]} {m[2][0]}')
+        self.legendBottomRight.setText(f'{data[3]} {m[3][0]}')
+        self.infoRightLabel0.setText(f'{total}')
+        self.infoRightLabel1.setText(f'{sinceLast}')
+        self.infoRightLabel2.setText(f'{averageUp:.1f}')
+        self.infoRightLabel3.setText(f'{average5:.1f}')
 
 
 class GachaSyncInterface(BaseInterface):
@@ -205,7 +362,7 @@ class GachaSyncInterface(BaseInterface):
         super().__init__(title, subtitle, parent)
 
         # Buttons
-        self.buttonsCard = None
+        self.buttonsCard = self.addCard(babelfish.ui_operation_zone())
         self.syncButton = qfw.PrimaryPushButton(
             text=babelfish.ui_sync(),
             parent=self,
@@ -220,24 +377,7 @@ class GachaSyncInterface(BaseInterface):
         self.saveButton.clicked.connect(self.onSaveButtonClicked)
         self.saveButton.setDisabled(True)
 
-        # Tables
-        self.tableLayout = qfw.FlowLayout()
-        self.stellarTable = ResultTableWidget(
-            babelfish.translate('STELLAR'),
-            self,
-        )
-        self.departureTable = ResultTableWidget(
-            babelfish.translate('DEPARTURE'),
-            self,
-        )
-        self.characterTable = ResultTableWidget(
-            babelfish.translate('CHARACTER'),
-            self,
-        )
-        self.lightConeTable = ResultTableWidget(
-            babelfish.translate('LIGHT_CONE'),
-            self,
-        )
+        self.__initRecordCards()
 
         # Gacha Sync Temp Objects
         self.syncThread = None
@@ -247,48 +387,71 @@ class GachaSyncInterface(BaseInterface):
         self.uid = get_latest_uid()
         logger.info(f'Detected current uid: {self.uid}')
         if self.uid:
-            self.updateTableDisplay()
             self.saveButton.setEnabled(True)
+            self.updateRecordDisplay()
 
         self.__initWidget()
 
     def __initWidget(self):
-        self.buttonsCard = self.addCard(babelfish.ui_operation_zone())
         self.buttonsCard.addWidget(self.syncButton)
         self.buttonsCard.addSpacing(10)
         self.buttonsCard.addWidget(self.saveButton)
         self.buttonsCard.addStretch(1)
 
-        self.tableLayout.addWidget(self.stellarTable)
-        self.tableLayout.addWidget(self.departureTable)
-        self.tableLayout.addWidget(self.characterTable)
-        self.tableLayout.addWidget(self.lightConeTable)
+    def __initRecordCards(self):
+        self.characterCard = self.addResultCard(
+            GachaType.CHARACTER,
+            babelfish.translate('CHARACTER'),
+        )
+        self.lightConeCard = self.addResultCard(
+            GachaType.LIGHT_CONE,
+            babelfish.translate('LIGHT_CONE'),
+        )
+        self.stellarCard = self.addResultCard(
+            GachaType.STELLAR,
+            babelfish.translate('STELLAR'),
+        )
+        self.departureCard = self.addResultCard(
+            GachaType.DEPARTURE,
+            babelfish.translate('DEPARTURE'),
+        )
+        self.cardMapping = {
+            GachaType.CHARACTER: self.characterCard,
+            GachaType.LIGHT_CONE: self.lightConeCard,
+            GachaType.STELLAR: self.stellarCard,
+            GachaType.DEPARTURE: self.departureCard,
+        }
 
-        self.vBoxLayout.addLayout(self.tableLayout)
+    def addResultCard(self, gachaType, title):
+        card = self.addCard(title)
+        ui = GachaRecordUI(card, gachaType)
+        return ui
+
+    def updateRecordDisplay(self):
+        manager = service.GachaDataManager(self.uid)
+        for gt in GachaType:
+            stats = manager.gacha[gt.value].stats_v2
+            self.cardMapping[gt].updateRecord(
+                character5=stats['character5'],
+                character4=stats['character4'],
+                lightCone5=stats['lightcone5'],
+                lightCone4=stats['lightcone4'],
+                lightCone3=stats['lightcone3'],
+                total=stats['total'],
+                sinceLast=0,
+                averageUp=0,
+                average5=0,
+                startTime='2023.01.01',
+                endTime='2023.01.01',
+                fiveStars=[],
+            )
 
     def resizeEvent(self, e):
         if self.syncToolTip:
             self.syncToolTip.move(self.syncToolTip.getSuitablePos())
         return super().resizeEvent(e)
 
-    def updateTableDisplay(self):
-        manager = service.GachaDataManager(self.uid)
-        mapping = {
-            GachaType.STELLAR.name: self.stellarTable,
-            GachaType.DEPARTURE.name: self.departureTable,
-            GachaType.CHARACTER.name: self.characterTable,
-            GachaType.LIGHT_CONE.name: self.lightConeTable,
-        }
-        for gacha_type in GachaType:
-            stats = manager.gacha[gacha_type.value].stats
-            table = [
-                [
-                    item['rank_type'], item['count'],
-                    item['basic_prob'], item['compr_prob'],
-                    item['since_last'],
-                ] for item in stats
-            ]
-            mapping[gacha_type.name].setTableData(table)
+    # == SLOTS ==
 
     def onSyncButtonClicked(self):
         logger.info('[GUI] Start gacha data synchronization')
@@ -329,9 +492,6 @@ class GachaSyncInterface(BaseInterface):
             self.syncButton.setEnabled(True)
             self.saveButton.setEnabled(True)
 
-    def onSyncSuccess(self):
-        self.updateTableDisplay()
-
     def setToolTipContentSlot(self, tooltip: qfw.StateToolTip, content: str):
         tooltip.setContent(content)
 
@@ -350,7 +510,7 @@ class GachaSyncInterface(BaseInterface):
         self.syncButton.setEnabled(True)
         self.saveButton.setEnabled(True)
 
-        self.onSyncSuccess()
+        self.updateRecordDisplay()
 
     def syncFailSlot(self, message: str):
         logger.info(f'[GUI] Gacha data sync fail with message {message}')
@@ -374,16 +534,6 @@ class GachaSyncInterface(BaseInterface):
 
         self.syncButton.setEnabled(True)
         self.saveButton.setEnabled(True)
-
-    def tableDisplaySlot(self, data):
-        mapping = {
-            GachaType.STELLAR.name: self.stellarTable,
-            GachaType.DEPARTURE.name: self.departureTable,
-            GachaType.CHARACTER.name: self.characterTable,
-            GachaType.LIGHT_CONE.name: self.lightConeTable,
-        }
-        for key, value in json.loads(data).items():
-            mapping[key].setTableData(value)
 
     def saveSuccessSlot(self, path):
         self.saveThread = None
