@@ -1,7 +1,6 @@
 import json
 import os
 import time
-from datetime import datetime
 
 import starrail.gacha.fileio as fileio
 from starrail.gacha.autodet import detect_api_url
@@ -124,11 +123,13 @@ def export_gacha_from_api(api_url, export, request_interval):
         xlsx=fileio.export_as_xlsx,
     )
     if 'all' in export:
-        export = ['csv', 'html', 'json', 'md', 'xlsx']
+        export = ['csv', 'html', 'json', 'md', 'srgf', 'xlsx']
 
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    timestamp = time.strftime('%Y%m%d%H%M%S')
 
     for format in export:
+        if format == 'srgf':
+            format = 'srgf.json'
         logger.info(f'Exporting gacha data as {format} format')
         output_dir = os.getcwd()
         filename = f'HKSR-export-{uid}-{timestamp}.{format}'

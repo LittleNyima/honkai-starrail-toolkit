@@ -40,7 +40,7 @@ def get_parser() -> argparse.ArgumentParser:
     )
     gacha.add_argument(
         '--export', nargs='+', type=str, default=['all'],
-        choices=['all', 'csv', 'html', 'json', 'md', 'xlsx'],
+        choices=['all', 'csv', 'html', 'json', 'md', 'srgf', 'xlsx'],
         help='Types of expected export formats.',
     )
     gacha.add_argument(

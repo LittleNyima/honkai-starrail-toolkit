@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+import time
 
 from starrail.config import configuration as cfg
 from starrail.utils import babelfish
@@ -39,7 +39,7 @@ class AccountRecord:
             )
 
     def update_timestamp(self, uid):
-        timestamp = datetime.now().strftime(babelfish.constants.TIME_FMT)
+        timestamp = time.strftime(babelfish.constants.TIME_FMT)
         if uid in self.accounts:
             self.accounts[uid]['last_update'] = timestamp
         else:

@@ -129,10 +129,14 @@ class RecordExportThread(QThread):
             html=service.fileio.export_as_html,
             json=service.fileio.export_as_json,
             md=service.fileio.export_as_md,
+            srgf=service.fileio.export_as_srgf,
             xlsx=service.fileio.export_as_xlsx,
         )
+        timestamp = time.strftime('%Y%m%d%H%M%S')
         for format, hook in export_hooks.items():
-            filename = f'HKSR-export-{self.uid}.{format}'
+            if format == 'srgf':
+                format = 'srgf.json'
+            filename = f'HKSR-export-{self.uid}-{timestamp}.{format}'
             export_path = os.path.join(self.path, filename)
             hook(manager, export_path)
         self.saveSuccessSignal.emit(self.path)

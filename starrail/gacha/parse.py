@@ -98,7 +98,7 @@ class GachaDataList:
 class GachaDataManager:
 
     def __init__(self, uid):
-        self.uid = uid
+        self.uid: str = uid
         self.gacha = self.load_cache(uid)
 
     def load_cache(self, uid: str):
