@@ -153,29 +153,29 @@ class RecordExportThread(QThread):
 
 pie_chart_mapping = {
     GachaType.CHARACTER: [
-        (babelfish.ui_5star_character(),  'red',    '#e52f2f'),
-        (babelfish.ui_4star_character(),  'orange', '#e56d2f'),
-        (babelfish.ui_4star_light_cone(), 'green',  '#4ae52f'),
-        (babelfish.ui_3star_light_cone(), 'blue',   '#2fa5e5'),
+        (babelfish.ui_5star_character(),  'redLegend',    '#e52f2f'),
+        (babelfish.ui_4star_character(),  'orangeLegend', '#e56d2f'),
+        (babelfish.ui_4star_light_cone(), 'greenLegend',  '#4ae52f'),
+        (babelfish.ui_3star_light_cone(), 'blueLegend',   '#2fa5e5'),
     ],
     GachaType.DEPARTURE: [
-        (babelfish.ui_5star_character(),  'red',    '#e52f2f'),
-        (babelfish.ui_4star_character(),  'orange', '#e56d2f'),
-        (babelfish.ui_4star_light_cone(), 'green',  '#4ae52f'),
-        (babelfish.ui_3star_light_cone(), 'blue',   '#2fa5e5'),
+        (babelfish.ui_5star_character(),  'redLegend',    '#e52f2f'),
+        (babelfish.ui_4star_character(),  'orangeLegend', '#e56d2f'),
+        (babelfish.ui_4star_light_cone(), 'greenLegend',  '#4ae52f'),
+        (babelfish.ui_3star_light_cone(), 'blueLegend',   '#2fa5e5'),
     ],
     GachaType.LIGHT_CONE: [
-        (babelfish.ui_5star_light_cone(), 'purple', '#b42fe5'),
-        (babelfish.ui_4star_character(),  'orange', '#e56d2f'),
-        (babelfish.ui_4star_light_cone(), 'green',  '#4ae52f'),
-        (babelfish.ui_3star_light_cone(), 'blue',   '#2fa5e5'),
+        (babelfish.ui_5star_light_cone(), 'purpleLegend', '#b42fe5'),
+        (babelfish.ui_4star_character(),  'orangeLegend', '#e56d2f'),
+        (babelfish.ui_4star_light_cone(), 'greenLegend',  '#4ae52f'),
+        (babelfish.ui_3star_light_cone(), 'blueLegend',   '#2fa5e5'),
     ],
     GachaType.STELLAR: [
-        (babelfish.ui_5star_character(),  'red',    '#e52f2f'),
-        (babelfish.ui_5star_light_cone(), 'purple', '#b42fe5'),
-        (babelfish.ui_4star_character(),  'orange', '#e56d2f'),
-        (babelfish.ui_4star_light_cone(), 'green',  '#4ae52f'),
-        (babelfish.ui_3star_light_cone(), 'blue',   '#2fa5e5'),
+        (babelfish.ui_5star_character(),  'redLegend',    '#e52f2f'),
+        (babelfish.ui_5star_light_cone(), 'purpleLegend', '#b42fe5'),
+        (babelfish.ui_4star_character(),  'orangeLegend', '#e56d2f'),
+        (babelfish.ui_4star_light_cone(), 'greenLegend',  '#4ae52f'),
+        (babelfish.ui_3star_light_cone(), 'blueLegend',   '#2fa5e5'),
     ],
 }
 
@@ -187,13 +187,16 @@ class GachaRecordUI:
         self.gachaType = gachaType
         self.mapping = pie_chart_mapping[gachaType]
 
-        self.chart = SmartPieChart(title='', showInner=True)
+        self.chart = SmartPieChart(title='', showInner=False)
         self.leftChartView = QtCharts.QChartView(
             chart=self.chart,
             parent=self.card,
         )
+        self.leftView = QtWidgets.QWidget(parent=self.card)
         self.middleView = QtWidgets.QWidget(parent=self.card)
         self.rightView = QtWidgets.QWidget(parent=self.card)
+
+        self.leftBottomLabel = QLabel(text='', parent=self.card)
 
         self.middleTopView = QtWidgets.QWidget(parent=self.card)
         self.middleTopView.setObjectName('legend')
@@ -223,9 +226,11 @@ class GachaRecordUI:
         )
         self.infoRightLabel3 = QLabel(text='', parent=self.card)
 
+        self.leftVBox = QVBoxLayout(self.leftView)
         self.middleVBox = QVBoxLayout(self.middleView)
         self.middleTopVBox = QVBoxLayout(self.middleTopView)
         self.middleBottomVBox = QVBoxLayout()
+        self.rightFlow = qfw.FlowLayout(self.rightView)
 
         self.__initLegend()
         self.__initLayout()
@@ -262,14 +267,17 @@ class GachaRecordUI:
 
     def __initLayout(self):
         self.leftChartView.setRenderHint(QPainter.RenderHint.Antialiasing)
-        # self.leftChartView.setEnabled(False)
+        self.leftChartView.setEnabled(False)
+        self.leftBottomLabel.setAlignment(AF.AlignCenter)
 
         self.middleVBox.setContentsMargins(0, 0, 0, 0)
         self.middleTopVBox.setContentsMargins(0, 0, 0, 0)
         self.middleBottomVBox.setContentsMargins(0, 0, 0, 0)
 
-        self.leftChartView.setFixedSize(250, 200)
+        self.leftView.setFixedWidth(200)
+        self.leftChartView.setFixedHeight(150)
         self.middleView.setFixedWidth(300)
+        self.rightView.setFixedHeight(210)
 
         self.legendTopLeft.setAlignment(AF.AlignCenter)
         self.legendTopLeft.setFixedHeight(30)
@@ -285,11 +293,14 @@ class GachaRecordUI:
             self.legendBottomBottom.setFixedHeight(30)
 
     def __initWidget(self):
-        self.card.addWidget(self.leftChartView)
+        self.card.addWidget(self.leftView)
         self.card.addSpacing(10)
         self.card.addWidget(self.middleView)
         self.card.addSpacing(10)
         self.card.addWidget(self.rightView)
+
+        self.leftVBox.addWidget(self.leftChartView)
+        self.leftVBox.addWidget(self.leftBottomLabel)
 
         self.middleVBox.addWidget(self.middleTopView)
         self.middleTopVBox.addLayout(self.legendHBox0)
@@ -339,26 +350,29 @@ class GachaRecordUI:
             self.chart.add_slice(m[1][0], character4, m[1][2])
             self.chart.add_slice(m[2][0], lightCone4, m[2][2])
             self.chart.add_slice(m[3][0], lightCone3, m[3][2])
-            self.legendTopLeft.setText(f'{lightCone5} {m[0][0]}')
-            self.legendTopRight.setText(f'{character4} {m[1][0]}')
-            self.legendBottomLeft.setText(f'{lightCone4} {m[2][0]}')
-            self.legendBottomRight.setText(f'{lightCone3} {m[3][0]}')
         else:
             data = (character5, lightCone5, character4, lightCone4)
             self.chart.add_slice(m[4][0], lightCone3, m[4][2])
-            self.legendBottomRight.setText(f'{lightCone3} {m[4][0]}')
+            self.legendBottomBottom.setText(f'{lightCone3}    {m[4][0]}')
         self.chart.add_slice(m[0][0], data[0], m[0][2])
         self.chart.add_slice(m[1][0], data[1], m[1][2])
         self.chart.add_slice(m[2][0], data[2], m[2][2])
         self.chart.add_slice(m[3][0], data[3], m[3][2])
-        self.legendTopLeft.setText(f'{data[0]} {m[0][0]}')
-        self.legendTopRight.setText(f'{data[1]} {m[1][0]}')
-        self.legendBottomLeft.setText(f'{data[2]} {m[2][0]}')
-        self.legendBottomRight.setText(f'{data[3]} {m[3][0]}')
+        self.legendTopLeft.setText(f'{data[0]}    {m[0][0]}')
+        self.legendTopRight.setText(f'{data[1]}    {m[1][0]}')
+        self.legendBottomLeft.setText(f'{data[2]}    {m[2][0]}')
+        self.legendBottomRight.setText(f'{data[3]}    {m[3][0]}')
         self.infoRightLabel0.setText(f'{total}')
         self.infoRightLabel1.setText(f'{sinceLast}')
         self.infoRightLabel2.setText(f'{averageUp:.1f}')
         self.infoRightLabel3.setText(f'{average5:.1f}')
+        self.leftBottomLabel.setText(f'{startTime}~{endTime}')
+
+        self.rightFlow.removeAllWidgets()
+        for name, warps, _ in fiveStars:
+            text = f'{name}@{warps}'
+            label = QLabel(text=text, parent=self.card)
+            self.rightFlow.addWidget(label)
 
 
 class GachaSyncInterface(BaseInterface):
@@ -443,12 +457,12 @@ class GachaSyncInterface(BaseInterface):
                 lightCone4=stats['lightcone4'],
                 lightCone3=stats['lightcone3'],
                 total=stats['total'],
-                sinceLast=0,
-                averageUp=0,
-                average5=0,
-                startTime='2023.01.01',
-                endTime='2023.01.01',
-                fiveStars=[],
+                sinceLast=stats['since_last'],
+                averageUp=stats['average_up'],
+                average5=stats['average_5'],
+                startTime=stats['start_time'],
+                endTime=stats['end_time'],
+                fiveStars=stats['five_stars'],  # (name, warps, is_up)
             )
 
     def resizeEvent(self, e):

@@ -122,7 +122,7 @@ class StarRailToolkit(FramelessWindow):
             self.unlockFpsInterface,
             'unlockFpsInterface',
             Icon.UNLOCK,
-            'unlock fps',
+            babelfish.ui_unlock_fps(),
             NavigationItemPosition.TOP,
         )
 

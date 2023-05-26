@@ -3,27 +3,27 @@
     background-color: #fafafa;
 }
 
-#red {
+#redLegend {
     color: #e52f2f;
     border-bottom: 3px solid #e52f2f;
 }
 
-#orange {
+#orangeLegend {
     color: #e56d2f;
     border-bottom: 3px solid #e56d2f;
 }
 
-#green {
+#greenLegend {
     color: #4ae52f;
     border-bottom: 3px solid #4ae52f;
 }
 
-#blue {
+#blueLegend {
     color: #2fa5e5;
     border-bottom: 3px solid #2fa5e5;
 }
 
-#purple {
+#purpleLegend {
     color: #b42fe5;
     border-bottom: 3px solid #b42fe5;
 }

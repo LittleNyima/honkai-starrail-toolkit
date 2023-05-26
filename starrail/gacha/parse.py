@@ -1,5 +1,6 @@
 import copy
 import os
+import time
 from typing import Dict
 
 from prettytable import PrettyTable
@@ -45,6 +46,23 @@ class GachaDataList:
 
     @property
     def stats_v2(self):
+        today = time.strftime('%y.%m.%d')
+        if not self.data:
+            return dict(
+                character5=0,
+                character4=0,
+                lightcone5=0,
+                lightcone4=0,
+                lightcone3=0,
+                total=0,
+                since_last=0,
+                average_up=0,
+                average_5=0,
+                start_time=today,
+                end_time=today,
+                five_stars=[],
+            )
+        self.sort()
         character5 = character4 = lightcone5 = lightcone4 = lightcone3 = 0
         for item in self.data:
             item_type = item['item_type']
@@ -62,6 +80,23 @@ class GachaDataList:
                     lightcone4 += 1
                 elif rank_type == '3':
                     lightcone3 += 1
+        five_stars = [['', 0, False]]
+        for item in reversed(self.data):
+            five_stars[-1][1] += 1
+            rank_type = item['rank_type']
+            name = item['name']
+            if rank_type == '5':
+                five_stars[-1] = (name, five_stars[-1][1], False)
+                five_stars.append(['', 0, False])
+        since_last = 0 if five_stars[-1][0] else five_stars[-1][1]
+        if not five_stars[-1][0]:
+            five_stars.pop(-1)
+        if not five_stars:
+            average_up = average_5 = 0
+        else:
+            average_5 = sum([it[1] for it in five_stars]) / len(five_stars)
+            ups = list(filter(lambda it: it[-1], five_stars))
+            average_up = sum([it[1] for it in ups]) / len(ups) if ups else 0
         return dict(
             character5=character5,
             character4=character4,
@@ -69,6 +104,12 @@ class GachaDataList:
             lightcone4=lightcone4,
             lightcone3=lightcone3,
             total=len(self.data),
+            since_last=since_last,
+            average_up=average_up,
+            average_5=average_5,
+            start_time=self.data[-1]['time'].split()[0].replace('-', '.'),
+            end_time=self.data[0]['time'].split()[0].replace('-', '.'),
+            five_stars=five_stars,
         )
 
     @property
