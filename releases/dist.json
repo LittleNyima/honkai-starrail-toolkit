@@ -1,8 +1,8 @@
 {
-  "version": "0.6.0",
+  "version": "0.6.5",
   "dist": {
     "GitHub_dist": "https://github.com/LittleNyima/honkai-starrail-toolkit/releases",
-    "netdisk_dist": "https://wwmg.lanzouy.com/iwDYF0x00q0f"
+    "netdisk_dist": "https://wwmg.lanzouk.com/ig3lR0xdvwwh"
   },
-  "changelog": "Release v0.6.0\n * 支持设置程序显示语言\n * 支持禁用自动检查更新\n * 支持解锁120帧\n * 美化程序界面\n * 修复了已知问题"
+  "changelog": "Release v0.6.5\n * 支持以 SRGFv1.0 标准导出抽卡记录\n * 美化程序界面\n * 修复了系统语言设置导致的问题"
 }
