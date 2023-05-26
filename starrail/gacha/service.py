@@ -50,7 +50,7 @@ def export_gacha_type(
         logger.info(f'Downloading page {page} of type {gacha_type.name}')
         api_url = get_api_url(
             api_template, end_id, str(gacha_type.value),
-            str(page), '5',
+            str(page), '20',
         )
         logger.debug(f'Requesting {api_url}')
         response, code = fetch_json(api_url)
@@ -60,8 +60,8 @@ def export_gacha_type(
         if should_stop:
             break
         data_list = response['data']['list']
-        region = response['region']
-        timezone = response['region_time_zone']
+        region = response['data']['region']
+        timezone = response['data']['region_time_zone']
         metainfo = dict(region=region, region_time_zone=timezone)
         for data_item in data_list:
             data_item.update(metainfo)
@@ -125,6 +125,7 @@ def export_gacha_from_api(api_url, export, request_interval):
         html=fileio.export_as_html,
         json=fileio.export_as_json,
         md=fileio.export_as_md,
+        srgf=fileio.export_as_srgf,
         xlsx=fileio.export_as_xlsx,
     )
     if 'all' in export:
@@ -133,11 +134,11 @@ def export_gacha_from_api(api_url, export, request_interval):
     timestamp = time.strftime('%Y%m%d%H%M%S')
 
     for format in export:
-        if format == 'srgf':
-            format = 'srgf.json'
         logger.info(f'Exporting gacha data as {format} format')
         output_dir = os.getcwd()
         filename = f'HKSR-export-{uid}-{timestamp}.{format}'
+        if format == 'srgf':
+            filename += '.json'
         path = os.path.join(output_dir, filename)
         export_hooks[format](manager, path)
         logger.info(f'Gacha data in {format} format is saved to {path}')

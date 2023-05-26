@@ -56,7 +56,7 @@ class GachaSyncThread(QThread):
             )
             api_url = service.get_api_url(
                 api_template, end_id, str(gacha_type.value),
-                str(page), '5',
+                str(page), '20',
             )
             logger.debug(f'Requesting {api_url}')
             response, code = service.fetch_json(api_url)
@@ -66,8 +66,8 @@ class GachaSyncThread(QThread):
             if should_stop:
                 break
             data_list = response['data']['list']
-            region = response['region']
-            timezone = response['region_time_zone']
+            region = response['data']['region']
+            timezone = response['data']['region_time_zone']
             metainfo = dict(region=region, region_time_zone=timezone)
             for data_item in data_list:
                 data_item.update(metainfo)
