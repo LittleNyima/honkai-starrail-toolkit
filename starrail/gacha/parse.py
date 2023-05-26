@@ -5,7 +5,7 @@ from typing import Dict
 from prettytable import PrettyTable
 
 from starrail.config import configuration as cfg
-from starrail.gacha.database import DatabaseFactory
+from starrail.gacha.factory import DatabaseFactory
 from starrail.gacha.type import GachaType
 from starrail.utils import loggings
 from starrail.utils.babelfish.dictionary import record_type_mapping
@@ -127,7 +127,7 @@ class GachaDataList:
 class GachaDataManager:
 
     def __init__(self, uid):
-        self.uid: str = uid
+        self.uid = uid
         self.gacha = self.load_cache(uid)
 
     def load_cache(self, uid: str):

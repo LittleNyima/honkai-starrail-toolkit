@@ -60,6 +60,11 @@ def export_gacha_type(
         if should_stop:
             break
         data_list = response['data']['list']
+        region = response['region']
+        timezone = response['region_time_zone']
+        metainfo = dict(region=region, region_time_zone=timezone)
+        for data_item in data_list:
+            data_item.update(metainfo)
         r.extend(data_list)
         end_id = data_list[-1]['id']
     return r

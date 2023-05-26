@@ -5,7 +5,7 @@ import pandas as pd
 
 import starrail
 import starrail.utils.babelfish as babelfish
-from starrail.gacha.database import DatabaseFactory
+from starrail.gacha.factory import DatabaseFactory
 from starrail.gacha.parse import GachaDataManager
 from starrail.gacha.type import GachaType
 from starrail.utils import loggings
@@ -132,9 +132,10 @@ def export_as_srgf(manager: GachaDataManager, output_path: str) -> None:
     for gacha_type in GachaType:
         gacha_list.extend(manager.gacha[gacha_type.value].tolist())
     gacha_list.sort(key=lambda x: x['id'])
-    uid = gacha_list[0]['uid'] if gacha_list else manager.uid
-    lang = gacha_list[0]['lang'] if gacha_list else 'zh-cn'
-    timezone = time.localtime().tm_gmtoff // 3600
+    uid = gacha_list[-1]['uid'] if gacha_list else manager.uid
+    lang = gacha_list[-1]['lang'] if gacha_list else 'zh-cn'
+    timezone = gacha_list[-1]['region_time_zone'] if gacha_list else '8'
+    timezone = int(timezone)
     timestamp = int(time.time())
     data = dict(
         info=dict(
