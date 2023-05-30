@@ -1,10 +1,11 @@
+import json
 import os
 import time
-import traceback
+from collections import defaultdict
 
 import qfluentwidgets as qfw
 from PySide6 import QtCharts, QtWidgets
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QLabel, QVBoxLayout
 
@@ -12,6 +13,7 @@ import starrail.gacha.service as service
 from starrail.gacha.type import GachaType
 from starrail.gui.common.icon import Icon
 from starrail.gui.common.stylesheet import StyleSheet
+from starrail.gui.common.thread import StatefulThread
 from starrail.gui.interfaces.base import BaseInterface, CardWidget
 from starrail.gui.widgets.pie_chart import SmartPieChart
 from starrail.utils import babelfish, loggings
@@ -23,23 +25,12 @@ logger = loggings.get_logger(__file__)
 
 # = FUNCTIONS =
 
-class GachaSyncThread(QThread):
+class GachaSyncThread(StatefulThread):
 
     syncStateSignal = Signal(str)
-    syncSuccessSignal = Signal(str)
-    syncFailSignal = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-
-    def run(self):
-        try:
-            uid = self.syncGachaData()
-            self.syncSuccessSignal.emit(uid)
-        except Exception:
-            self.syncFailSignal.emit(
-                f'{babelfish.ui_traceback()}:\n{traceback.format_exc()}',
-            )
 
     def logAndUpdateState(self, message, level=loggings.logging.INFO):
         logger.log(level=level, msg=f'[GUI] {message}')
@@ -76,14 +67,14 @@ class GachaSyncThread(QThread):
             end_id = data_list[-1]['id']
         return r
 
-    def syncGachaData(self):
+    def work(self):
         self.logAndUpdateState(babelfish.ui_extracting_api_url())
         api_url = service.detect_api_url()
         response, code = service.fetch_json(api_url)
         valid, _, msg = service.check_response(response, code)
         logger.info(f'check_response (api): {msg}')
         if not valid:
-            self.syncFailSignal.emit(babelfish.ui_extract_api_fail())
+            self.failureSignal.emit(babelfish.ui_extract_api_fail())
             raise ValueError(babelfish.ui_extract_api_fail_with_msg(msg))
 
         api_template = service.get_url_template(api_url)
@@ -121,25 +112,60 @@ class GachaSyncThread(QThread):
         return uid
 
 
-class RecordExportThread(QThread):
+class RecordImportThread(StatefulThread):
 
-    saveSuccessSignal = Signal(str)
-    saveFailSignal = Signal(str)
+    def __init__(self, path, parent=None):
+        super().__init__(parent=parent)
+        self.path = path
+
+    def work(self):
+        with open(self.path, encoding='utf-8') as f:
+            data = json.load(f)
+        info = data['info']
+        uid = info['uid']
+        update_info = dict(
+            uid=info['uid'],
+            lang=info['lang'],
+            region='',  # unused
+            region_time_zone=str(info['region_time_zone']),
+        )
+        record_cache = defaultdict(list)
+        for item in data['list']:
+            item.update(update_info)
+            record_cache[int(item['gacha_type'])].append(item)
+
+        manager = service.GachaDataManager(uid=uid)
+        logger.info(f'Successfully connected to cache of uid {uid}')
+        manager.log_stats()
+
+        total = 0
+
+        for k, v in record_cache.items():
+            manager.add_records(k, v)
+            manager.gacha[k].sort()
+            total += len(v)
+
+        service.fileio.export_as_sql(manager, manager.cache_path)
+
+        timestamp = info['export_timestamp']
+        timestruct = time.localtime(timestamp)
+        timestr = time.strftime(babelfish.constants.TIME_FMT, timestruct)
+        account_record.update_timestamp(uid, timestr)
+
+        logger.info(f'Successfully load gacha data from {self.path}')
+        msg = babelfish.ui_load_success_msg(uid=uid, cnt=total)
+        # return msg: {uid: uid, msg: msg}
+        return json.dumps(dict(uid=uid, msg=msg), ensure_ascii=False)
+
+
+class RecordExportThread(StatefulThread):
 
     def __init__(self, uid, path, parent=None):
         super().__init__(parent=parent)
         self.uid = uid
         self.path = path
 
-    def run(self):
-        try:
-            self.export()
-        except Exception:
-            self.saveFailSignal.emit(
-                f'{babelfish.ui_traceback()}:\n{traceback.format_exc()}',
-            )
-
-    def export(self):
+    def work(self):
         manager = service.GachaDataManager(self.uid)
         export_hooks = dict(
             csv=service.fileio.export_as_csv,
@@ -156,7 +182,8 @@ class RecordExportThread(QThread):
             filename = f'HKSR-export-{self.uid}-{timestamp}.{format}'
             export_path = os.path.join(self.path, filename)
             hook(manager, export_path)
-        self.saveSuccessSignal.emit(self.path)
+
+        return self.path
 
 # = UI =
 
@@ -418,6 +445,7 @@ class GachaSyncInterface(BaseInterface):
         self.syncThread = None
         self.syncToolTip = None
         self.saveThread = None
+        self.loadThread = None
 
         self.uid = get_latest_uid()
         logger.info(f'Detected current uid: {self.uid}')
@@ -517,8 +545,8 @@ class GachaSyncInterface(BaseInterface):
         self.syncThread.syncStateSignal.connect(
             lambda s: self.setToolTipContentSlot(self.syncToolTip, s),
         )
-        self.syncThread.syncSuccessSignal.connect(self.syncSuccessSlot)
-        self.syncThread.syncFailSignal.connect(self.syncFailSlot)
+        self.syncThread.successSignal.connect(self.syncSuccessSlot)
+        self.syncThread.failureSignal.connect(self.syncFailureSlot)
         self.syncThread.start()
 
     def onSaveButtonClicked(self):
@@ -531,8 +559,8 @@ class GachaSyncInterface(BaseInterface):
         )
         if path:
             self.saveThread = RecordExportThread(self.uid, path, self)
-            self.saveThread.saveSuccessSignal.connect(self.saveSuccessSlot)
-            self.saveThread.saveFailSignal.connect(self.saveFailSlot)
+            self.saveThread.successSignal.connect(self.saveSuccessSlot)
+            self.saveThread.failureSignal.connect(self.saveFailureSlot)
             self.saveThread.start()
         else:
             self.enableButtons()
@@ -540,15 +568,21 @@ class GachaSyncInterface(BaseInterface):
     def onLoadButtonClicked(self):
         logger.info('[GUI] Trying to load gacha data')
 
-        qfw.InfoBar.info(
-            title='Not Supported',
-            content='Please update your app',
-            orient=Qt.Orientation.Horizontal,
-            isClosable=True,
-            duration=3000,
-            position=qfw.InfoBarPosition.TOP_RIGHT,
+        self.disableButtons()
+
+        path, _ = QtWidgets.QFileDialog.getOpenFileName(
             parent=self,
+            caption='Select Import File',
+            dir=os.path.expanduser('~'),
+            filter='JSON Files (*.json);;All Files (*)',
         )
+        if path:
+            self.loadThread = RecordImportThread(path=path, parent=self)
+            self.loadThread.successSignal.connect(self.loadSuccessSlot)
+            self.loadThread.failureSignal.connect(self.loadFailureSlot)
+            self.loadThread.start()
+        else:
+            self.enableButtons()
 
     def setToolTipContentSlot(self, tooltip: qfw.StateToolTip, content: str):
         tooltip.setContent(content)
@@ -566,10 +600,9 @@ class GachaSyncInterface(BaseInterface):
         self.syncThread = None
 
         self.enableButtons()
-
         self.updateRecordDisplay()
 
-    def syncFailSlot(self, message: str):
+    def syncFailureSlot(self, message: str):
         logger.info(f'[GUI] Gacha data sync fail with message {message}')
 
         if self.syncToolTip is not None:
@@ -606,11 +639,44 @@ class GachaSyncInterface(BaseInterface):
 
         self.enableButtons()
 
-    def saveFailSlot(self, msg):
+    def saveFailureSlot(self, msg):
         self.saveThread = None
 
         qfw.InfoBar.error(
             title=babelfish.ui_save_failure(),
+            content=msg,
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            duration=-1,
+            position=qfw.InfoBarPosition.TOP_RIGHT,
+            parent=self,
+        )
+
+        self.enableButtons()
+
+    def loadSuccessSlot(self, msg):
+        self.loadThread = None
+        msg = json.loads(msg)
+        self.uid = msg['uid']
+
+        qfw.InfoBar.success(
+            title=babelfish.ui_load_success(),
+            content=msg['msg'],
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            duration=-1,
+            position=qfw.InfoBarPosition.TOP_RIGHT,
+            parent=self,
+        )
+
+        self.enableButtons()
+        self.updateRecordDisplay()
+
+    def loadFailureSlot(self, msg):
+        self.loadThread = None
+
+        qfw.InfoBar.error(
+            title=babelfish.ui_load_failure(),
             content=msg,
             orient=Qt.Orientation.Horizontal,
             isClosable=True,

@@ -156,7 +156,13 @@ ui_is_latest_version = _MS(
     en='Your application is the latest version.',
     zhs='已经是最新版本啦',
 )
+ui_load_failure = _MS(en='Record Load Failed', zhs='加载失败')
 ui_load_gacha = _MS(en='Import from JSON', zhs='导入数据')
+ui_load_success = _MS(en='Record Load Success', zhs='加载成功')
+ui_load_success_msg = _MS(
+    en='Successfully loaded {cnt} items for uid {uid}.',
+    zhs='成功导入了用户{uid}的{cnt}条记录。',
+)
 ui_locale = _MS(en='Display Language', zhs='显示语言')
 ui_locale_setting_desc = _MS(en='Changing the display language', zhs='改变显示语言')
 ui_no_data = _MS(en='No Data', zhs='暂无数据')
