@@ -4,7 +4,7 @@ import traceback
 from starrail import __version__, digital_version
 from starrail.config import configuration as cfg
 from starrail.entry.setup import setup
-from starrail.gacha.service import export_gacha_from_api
+from starrail.gacha.service import export_gacha_from_api, import_srgf_data
 from starrail.unlock.service import unlock_fps
 from starrail.utils import babelfish, loggings
 from starrail.utils.auto_update import check_update
@@ -42,6 +42,10 @@ def get_parser() -> argparse.ArgumentParser:
         '--export', nargs='+', type=str, default=['all'],
         choices=['all', 'csv', 'html', 'json', 'md', 'srgf', 'xlsx'],
         help='Types of expected export formats.',
+    )
+    gacha.add_argument(
+        '--load', type=str,
+        help='Import source json under SRGF standard.',
     )
     gacha.add_argument(
         '--request-interval', type=float, default=0.1,
@@ -95,6 +99,7 @@ def cli_entry():
     cli_check_update()
 
     if args.command == 'gacha':
+        import_srgf_data(filename=args.load)
         export_gacha_from_api(
             api_url=args.api,
             export=args.export,

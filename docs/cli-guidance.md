@@ -40,6 +40,7 @@ optional arguments:
 
 - `--api`：（Windows 平台可选）API URL 地址。若为 Windows 平台，可以不填这个参数，而使用自动检测功能。
 - `--export`：（可选）导出格式选项。默认为导出全部格式，若仅需导出部分格式，可以替换对应参数。目前支持的格式有 `csv`、`html`、`json`、`md`、`xlsx`。例如，若只需要 json 与 xlsx 格式数据，可以替换为 `--export json xlsx`。
+- `--load`：（可选）导入抽卡信息，应当传入符合 [SRGF 标准](https://uigf.org/zh/standards/SRGF.html)的 json 文件，若不填则默认跳过导入步骤。
 - `--request-interval`：（可选）请求间隔。两次请求之间的最小间隔，默认为 `0.1`。若某些情况下因请求过于频繁导致 IP 被 ban，可以适度把这个值调大一点。
 
 ### unlock 命令

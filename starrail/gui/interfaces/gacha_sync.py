@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout
 
 import starrail.gacha.service as service
 from starrail.gacha.type import GachaType
+from starrail.gui.common.icon import Icon
 from starrail.gui.common.stylesheet import StyleSheet
 from starrail.gui.interfaces.base import BaseInterface, CardWidget
 from starrail.gui.widgets.pie_chart import SmartPieChart
@@ -123,6 +124,7 @@ class GachaSyncThread(QThread):
 class RecordExportThread(QThread):
 
     saveSuccessSignal = Signal(str)
+    saveFailSignal = Signal(str)
 
     def __init__(self, uid, path, parent=None):
         super().__init__(parent=parent)
@@ -130,6 +132,14 @@ class RecordExportThread(QThread):
         self.path = path
 
     def run(self):
+        try:
+            self.export()
+        except Exception:
+            self.saveFailSignal.emit(
+                f'{babelfish.ui_traceback()}:\n{traceback.format_exc()}',
+            )
+
+    def export(self):
         manager = service.GachaDataManager(self.uid)
         export_hooks = dict(
             csv=service.fileio.export_as_csv,
@@ -395,6 +405,12 @@ class GachaSyncInterface(BaseInterface):
         )
         self.saveButton.clicked.connect(self.onSaveButtonClicked)
         self.saveButton.setDisabled(True)
+        self.loadButton = qfw.PrimaryPushButton(
+            text=babelfish.ui_load_gacha(),
+            parent=self,
+            icon=Icon.FILE_IMPORT,
+        )
+        self.loadButton.clicked.connect(self.onLoadButtonClicked)
 
         self.__initRecordCards()
 
@@ -415,6 +431,8 @@ class GachaSyncInterface(BaseInterface):
         self.buttonsCard.addWidget(self.syncButton)
         self.buttonsCard.addSpacing(10)
         self.buttonsCard.addWidget(self.saveButton)
+        self.buttonsCard.addSpacing(10)
+        self.buttonsCard.addWidget(self.loadButton)
         self.buttonsCard.addStretch(1)
 
     def __initRecordCards(self):
@@ -470,13 +488,22 @@ class GachaSyncInterface(BaseInterface):
             self.syncToolTip.move(self.syncToolTip.getSuitablePos())
         return super().resizeEvent(e)
 
+    def disableButtons(self):
+        self.syncButton.setDisabled(True)
+        self.saveButton.setDisabled(True)
+        self.loadButton.setDisabled(True)
+
+    def enableButtons(self):
+        self.syncButton.setEnabled(True)
+        self.saveButton.setEnabled(True)
+        self.loadButton.setEnabled(True)
+
     # == SLOTS ==
 
     def onSyncButtonClicked(self):
         logger.info('[GUI] Start gacha data synchronization')
 
-        self.syncButton.setDisabled(True)
-        self.saveButton.setDisabled(True)
+        self.disableButtons()
 
         self.syncToolTip = qfw.StateToolTip(
             babelfish.ui_synchronizing_gacha(),
@@ -497,8 +524,7 @@ class GachaSyncInterface(BaseInterface):
     def onSaveButtonClicked(self):
         logger.info('[GUI] Start gacha data exporting')
 
-        self.syncButton.setDisabled(True)
-        self.saveButton.setDisabled(True)
+        self.disableButtons()
 
         path = QtWidgets.QFileDialog.getExistingDirectory(
             self, 'Select Export Folder', os.path.expanduser('~'),
@@ -506,15 +532,28 @@ class GachaSyncInterface(BaseInterface):
         if path:
             self.saveThread = RecordExportThread(self.uid, path, self)
             self.saveThread.saveSuccessSignal.connect(self.saveSuccessSlot)
+            self.saveThread.saveFailSignal.connect(self.saveFailSlot)
             self.saveThread.start()
         else:
-            self.syncButton.setEnabled(True)
-            self.saveButton.setEnabled(True)
+            self.enableButtons()
+
+    def onLoadButtonClicked(self):
+        logger.info('[GUI] Trying to load gacha data')
+
+        qfw.InfoBar.info(
+            title='Not Supported',
+            content='Please update your app',
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            duration=3000,
+            position=qfw.InfoBarPosition.TOP_RIGHT,
+            parent=self,
+        )
 
     def setToolTipContentSlot(self, tooltip: qfw.StateToolTip, content: str):
         tooltip.setContent(content)
 
-    def syncSuccessSlot(self, uid: int):
+    def syncSuccessSlot(self, uid: str):
         logger.info('[GUI] Gacha data synchronization success')
 
         self.uid = uid
@@ -526,8 +565,7 @@ class GachaSyncInterface(BaseInterface):
         self.syncToolTip = None
         self.syncThread = None
 
-        self.syncButton.setEnabled(True)
-        self.saveButton.setEnabled(True)
+        self.enableButtons()
 
         self.updateRecordDisplay()
 
@@ -551,8 +589,7 @@ class GachaSyncInterface(BaseInterface):
             parent=self,
         )
 
-        self.syncButton.setEnabled(True)
-        self.saveButton.setEnabled(True)
+        self.enableButtons()
 
     def saveSuccessSlot(self, path):
         self.saveThread = None
@@ -567,5 +604,19 @@ class GachaSyncInterface(BaseInterface):
             parent=self,
         )
 
-        self.syncButton.setEnabled(True)
-        self.saveButton.setEnabled(True)
+        self.enableButtons()
+
+    def saveFailSlot(self, msg):
+        self.saveThread = None
+
+        qfw.InfoBar.error(
+            title=babelfish.ui_save_failure(),
+            content=msg,
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            duration=-1,
+            position=qfw.InfoBarPosition.TOP_RIGHT,
+            parent=self,
+        )
+
+        self.enableButtons()

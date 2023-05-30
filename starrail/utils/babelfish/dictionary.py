@@ -156,6 +156,7 @@ ui_is_latest_version = _MS(
     en='Your application is the latest version.',
     zhs='已经是最新版本啦',
 )
+ui_load_gacha = _MS(en='Import from JSON', zhs='导入数据')
 ui_locale = _MS(en='Display Language', zhs='显示语言')
 ui_locale_setting_desc = _MS(en='Changing the display language', zhs='改变显示语言')
 ui_no_data = _MS(en='No Data', zhs='暂无数据')
@@ -173,6 +174,7 @@ ui_reset_fps = _MS(
 )
 ui_reset_panel = _MS(en='Reset Panel', zhs='重置面板')
 ui_save_data = _MS(en='Save As', zhs='保存数据')
+ui_save_failure = _MS(en='Data Save Failed', zhs='保存失败')
 ui_save_success = _MS(en='Data Save Success', zhs='保存成功')
 ui_save_success_msg = _MS(en='Data is saved to {}', zhs='数据已保存到{}')
 ui_send_feedback = _MS(en='Send Feedback', zhs='提交反馈')

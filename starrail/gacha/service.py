@@ -1,6 +1,8 @@
 import json
 import os
 import time
+import traceback
+from collections import defaultdict
 
 import starrail.gacha.fileio as fileio
 from starrail.gacha.autodet import detect_api_url
@@ -8,7 +10,7 @@ from starrail.gacha.fetch import fetch_json
 from starrail.gacha.parse import GachaDataManager
 from starrail.gacha.type import GachaType
 from starrail.gacha.url import get_api_url, get_url_template
-from starrail.utils import loggings
+from starrail.utils import babelfish, loggings
 from starrail.utils.accounts import account_record
 
 logger = loggings.get_logger(__file__)
@@ -142,3 +144,44 @@ def export_gacha_from_api(api_url, export, request_interval):
         path = os.path.join(output_dir, filename)
         export_hooks[format](manager, path)
         logger.info(f'Gacha data in {format} format is saved to {path}')
+
+
+def import_srgf_data(filename):
+    if not filename:
+        logger.info('Skipping import srgf data')
+        return
+    try:
+        with open(filename, encoding='utf-8') as f:
+            data = json.load(f)
+        info = data['info']
+        uid = info['uid']
+        update_info = dict(
+            uid=info['uid'],
+            lang=info['lang'],
+            region='',  # unused
+            region_time_zone=str(info['region_time_zone']),
+        )
+        record_cache = defaultdict(list)
+        for item in data['list']:
+            item.update(update_info)
+            record_cache[int(item['gacha_type'])].append(item)
+
+        manager = GachaDataManager(uid=uid)
+        logger.info(f'Successfully connected to cache of uid {uid}')
+        manager.log_stats()
+
+        for k, v in record_cache.items():
+            manager.add_records(k, v)
+            manager.gacha[k].sort()
+
+        fileio.export_as_sql(manager, manager.cache_path)
+
+        timestamp = info['export_timestamp']
+        timestruct = time.localtime(timestamp)
+        timestr = time.strftime(babelfish.constants.TIME_FMT, timestruct)
+        account_record.update_timestamp(uid, timestr)
+
+        logger.info(f'Successfully load gacha data from {filename}')
+    except Exception:
+        logger.error('Import gacha data failed. Traceback:')
+        logger.error(traceback.format_exc())

@@ -38,8 +38,9 @@ class AccountRecord:
                 ensure_ascii=False, indent=2,
             )
 
-    def update_timestamp(self, uid):
-        timestamp = time.strftime(babelfish.constants.TIME_FMT)
+    def update_timestamp(self, uid, timestamp=None):
+        if not timestamp:
+            timestamp = time.strftime(babelfish.constants.TIME_FMT)
         if uid in self.accounts:
             self.accounts[uid]['last_update'] = timestamp
         else:
