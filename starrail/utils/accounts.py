@@ -38,13 +38,22 @@ class AccountRecord:
                 ensure_ascii=False, indent=2,
             )
 
+    def add_account(self, uid: str):
+        uid = str(uid)
+        if uid not in self.accounts:
+            self.accounts[uid] = dict(
+                last_update='',
+                pid='',
+                cookie='',
+            )
+
     def update_timestamp(self, uid, timestamp=None):
+        uid = str(uid)
         if not timestamp:
             timestamp = time.strftime(babelfish.constants.TIME_FMT)
-        if uid in self.accounts:
-            self.accounts[uid]['last_update'] = timestamp
-        else:
-            self.accounts[uid] = dict(last_update=timestamp)
+        if uid not in self.accounts:
+            self.add_account(uid)
+        self.accounts[uid]['last_update'] = timestamp
         self.meta['latest'] = uid
         self.flush()
 

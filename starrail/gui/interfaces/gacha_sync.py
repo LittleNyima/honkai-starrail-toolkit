@@ -29,8 +29,9 @@ class GachaSyncThread(StatefulThread):
 
     syncStateSignal = Signal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self, api_url='', parent=None):
         super().__init__(parent=parent)
+        self.api_url = api_url
 
     def logAndUpdateState(self, message, level=loggings.logging.INFO):
         logger.log(level=level, msg=f'[GUI] {message}')
@@ -69,7 +70,7 @@ class GachaSyncThread(StatefulThread):
 
     def work(self):
         self.logAndUpdateState(babelfish.ui_extracting_api_url())
-        api_url = service.detect_api_url()
+        api_url = self.api_url or service.detect_api_url()
         response, code = service.fetch_json(api_url)
         valid, _, msg = service.check_response(response, code)
         logger.info(f'check_response (api): {msg}')
@@ -438,6 +439,17 @@ class GachaSyncInterface(BaseInterface):
             icon=Icon.FILE_IMPORT,
         )
         self.loadButton.clicked.connect(self.onLoadButtonClicked)
+        self.urlCard = self.addCard(babelfish.ui_customize_url())
+        self.urlCheckbox = qfw.CheckBox(
+            text=babelfish.ui_use_customize_url(),
+            parent=self,
+        )
+        self.urlCheckbox.stateChanged.connect(self.onCheckboxChanged)
+        self.urlLineEdit = qfw.LineEdit(parent=self)
+        default_url = 'https://api-takumi.mihoyo.com/common/gacha_record/...'
+        self.urlLineEdit.setText(default_url)
+        self.urlLineEdit.setDisabled(True)
+        self.urlLineEdit.setClearButtonEnabled(False)
 
         self.__initRecordCards()
 
@@ -462,6 +474,10 @@ class GachaSyncInterface(BaseInterface):
         self.buttonsCard.addSpacing(10)
         self.buttonsCard.addWidget(self.loadButton)
         self.buttonsCard.addStretch(1)
+
+        self.urlCard.addWidget(self.urlCheckbox)
+        self.urlCard.addSpacing(20)  # 10 (from line edit) + 10 (spacing)
+        self.urlCard.addWidget(self.urlLineEdit)
 
     def __initRecordCards(self):
         self.characterCard = self.addResultCard(
@@ -541,7 +557,10 @@ class GachaSyncInterface(BaseInterface):
         self.syncToolTip.move(self.syncToolTip.getSuitablePos())
         self.syncToolTip.show()
 
-        self.syncThread = GachaSyncThread(self)
+        api_url = ''
+        if self.urlCheckbox.checkState() == Qt.CheckState.Checked:
+            api_url = self.urlLineEdit.text().strip()
+        self.syncThread = GachaSyncThread(api_url=api_url, parent=self)
         self.syncThread.syncStateSignal.connect(
             lambda s: self.setToolTipContentSlot(self.syncToolTip, s),
         )
@@ -583,6 +602,14 @@ class GachaSyncInterface(BaseInterface):
             self.loadThread.start()
         else:
             self.enableButtons()
+
+    def onCheckboxChanged(self, status):
+        if status == Qt.CheckState.Checked.value:  # enabled
+            self.urlLineEdit.setEnabled(True)
+            self.urlLineEdit.setClearButtonEnabled(True)
+        elif status == Qt.CheckState.Unchecked.value:  # disabled
+            self.urlLineEdit.setDisabled(True)
+            self.urlLineEdit.setClearButtonEnabled(False)
 
     def setToolTipContentSlot(self, tooltip: qfw.StateToolTip, content: str):
         tooltip.setContent(content)

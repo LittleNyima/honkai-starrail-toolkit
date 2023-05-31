@@ -94,6 +94,10 @@ ui_current_version = _MS(
     en='Current version: {}.',
     zhs='当前版本：{}。',
 )
+ui_customize_url = _MS(
+    en='Customize API URL',
+    zhs='自定义 API URL',
+)
 ui_deduce_uid_fail = _MS(
     en='Fail to deduce uid. There may be no record. Please check.',
     zhs='检测 UID 失败，账号可能没有抽卡记录，请重试。',
@@ -268,6 +272,7 @@ ui_update_desc = _MS(
         '功能。如果你对GitHub的连接不稳定，请从网盘下载最新版本。'
     ),
 )
+ui_use_customize_url = _MS(en='Use Customize URL', zhs='使用自定义URL')
 ui_users = _MS(en='Users', zhs='用户管理')
 ui_users_desc = _MS(en='Multi-user management', zhs='如果有多个账号可以用这个切换')
 ui_welcome = _MS(

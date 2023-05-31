@@ -1,4 +1,4 @@
-__version__ = '0.6.7'
+__version__ = '0.6.8'
 
 
 def digital_version(version: str):
