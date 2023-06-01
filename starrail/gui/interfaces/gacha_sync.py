@@ -542,6 +542,12 @@ class GachaSyncInterface(BaseInterface):
         self.saveButton.setEnabled(True)
         self.loadButton.setEnabled(True)
 
+    # == HOOKS ==
+
+    def updateUidHook(self, uid):
+        self.uid = uid
+        self.updateRecordDisplay()
+
     # == SLOTS ==
 
     def onSyncButtonClicked(self):

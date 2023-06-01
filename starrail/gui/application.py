@@ -16,6 +16,7 @@ from starrail.gui.interfaces.unlock_fps import UnlockFpsInterface
 from starrail.gui.interfaces.users import UsersInterface
 from starrail.gui.widgets.title_bar import CustomTitleBar
 from starrail.utils import babelfish
+from starrail.utils.accounts import account_record as ar
 
 
 class StackedWidget(QFrame):
@@ -83,6 +84,7 @@ class StarRailToolkit(FramelessWindow):
         self.initLayout()
         self.initNavigation()
         self.initWindow()
+        self.initHooks()
 
     def initLayout(self):
         self.hBoxLayout.setSpacing(0)
@@ -188,6 +190,10 @@ class StarRailToolkit(FramelessWindow):
         self.move(w // 2 - self.width() // 2, h // 2 - self.height() // 2)
 
         StyleSheet.STAR_RAIL_TOOLKIT.apply(self)
+
+    def initHooks(self):
+        ar.latest_uid_changed = self.gachaSyncInterface.updateUidHook
+        ar.accounts_changed = self.usersInterface.updateUserList
 
     def resizeEvent(self, _):
         self.titleBar.move(46, 0)

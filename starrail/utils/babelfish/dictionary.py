@@ -90,6 +90,7 @@ ui_curr_fps = _MS(
     en='Current FPS in Game Settings: {}.',
     zhs='当前游戏设定帧率：{}。',
 )
+ui_current_account = _MS(en='Current', zhs='当前账号')
 ui_current_version = _MS(
     en='Current version: {}.',
     zhs='当前版本：{}。',
@@ -213,6 +214,7 @@ ui_since_last_guarantee = _MS(
     zhs='保底已垫',
 )
 ui_status_panel = _MS(en='Status Panel', zhs='状态面板')
+ui_switch = _MS(en='Switch', zhs='切换')
 ui_sync = _MS(en='Sync Data', zhs='同步数据')
 ui_sync_gacha_fail = _MS(
     en='Synchronization Failed',
