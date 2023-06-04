@@ -8,7 +8,7 @@
 
 | 主分支版本 | 开发分支版本 | PyPI 版本 | 发行版版本 |
 | :--------: | :----------: | :-------: | :--------: |
-|   0.6.5    |    0.6.9     |   0.6.5   |   0.6.5    |
+|   0.6.9    |    0.6.9     |   0.6.9   |   0.6.9    |
 
 目前第一阶段开发已完成，历史开发计划见[该页面](docs/history-dev-plan.md)。
 
@@ -29,9 +29,7 @@
 
 ### 下载可执行程序
 
-目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouk.com/ig3lR0xdvwwh)，两种途径的内容相同，可以自行选择下载方式。
-
-***BREAKING：目前用户界面正在优化中，预览如下图所示。***（注意：该版本尚未发布，所以 release 中仍然是旧版界面，且该界面正在调试过程中，可能会有一些问题，如果出现问题，请先下载旧版 release 使用。）
+目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouk.com/iN7870y9o7gb)，两种途径的内容相同，可以自行选择下载方式。
 
 ![gui preview gacha](https://s1.ax1x.com/2023/06/01/p9xxdXj.png)
 
@@ -53,6 +51,12 @@ python3 -m pip install starrail-toolkit --force-reinstall --upgrade -i https://p
 git clone git@github.com:LittleNyima/honkai-starrail-toolkit.git
 cd honkai-starrail-toolkit
 python3 setup.py install
+```
+
+注：如果出现关于 `qfluentwidgets` 相关的报错，可能是因为默认 pypi 源的版本较低，可以使用以下命令安装最新版本的依赖：
+
+```
+pip install -U PySide6-Fluent-Widgets -i https://pypi.org/simple/
 ```
 
 ##  命令行使用指南

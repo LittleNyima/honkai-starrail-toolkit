@@ -1,8 +1,8 @@
 {
-  "version": "0.6.5",
+  "version": "0.6.9",
   "dist": {
     "GitHub_dist": "https://github.com/LittleNyima/honkai-starrail-toolkit/releases",
-    "netdisk_dist": "https://wwmg.lanzouk.com/ig3lR0xdvwwh"
+    "netdisk_dist": "https://wwmg.lanzouk.com/iN7870y9o7gb"
   },
-  "changelog": "Release v0.6.5\n * 支持以 SRGFv1.0 标准导出抽卡记录\n * 美化程序界面\n * 修复了系统语言设置导致的问题"
+  "changelog": "Release v0.6.9\n * 支持抽卡记录导入\n * 支持同步抽卡记录时自定义 API URL\n * 修复了部分已知问题"
 }
