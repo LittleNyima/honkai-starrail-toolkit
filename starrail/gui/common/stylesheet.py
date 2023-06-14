@@ -6,6 +6,7 @@ from qfluentwidgets import StyleSheetBase, Theme, qconfig
 class StyleSheet(StyleSheetBase, Enum):
     """ Style sheet  """
 
+    ANNOUNCEMENT = 'announcement'
     BASE_INTERFACE = 'base_interface'
     CHECK_UPDATE_DIALOG = 'check_update_dialog'
     GACHA_RECORD = 'gacha_record'

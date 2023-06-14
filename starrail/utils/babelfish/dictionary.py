@@ -55,6 +55,14 @@ ui_5star_character = _MS(en='Character (5)', zhs='五星角色')
 ui_5star_light_cone = _MS(en='Light Cone (5)', zhs='五星光锥')
 ui_about = _MS(en='About', zhs='关于')
 ui_about_this = _MS(en='About This Application', zhs='关于本软件')
+ui_announcements = _MS(
+    en='Announcements',
+    zhs='通知公告',
+)
+ui_announcements_desc = _MS(
+    en='The latest news about Honkai: Star Rail.',
+    zhs='有关星穹铁道的最新消息',
+)
 ui_arerage_warps_per_5star = _MS(
     en='Average warps per 5 star',
     zhs='五星平均抽数',

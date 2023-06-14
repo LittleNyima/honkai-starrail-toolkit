@@ -4,6 +4,7 @@ import os
 from easydict import EasyDict
 
 userroot = os.path.abspath(os.path.expanduser('~'))
+srroot = os.path.join(userroot, '.starrail')
 
 
 class Configuration(EasyDict):
@@ -38,10 +39,11 @@ class Configuration(EasyDict):
 
 
 configuration = Configuration(
-    cache_dir=os.path.join(userroot, '.starrail'),
-    db_dir=os.path.join(userroot, '.starrail', 'database'),
-    config_path=os.path.join(userroot, '.starrail', 'config.json'),
-    account_record_path=os.path.join(userroot, '.starrail', 'accounts.json'),
+    cache_dir=srroot,
+    db_dir=os.path.join(srroot, 'database'),
+    config_path=os.path.join(srroot, 'config.json'),
+    account_record_path=os.path.join(srroot, 'accounts.json'),
+    res_cache_dir=os.path.join(srroot, 'cache'),
     check_update=True,
     locale='zhs',
     log_level='DEBUG',
@@ -49,6 +51,7 @@ configuration = Configuration(
 configuration.set_skip_keys(
     'skip_keys', 'no_flush',
     'cache_dir', 'config_path', 'db_dir', 'account_record_path',
+    'res_cache_dir',
 )
 
 
@@ -56,6 +59,7 @@ def init_config():
 
     os.makedirs(configuration.cache_dir, exist_ok=True)
     os.makedirs(configuration.db_dir, exist_ok=True)
+    os.makedirs(configuration.res_cache_dir, exist_ok=True)
 
     if os.path.isfile(configuration.config_path):
         with open(configuration.config_path, encoding='utf-8') as fcfg:

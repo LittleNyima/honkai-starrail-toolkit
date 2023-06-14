@@ -27,7 +27,7 @@ def fetch_json(url, timeout=None):  # no typing annotations to pass mypy check
             logger.debug(json.dumps(payload, ensure_ascii=False, indent=2))
             return payload, r.status_code
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
     return None, -1
 
 
@@ -38,5 +38,5 @@ def fetch_text(url):
             content = r.content.decode('utf-8', errors='ignore')
             return content, r.status_code
     except Exception:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
     return None, -1

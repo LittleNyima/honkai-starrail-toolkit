@@ -1,0 +1,9 @@
+QLabel {
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    color: white;
+}
+
+QTextBrowser {
+    background-color: transparent;
+    color: white;
+}

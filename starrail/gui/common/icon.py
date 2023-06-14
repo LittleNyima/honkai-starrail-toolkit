@@ -6,6 +6,7 @@ from qfluentwidgets import FluentIconBase, Theme, getIconColor
 class Icon(FluentIconBase, Enum):
 
     FILE_IMPORT = 'FileImport'
+    MEGAPHONE = 'Megaphone'
     UNLOCK = 'Unlock'
     USER = 'User'
 

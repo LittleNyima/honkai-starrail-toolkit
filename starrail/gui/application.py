@@ -9,6 +9,7 @@ from starrail.gui.common.config import qcfg
 from starrail.gui.common.icon import Icon
 from starrail.gui.common.stylesheet import StyleSheet
 from starrail.gui.common.utils import checkUpdate
+from starrail.gui.interfaces.announcements import AnnouncementsInterface
 from starrail.gui.interfaces.gacha_sync import GachaSyncInterface
 from starrail.gui.interfaces.home import HomeInterface
 from starrail.gui.interfaces.setting import SettingInterface
@@ -64,6 +65,11 @@ class StarRailToolkit(FramelessWindow):
         self.navigationInterface = NavigationInterface(self, True, True)
 
         self.homeInterface = HomeInterface(self)
+        self.announcementsInterface = AnnouncementsInterface(
+            babelfish.ui_announcements(),
+            babelfish.ui_announcements_desc(),
+            self,
+        )
         self.gachaSyncInterface = GachaSyncInterface(
             babelfish.ui_gacha_sync(),
             babelfish.ui_gacha_sync_desc(),
@@ -111,6 +117,14 @@ class StarRailToolkit(FramelessWindow):
         )
 
         self.navigationInterface.addSeparator()
+
+        self.addSubInterface(
+            self.announcementsInterface,
+            'announcementInterface',
+            Icon.MEGAPHONE,
+            babelfish.ui_announcements(),
+            NavigationItemPosition.TOP,
+        )
 
         self.addSubInterface(
             self.gachaSyncInterface,
