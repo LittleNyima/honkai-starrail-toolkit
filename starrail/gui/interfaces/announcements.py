@@ -1,4 +1,5 @@
 import json
+import re
 
 import qfluentwidgets as qfw
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -56,8 +57,10 @@ class AnnouncementsInterface(BaseInterface):
         self.bannerLabel = QtWidgets.QLabel(text='', parent=self)
         self.annTitleLabel = QtWidgets.QLabel(text='', parent=self)
         self.browser = QtWidgets.QTextBrowser(self)
+        self.browser.anchorClicked.connect(self.onHrefAnchorClicked)
 
         self.updateThread = None
+        self.urlPattern = re.compile(r'^(https?)://[^\s/$.?#].[^\s]*$')
 
         self.__initWidget()
         self.__initLayout()
@@ -115,6 +118,17 @@ class AnnouncementsInterface(BaseInterface):
                 width = self.width() - self.annList.width() - 72
                 height = int(width * aspectRatio)
                 self.bannerLabel.setFixedSize(width, height)
+
+    def onHrefAnchorClicked(self, qurl: QtCore.QUrl):
+        self.browser.setSource(QtCore.QUrl())
+        url = qurl.toString()
+        jsprefix0 = "javascript:miHoYoGameJSSDK.openInBrowser('"
+        jsprefix1 = "javascript:miHoYoGameJSSDK.openInWebview('"
+        if re.match(self.urlPattern, url):
+            QtGui.QDesktopServices.openUrl(url)
+        elif url.startswith(jsprefix0) or url.startswith(jsprefix1):
+            url = url[len(jsprefix0):].split("'")[0]
+            QtGui.QDesktopServices.openUrl(url)
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
