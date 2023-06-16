@@ -32,6 +32,8 @@
 
 ![gui preview gacha](https://s1.ax1x.com/2023/06/01/p9xxdXj.png)
 
+![announcements](https://s1.ax1x.com/2023/06/16/pCMTlxH.png)
+
 ![gui preview unlock](https://s1.ax1x.com/2023/05/23/p9o76gA.png)
 
 ### 命令行安装
@@ -105,7 +107,7 @@ hksr gacha
 
 ## 安全提醒
 
-本仓库代码完全开源，且用户数据全部保存在本地，**本项目不会上传任何用户数据**。本项目仅在该 GitHub 仓库及 PyPI 进行分发，请仔细甄别下载到的程序，防止遭遇恶意程序。
+本仓库代码完全开源，且用户数据全部保存在本地，**本项目不会上传任何用户数据**。本项目仅在该 GitHub 仓库及 PyPI 进行分发，请仔细甄别下载到的程序，防止遭遇恶意程序。关于账号安全的更多信息，可以访问**[本链接](docs/account-privacy.md)**了解。
 
 ## Credits
 

@@ -7,6 +7,20 @@ from starrail.utils import babelfish
 
 
 def todict(d, keys):
+    """
+    Filters a dictionary by keeping only the specified keys and returns a new
+    dictionary with those key-value pairs.
+
+    Args:
+        d (dict): The input dictionary to filter.
+        keys (iterable): An iterable of keys that should be kept in the output
+            dictionary.
+
+    Returns:
+        dict: A new dictionary containing only the specified key-value pairs
+            from the input dictionary.
+    """
+
     return {k: d[k] for k in d if k in keys}
 
 
@@ -48,6 +62,7 @@ class AccountRecord:
                 last_update='',
                 pid='',
                 cookie='',
+                cookie_iv='',
             )
             if self.accounts_changed is not None:
                 self.accounts_changed()

@@ -3,6 +3,7 @@ openpyxl
 pandas
 prettytable
 PTable
+pycryptodomex
 PySide6_Fluent_Widgets
 requests
 setuptools
