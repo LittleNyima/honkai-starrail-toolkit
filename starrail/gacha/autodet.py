@@ -83,6 +83,7 @@ def get_latest_url(url_list):
 
 
 # Modified from: https://github.com/sunfkny/genshin-gacha-export
+# (under MIT license)
 def get_api_from_cache(cache_path):
     logger.info('Getting api URL from cache')
     with open(cache_path, 'rb') as f_cache:

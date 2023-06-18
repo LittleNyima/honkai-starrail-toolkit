@@ -1,5 +1,6 @@
 import base64
-from typing import Tuple
+import hashlib
+from typing import Tuple, Union
 
 from Cryptodome.Cipher import AES
 from Cryptodome.Util.Padding import pad, unpad
@@ -84,6 +85,30 @@ class Base64:
         encoded = encodedtext.encode()
         decoded = base64.b64decode(encoded)
         return decoded
+
+
+class MD5:
+    """
+    MD5 supports md5 hashing.
+    """
+
+    @staticmethod
+    def hash(data: Union[str, bytes]) -> str:
+        """
+        Computes the MD5 hash of the given string or bytes.
+
+        Args:
+            data (Union[str, bytes]): The input data to be hashed.
+
+        Returns:
+            str: The computed MD5 hash as a hexadecimal string.
+        """
+
+        if isinstance(data, str):
+            data = data.encode()
+        md5 = hashlib.md5()
+        md5.update(data)
+        return md5.hexdigest()
 
 
 """
