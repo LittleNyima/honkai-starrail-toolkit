@@ -14,7 +14,6 @@ class SettingInterface(qfw.ScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.initialParent = parent
         self.scrollWidget = QWidget()
         self.expandLayout = qfw.ExpandLayout(self.scrollWidget)
 
@@ -153,4 +152,4 @@ class SettingInterface(qfw.ScrollArea):
         qcfg.appRestartSig.connect(self.__showRestartToolTip)
 
     def checkUpdateAction(self):
-        checkUpdate(parent=self.initialParent, show_success=True)
+        checkUpdate(parent=self.window(), show_success=True)

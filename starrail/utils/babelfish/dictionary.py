@@ -72,6 +72,7 @@ ui_average_warps_per_up = _MS(
     en='Average warps per up',
     zhs='UP 平均抽数',
 )
+ui_cancel = _MS(en='Cancel', zhs='取消')
 ui_cancel_update = _MS(en='Cancel Update', zhs='暂不更新')
 ui_check_update = _MS(en='Check Update', zhs='检查更新')
 ui_check_update_at_start = _MS(
@@ -90,6 +91,9 @@ ui_check_update_success = _MS(
     en='Check update finished',
     zhs='检查更新完成',
 )
+ui_connect_finish = _MS(en='Connection done.', zhs='绑定完成。')
+ui_connect_to_hoyolab = _MS(en='Connect to HoyoLab', zhs='绑定米游社')
+ui_connected = _MS(en='Connected', zhs='已绑定')
 ui_copyright = _MS(
     en='Copyright © {} LittleNyima.',
     zhs='版权所有 © {} LittleNyima。',
@@ -111,6 +115,7 @@ ui_deduce_uid_fail = _MS(
     en='Fail to deduce uid. There may be no record. Please check.',
     zhs='检测 UID 失败，账号可能没有抽卡记录，请重试。',
 )
+ui_done = _MS(en='Done', zhs='完成')
 ui_downloading_gacha = _MS(
     en='Downloading page {page} of type {name}',
     zhs='正在导出{name}的第{page}页',
@@ -165,10 +170,17 @@ ui_github_repo_desc = _MS(
     en='This project is open-resource, licenced under GPLv3. View code here.',
     zhs='本项目代码开源，以 GPLv3 分发。点此查看源代码。',
 )
+ui_hoyolab_connect_status = _MS(en='HoyoLab Connection: {}', zhs='米游社绑定：{}')
+ui_html_bold = _MS(en='<b>{}</b>', zhs='<b>{}</b>')
+ui_html_font_color = _MS(
+    en='<font color="{color}">{}</font>',
+    zhs='<font color="{color}">{}</font>',
+)
 ui_is_latest_version = _MS(
     en='Your application is the latest version.',
     zhs='已经是最新版本啦',
 )
+ui_last_update_at = _MS(en='Last Update: {}', zhs='上一次更新于：{}')
 ui_load_failure = _MS(en='Record Load Failed', zhs='加载失败')
 ui_load_gacha = _MS(en='Import from JSON', zhs='导入数据')
 ui_load_success = _MS(en='Record Load Success', zhs='加载成功')
@@ -179,6 +191,7 @@ ui_load_success_msg = _MS(
 ui_locale = _MS(en='Display Language', zhs='显示语言')
 ui_locale_setting_desc = _MS(en='Changing the display language', zhs='改变显示语言')
 ui_no_data = _MS(en='No Data', zhs='暂无数据')
+ui_not_connected = _MS(en='Not Connected', zhs='未绑定')
 ui_not_good = _MS(en='No', zhs='不好')
 ui_ooops = _MS(en='OOOPS!', zhs='出错了！')
 ui_open_docs = _MS(en='Open Documentations', zhs='打开帮助页面')
@@ -196,6 +209,13 @@ ui_save_data = _MS(en='Save As', zhs='保存数据')
 ui_save_failure = _MS(en='Data Save Failed', zhs='保存失败')
 ui_save_success = _MS(en='Data Save Success', zhs='保存成功')
 ui_save_success_msg = _MS(en='Data is saved to {}', zhs='数据已保存到{}')
+ui_scan_code_instr = _MS(
+    en='Scan QR code with HoyoLab client to login. Current Status: {}.',
+    zhs='用米游社手机客户端扫描二维码以登陆。扫描状态：{}。',
+)
+ui_scan_confirmed = _MS(en='Confirmed', zhs='已确认')
+ui_scan_init = _MS(en='Not Scanned', zhs='未扫描')
+ui_scan_scanned = _MS(en='Scanned', zhs='已扫描')
 ui_send_feedback = _MS(en='Send Feedback', zhs='提交反馈')
 ui_send_feedback_desc = _MS(
     en='Feedback is welcome if you encounter problems or have suggestions.',
@@ -247,6 +267,7 @@ ui_theme_mode_settings_desc = _MS(
     en='Changing the appearance of application',
     zhs='改变应用外观',
 )
+ui_time_fmt = _MS(en='%Y/%m/%d %H:%M:%S', zhs='%Y/%m/%d %H:%M:%S')
 ui_title = _MS(en='Honkai: Star Rail Toolkit', zhs='崩坏：星穹铁道工具箱')
 ui_total_warp = _MS(en='Total Warp', zhs='总抽数')
 ui_traceback = _MS(en='Traceback', zhs='报错信息')
@@ -255,6 +276,8 @@ ui_troubleshooting_desc = _MS(
     en='Click here to view FAQ.',
     zhs='点此查看常见问题解答。',
 )
+ui_unconnect_to_hoyolab = _MS(en='Unconnect', zhs='解除绑定')
+ui_unknown = _MS(en='unkown', zhs='未知')
 ui_unlock_fps = _MS(
     en='Unlock FPS Settings',
     zhs='解锁帧率',
@@ -283,8 +306,13 @@ ui_update_desc = _MS(
     ),
 )
 ui_use_customize_url = _MS(en='Use Customize URL', zhs='使用自定义URL')
+ui_user_list = _MS(en='Users List', zhs='用户列表')
 ui_users = _MS(en='Users', zhs='用户管理')
 ui_users_desc = _MS(en='Multi-user management', zhs='如果有多个账号可以用这个切换')
+ui_wait_for_connection = _MS(
+    en='Connecting to HoyoLab, please wait...',
+    zhs='正在绑定，请等待...',
+)
 ui_welcome = _MS(
     en='Welcome to HKSR Toolkit!',
     zhs='欢迎登车！',

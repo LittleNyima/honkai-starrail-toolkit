@@ -20,12 +20,13 @@ game_record = f'{takumi_record_api}/game_record/card/wapi/getGameRecordCard'
 
 # auth
 auth_api = f'{takumi_api}/auth/api'
-get_token_by_login_tikcet = f'{auth_api}/getMultiTokenByLoginTicket'
+get_multi_token_by_login_ticket = f'{auth_api}/getMultiTokenByLoginTicket'
 get_cookie_by_stoken = f'{auth_api}/getCookieAccountInfoBySToken'
 get_cookie_by_game_token = f'{auth_api}/getCookieAccountInfoByGameToken'
-get_stoken_by_game_token = (
-    f'{passport_api}/account/ma-cn-session/app/getTokenByGameToken'
-)
+
+app_passport_api = f'{passport_api}/account/ma-cn-session/app'
+get_stoken_by_game_token = f'{app_passport_api}/getTokenByGameToken'
+get_v2token_by_stoken = f'{app_passport_api}/getTokenBySToken'
 
 # qrcode
 qrcode_api = f'{hk4e_sdk_api}/hk4e_cn/combo/panda/qrcode'

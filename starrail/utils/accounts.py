@@ -2,6 +2,8 @@ import json
 import os
 import time
 
+import easydict
+
 from starrail.config import configuration as cfg
 from starrail.utils import babelfish
 
@@ -26,6 +28,7 @@ def todict(d, keys):
 
 class AccountRecord:
 
+    # callbacks
     latest_uid_changed = None
     accounts_changed = None
 
@@ -34,6 +37,19 @@ class AccountRecord:
         cache = self.safe_load()
         self.meta = cache['meta']
         self.accounts = cache['accounts']
+        self.init_keys()
+
+    def init_keys(self, keys=('last_update', 'iv')):
+        keys_set = set(keys)
+        for uid in self.accounts:
+            user_keys_set = set(self.accounts[uid])
+            del_keys_set = user_keys_set - keys_set
+            add_keys_set = keys_set - user_keys_set
+            for del_key in del_keys_set:
+                del self.accounts[uid][del_key]
+            for add_key in add_keys_set:
+                self.accounts[uid][add_key] = ''
+        self.flush()
 
     def safe_load(self):
         try:
@@ -60,9 +76,7 @@ class AccountRecord:
         if uid not in self.accounts:
             self.accounts[uid] = dict(
                 last_update='',
-                pid='',
-                cookie='',
-                cookie_iv='',
+                iv='',
             )
             if self.accounts_changed is not None:
                 self.accounts_changed()
@@ -87,6 +101,10 @@ class AccountRecord:
             self.meta['latest'] = value
             if self.latest_uid_changed is not None:
                 self.latest_uid_changed(value)
+
+    def get_user_properties(self, uid: str):
+        uid = str(uid)
+        return easydict.EasyDict(self.accounts[uid])
 
 
 account_record = AccountRecord(cfg.account_record_path)

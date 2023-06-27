@@ -1,558 +1,252 @@
-import json
-import random
-import threading
-import time
+import functools
 import traceback
 import uuid
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional
 from urllib.parse import parse_qs, urlparse
 
 import requests
 
-from starrail.mihoyo import api
-from starrail.mihoyo.codes import SaltType
+from starrail.mihoyo import api, dynamic_secret
 from starrail.utils import loggings
-from starrail.utils.security import MD5
 
 logger = loggings.get_logger(__file__)
 
 
-def random_hexstring(length: int) -> str:
+def enter(prefix: str = '') -> Callable:
     """
-    Generates a random hexadecimal string of the specified length
+    Given a prefix string, creates a decorator that logs the function name
+    with the given prefix when the decorated function is called.
 
     Args:
-        length (int): The desired length of the hexadecimal string.
+        prefix (str, optional): A custom prefix to be displayed in the log
+            message. Defaults to an empty string.
 
     Returns:
-        str: A random hexadecimal string of the specified length.
+        Callable: A decorator that accepts a function and returns a wrapped
+            function.
+
+    Example:
+        >>> @enter("My Prefix: ")
+        ... def my_function():
+        ...     pass
     """
 
-    hexdigits = '0123456789abcdef'
-    return ''.join(random.choice(hexdigits) for _ in range(length))
+    def log_func(func: Callable):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            infostr = f'{prefix} {func.__name__}' if prefix else func.__name__
+            logger.info(infostr)
+            return func(*args, **kwargs)
+        return wrapper
+
+    return log_func
 
 
-class IntervalThread(threading.Thread):
-
-    def __init__(self, interval, callable, *args, **kwargs):
-        super().__init__(deamon=True)
-        self.interval = interval
-        self.callable = callable
-        self.args = args
-        self.kwargs = kwargs
-        self.stop_event = threading.Event()
-
-    def run(self):
-        while not self.stop_event.is_set():
-            self.callable(*self.args, **self.kwargs)
-            self.stop_event.wait(self.interval)
-
-    def stop(self):
-        self.stop_event.set()
-
-
-def set_interval(interval, callable, *args, **kwargs):
-    """
-    Starts and returns an interval-based thread that executes the provided
-    callable at each interval.
-
-    Args:
-        interval (float): The time interval between each execution of the
-            callable in seconds.
-        callable (Callable): The function to be executed at each interval.
-        *args: Variable-length argument list to be passed to the callable.
-        **kwargs: Arbitrary keyword arguments to be passed to the callable.
-
-    Returns:
-        IntervalThread: An instance of the interval-based thread.
-    """
-
-    thread = IntervalThread(interval, callable, *args, **kwargs)
-    thread.start()
-    return thread
-
-
-def unparse_qs(query: Dict):
-    return '&'.join([f'{k}={v}' for k, v in query.items()])
-
-
-# Modified from GitHub code under AGPL-3.0 license:
-# Mar-7th/March7th/march7th/nonebot_plugin_mys_api/api.py
 class HoyolabClient:
 
-    user_agent = (
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit'
-        '/605.1.15 (KHTML, like Gecko) miHoYoBBS/2.50.1'
-    )
+    xrpc_version = '2.50.1'
 
-    def __init__(self):
-        self.device_id = ''
-        self.device_fingerprint = ''
+    user_agent = 'Mozilla/5.0 (Windows NT 11.0; Win64; x64) miHoYoBBS/2.50.1'
 
-        set_interval(300, self.refresh_device)
-
-    def refresh_device(self):
-        self.device_id = str(uuid.uuid4())
-        self.device_fingerprint = self.get_device_fingerprint(self.device_id)
-
-    @staticmethod
-    def get_dynamic_secret(
-        query: str = '',
-        body: Optional[Dict] = None,
-        salt_type: SaltType = SaltType.SALT_4X,
-    ):
-        """
-        Generates a dynamic secret based on the given parameters.
-
-        Args:
-            query (str, optional): The query string. Defaults to ''.
-            body (dict, optional): The JSON payload. Defaults to None.
-            hoyolab_bbs_checkin (bool, optional): A flag that indicates
-                whether to use the hoyolab_bbs_checkin secret or not. Defaults
-                to False.
-
-        Returns:
-            str: The generated dynamic secret.
-        """
-
-        b = json.dumps(body) if body else ''
-        s = salt_type.value
-        t = str(int(time.time()))
-        r = random.randint(100000, 200000)
-        if r == 100000:
-            r = 642367
-        c = MD5.hash(f'salt={s}&t={t}&r={r}&b={b}&q={query}')
-        return f'{t},{r},{c}'
-
-    def generate_headers(
+    def request_json(
         self,
-        cookie: str = '',
-        query: str = '',
-        body: Dict = {},
-        referer: str = 'https://webstatic.mihoyo.com',
-        rpc_client_type: str = '5',
-        rpc_page: str = '',
-        salt_type: SaltType = SaltType.SALT_4X,
+        method,
+        url,
+        params=None,
+        headers=None,
+        timeout=None,
     ):
-        return {
-            'Cookie': cookie,
-            'DS': self.get_dynamic_secret(query, body, salt_type),
-            'Origin': 'https://webstatic.mihoyo.com',
-            'Referer': referer,
-            'User-Agent': HoyolabClient.user_agent,
-            'X-Requested-With': 'com.mihoyo.hyperion',
-            'x-rpc-app_version': '2.50.1',
-            'x-rpc-page': rpc_page,
-            'x-rpc-client_type': rpc_client_type,
-            'x-rpc-device_fp': self.device_fingerprint,
-            'x-rpc-device_id': self.device_id,
-            'x-rpc-device_name': 'iPhone14Pro',
-            'x-rpc-sys_version': '12',
-        }
+        logger.debug(f'requesting json: {url}')
+        response = requests.request(
+            method=method,
+            url=url,
+            params=params,
+            headers=headers,
+            timeout=timeout,
+        )
+        payload = response.json()
+        logger.debug(payload)
+        return payload
 
-    def get_device_fingerprint(self, device_id: str) -> str:
-        """
-        Retrieves the device fingerprint for the given device ID.
-
-        Args:
-            device_id (str): The device ID for which the device fingerprint
-                is to be fetched.
-
-        Returns:
-            str: The device fingerprint, or a random hexadecimal string if
-                fetching fails.
-        """
-
+    def xrpc_headers(
+        self,
+        device_id: str,
+        extra: Dict[str, str] = {},
+        **kwargs: str,
+    ):
         headers = {
-            'x-rpc-app_version': '2.50.1',
-            'x-rpc-client_type': '5',
-            'Origin': 'https://webstatic.mihoyo.com',
-            'Referer': 'https://webstatic.mihoyo.com/',
+            'Accept': 'application/json',
             'User-Agent': HoyolabClient.user_agent,
+            'x-rpc-app_version': HoyolabClient.xrpc_version,
+            'x-rpc-client_type': '5',
+            'x-rpc-device_id': device_id,
         }
-        params = {
-            'app_name': 'account_cn',
-            'device_id': device_id,
-            'device_fp': random_hexstring(13),
-            'platform': '5',
-            'seed_id': random_hexstring(16),
-            'seed_time': str(round(time.time() * 1000)),
-            'ext_fields': (
-                '{'
-                f'"userAgent":"{HoyolabClient.user_agent}",'
-                '"browserScreenSize":329280,'
-                '"maxTouchPoints":5,'
-                '"isTouchSupported":true,'
-                '"browserLanguage":"zh-CN",'
-                '"browserPlat":"Linux i686",'
-                '"browserTimeZone":"Asia/Shanghai",'
-                '"webGlRender":"Adreno (TM) 640",'
-                '"webGlVendor":"Qualcomm",'
-                '"numOfPlugins":0,'
-                '"listOfPlugins":"unknown",'
-                '"screenRatio":3.75,'
-                '"deviceMemory":"4",'
-                '"hardwareConcurrency":"4",'
-                '"cpuClass":"unknown",'
-                '"ifNotTrack":"unknown",'
-                '"ifAdBlock":0,'
-                '"hasLiedResolution":1,'
-                '"hasLiedOs":0,'
-                '"hasLiedBrowser":0'
-                '}'
-            ),
-        }
-        try:
-            response = requests.post(
-                url=api.device_fingerprint,
-                params=params,
-                headers=headers,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return str(payload['data']['device_fp'])
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to get device fingerprint, using random fp.')
-        return random_hexstring(13)
+        headers.update(extra, **kwargs)
+        return headers
 
-    def get_stoken_by_login_ticket(
-            self,
-            login_ticket: str,
-            hoyolab_uid: str,
-    ) -> str:
+    def xrpc2_headers(
+        self,
+        device_id: str,
+        extra: Dict[str, str] = {},
+        **kwargs: str,
+    ):
         headers = {
-            'x-rpc-app_version': '2.50.1',
-            'x-rpc-client_type': '5',
-            'Origin': 'https://webstatic.mihoyo.com',
-            'Referer': 'https://webstatic.mihoyo.com/',
+            'Accept': 'application/json',
             'User-Agent': HoyolabClient.user_agent,
+            'x-rpc-aigis': '',
+            'x-rpc-app_id': 'bll8iq97cem8',
+            'x-rpc-app_version': HoyolabClient.xrpc_version,
+            'x-rpc-client_type': '2',
+            'x-rpc-device_id': device_id,
+            'x-rpc-game_biz': 'bbs_cn',
+            'x-rpc-sdk_version': '1.3.1.2',
         }
+        headers.update(extra, **kwargs)
+        return headers
+
+    def get_multi_token_by_login_ticket(
+        self,
+        login_ticket: str,
+        login_uid: str,
+    ) -> Optional[Dict[str, str]]:
+        headers = self.xrpc_headers(device_id='')
         params = {
             'login_ticket': login_ticket,
+            'uid': login_uid,
             'token_types': '3',
-            'uid': hoyolab_uid,
         }
         try:
-            response = requests.get(
-                url=api.get_token_by_login_tikcet,
+            payload = self.request_json(
+                method='get',
+                url=api.get_multi_token_by_login_ticket,
                 params=params,
                 headers=headers,
                 timeout=10,
             )
-            payload = response.json()
-            logger.debug(payload)
-            return payload['data']['list'][0]['token']
+            for item in payload['data']['list']:
+                if isinstance(item, dict) and 'name' in item:
+                    if item['name'].lower() == 'ltoken':
+                        ltoken = item['token']
+                    if item['name'].lower() == 'stoken':
+                        stoken = item['token']
+            return {
+                'ltoken': ltoken,
+                'stoken': stoken,
+            }
         except Exception:
             logger.error(traceback.format_exc())
-            logger.warn('Fail to fetch stoken by login ticket.')
-        return ''
+            return None
 
-    def get_cookie_by_stoken(self, stoken: str, hoyolab_uid: str) -> str:
-        headers = {
-            'x-rpc-app_version': '2.50.1',
-            'x-rpc-client_type': '5',
-            'Origin': 'https://webstatic.mihoyo.com',
-            'Referer': 'https://webstatic.mihoyo.com/',
-            'User-Agent': HoyolabClient.user_agent,
-            'Cookie': f'stuid={hoyolab_uid};stoken={stoken}',
-        }
-        params = {
-            'uid': hoyolab_uid,
-            'stoken': stoken,
-        }
+    def get_v2token_by_stoken(
+        self,
+        v1stoken: str,
+        v1uid: str,
+    ) -> Optional[Dict[str, str]]:
+        cookie = f'stuid={v1uid};stoken={v1stoken}'
+        device_id = str(uuid.uuid4())
+        ds = dynamic_secret.DynamicSecretGenerator(
+            version=dynamic_secret.DynamicSecretVersion.V2,
+            salt_type=dynamic_secret.SaltType.PROD,
+            include_chars=True,
+        ).generate(
+            content=cookie,
+            url=api.get_v2token_by_stoken,
+        )
+        headers = self.xrpc2_headers(
+            device_id=device_id,
+            Cookie=cookie,
+            DS=ds,
+        )
         try:
-            response = requests.get(
-                url=api.get_cookie_by_stoken,
-                params=params,
+            payload = self.request_json(
+                method='post',
+                url=api.get_v2token_by_stoken,
                 headers=headers,
                 timeout=10,
             )
-            payload = response.json()
-            logger.debug(payload)
+            return {
+                'token': payload['data']['token']['token'],
+                'aid': payload['data']['user_info']['aid'],
+                'mid': payload['data']['user_info']['mid'],
+                'device_id': device_id,
+            }
+        except Exception:
+            logger.error(traceback.format_exc())
+            return None
+
+    def get_cookie_token_by_stoken(
+        self,
+        v2stoken: str,
+        uid: str,
+        mid: str,
+        device_id: str,
+    ) -> Optional[str]:
+        cookie = f'stuid={uid};stoken={v2stoken};mid={mid}'
+        ds = dynamic_secret.DynamicSecretGenerator(
+            version=dynamic_secret.DynamicSecretVersion.V2,
+            salt_type=dynamic_secret.SaltType.PROD,
+            include_chars=True,
+        ).generate(
+            content=cookie,
+            url=api.get_cookie_by_stoken,
+        )
+        headers = self.xrpc2_headers(
+            device_id=device_id,
+            Cookie=cookie,
+            DS=ds,
+        )
+        try:
+            payload = self.request_json(
+                method='get',
+                url=api.get_cookie_by_stoken,
+                headers=headers,
+                timeout=10,
+            )
             return payload['data']['cookie_token']
         except Exception:
             logger.error(traceback.format_exc())
-            logger.warn('Fail to fetch cookie by stoken.')
-        return ''
+            return None
 
-    def get_cookie_by_game_token(self, game_token: str, uid: str):
-        params = {
-            'game_token': game_token,
-            'account_id': uid,
-        }
+    @enter(prefix='[Client]')
+    def get_login_qrcode(self) -> Optional[Dict[str, str]]:
+        device_id = str(uuid.uuid4())
+        params = dict(app_id='8', device=device_id)
         try:
-            response = requests.get(
-                url=api.get_cookie_by_game_token,
-                params=params,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return payload
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to fetch cookie by game token.')
-        return {}
-
-    def get_stoken_by_game_token(self, game_token: str, uid: str):
-        params = {
-            'account_id': uid,
-            'game_token': game_token,
-        }
-        headers = {
-            'x-rpc-aigis': '',
-            'x-rpc-game_biz': 'bbs_cn',
-            'x-rpc-sys_version': '11',
-            'x-rpc-device_id': self.device_id,
-            'x-rpc-device_fp': self.device_fingerprint,
-            'x-rpc-device_name': 'Chrome 108.0.0.0',
-            'x-rpc-device_model': 'Windows 10 64-bit',
-            'x-rpc-app_id': 'bll8iq97cem8',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'DS': self.get_dynamic_secret(body=params),
-            'User-Agent': 'okhttp/4.8.0',
-        }
-        try:
-            response = requests.get(
-                url=api.get_stoken_by_game_token,
-                params=params,
-                headers=headers,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return payload
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to fetch stoken by game token.')
-        return {}
-
-    def fetch_login_qrcode(self, app_id: str) -> Dict:
-        params = {
-            'app_id': app_id,
-            'device': self.device_id,
-        }
-        try:
-            response = requests.get(
+            payload = self.request_json(
+                method='post',
                 url=api.qrcode_fetch,
                 params=params,
                 timeout=10,
             )
-            payload = response.json()
-            logger.debug(payload)
             url = payload['data']['url']
-            parsed_url = urlparse(url)
-            query_dict = parse_qs(parsed_url.query)
-            ticket = query_dict.get('ticket', '')
+            query_dict = parse_qs(urlparse(url).query)
+            ticket = query_dict['ticket'][0]
             return {
-                'app_id': app_id,
+                'app_id': '8',
                 'ticket': ticket,
-                'device': self.device_id,
+                'device': device_id,
                 'url': url,
             }
         except Exception:
             logger.error(traceback.format_exc())
-            logger.warn('Fail to fetch login qrcode.')
-        return {}
+            return None
 
-    def query_login_qrcode(self, login_data: Dict):
-        params = {
-            'app_id': login_data.get('app_id'),
-            'ticket': login_data.get('ticket'),
-            'device': login_data.get('device'),
-        }
+    @enter(prefix='[Client]')
+    def check_login_qrcode(
+        self,
+        app_id: str,
+        ticket: str,
+        device: str,
+    ):
+        params = dict(app_id=app_id, ticket=ticket, device=device)
         try:
-            response = requests.get(
+            payload = self.request_json(
+                method='post',
                 url=api.qrcode_query,
                 params=params,
                 timeout=10,
             )
-            payload = response.json()
-            logger.debug(payload)
             return payload
         except Exception:
             logger.error(traceback.format_exc())
-            logger.warn('Fail to query login qrcode.')
-        return {}
-
-    def get_hoyolab_game_record(
-        self,
-        cookie: str,
-        hoyolab_uid: str,
-    ):
-        params = {'uid': hoyolab_uid}
-        headers = self.generate_headers(
-            cookie=cookie,
-            query=unparse_qs(params),
-        )
-        try:
-            response = requests.get(
-                url=api.game_record,
-                params=params,
-                headers=headers,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return payload['data']
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to get hoyolab game record.')
-        return {}
-
-    def get_starrail_basic_info(
-        self,
-        cookie: str,
-        role_id: str,
-    ):
-        params = {
-            'role_id': role_id,
-            'server': 'prod_gf_cn',
-        }
-        headers = self.generate_headers(
-            cookie=cookie,
-            query=unparse_qs(params),
-            rpc_page='3.7.3_#/rpg',
-        )
-        try:
-            response = requests.get(
-                url=api.hksr_basic_info,
-                params=params,
-                headers=headers,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return payload['data']
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to get starrail basic info.')
-        return {}
-
-    def get_starrail_index(
-        self,
-        cookie: str,
-        role_id: str,
-    ):
-        params = {
-            'role_id': role_id,
-            'server': 'prod_gf_cn',
-        }
-        headers = self.generate_headers(
-            cookie=cookie,
-            query=unparse_qs(params),
-            rpc_page='3.7.3_#/rpg',
-        )
-        try:
-            response = requests.get(
-                url=api.hksr_index,
-                params=params,
-                headers=headers,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return payload['data']
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to get starrail index.')
-        return {}
-
-    def get_starrail_avatar_info(
-        self,
-        cookie: str,
-        role_id: str,
-        avatar_id: str,
-    ):
-        params = {
-            'id': avatar_id,
-            'need_wiki': 'true',
-            'role_id': role_id,
-            'server': 'prod_gf_cn',
-        }
-        headers = self.generate_headers(
-            cookie=cookie,
-            query=unparse_qs(params),
-            rpc_page='3.7.3_#/rpg/role',
-            referer=(
-                'https://webstatic.mihoyo.com/app/community-game-records/rpg/'
-                '?bbs_presentation_style=fullscreen'
-            ),
-        )
-        try:
-            response = requests.get(
-                url=api.hksr_avatar_info,
-                params=params,
-                headers=headers,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return payload['data']
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to get starrail avatar info.')
-        return {}
-
-    def get_starrail_note(
-        self,
-        cookie: str,
-        role_id: str,
-    ):
-        params = {
-            'role_id': role_id,
-            'server': 'prod_gf_cn',
-        }
-        headers = self.generate_headers(
-            cookie=cookie,
-            query=unparse_qs(params),
-            rpc_page='3.7.3_#/rpg',
-        )
-        try:
-            response = requests.get(
-                url=api.hksr_note,
-                params=params,
-                headers=headers,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return payload['data']
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to get starrail note.')
-        return {}
-
-    def get_starrail_month_info(
-        self,
-        cookie: str,
-        role_id: str,
-    ):
-        params = {
-            'act_id': 'e202304121516551',
-            'region': 'prod_gf_cn',
-            'uid': role_id,
-            'lang': 'zh-cn',
-        }
-        headers = self.generate_headers(
-            cookie=cookie,
-            query=unparse_qs(params),
-            rpc_page='3.7.3_#/rpg',
-        )
-        try:
-            response = requests.get(
-                url=api.hksr_month_info,
-                params=params,
-                headers=headers,
-                timeout=10,
-            )
-            payload = response.json()
-            logger.debug(payload)
-            return payload['data']
-        except Exception:
-            logger.error(traceback.format_exc())
-            logger.warn('Fail to get starrail month info.')
-        return {}
+            return None

@@ -4,6 +4,8 @@ pandas
 prettytable
 PTable
 pycryptodomex
+PySide6
 PySide6_Fluent_Widgets
+PySideSix_Frameless_Window
 requests
 setuptools
