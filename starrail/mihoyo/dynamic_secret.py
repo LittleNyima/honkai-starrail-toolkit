@@ -2,6 +2,7 @@ import json
 import random
 import time
 from enum import Enum
+from typing import Optional
 from urllib.parse import unquote, urlparse
 
 from starrail.utils.security import MD5
@@ -103,7 +104,12 @@ class DynamicSecretGenerator:
         rand = random.randint(100000, 200000)
         return '642367' if rand == 100000 else str(rand)
 
-    def generate(self, content, url: str):
+    def generate(
+        self,
+        content=None,
+        url: Optional[str] = None,
+        query: Optional[str] = None,
+    ):
         """
         Generate a dynamic secret based on the input content and URL.
 
@@ -123,9 +129,14 @@ class DynamicSecretGenerator:
 
         if self.version == DynamicSecretVersion.V2:
             body = self.dumps(content) if content else self.default_body
-            query = urlparse(unquote(url)).query
-            query = '&'.join(sorted(query.split('&')))
-            dscontent += f'&b={body}&q={query}'
+            if query:
+                query_str = query
+            elif url:
+                query_str = urlparse(unquote(url)).query
+                query_str = '&'.join(sorted(query_str.split('&')))
+            else:
+                query_str = ''
+            dscontent += f'&b={body}&q={query_str}'
 
         check = MD5.hash(dscontent)
         return f'{t},{r},{check}'

@@ -1,7 +1,9 @@
 import functools
+import random
+import time
 import traceback
 import uuid
-from typing import Callable, Dict, Optional
+from typing import Any, Callable, Dict, Hashable, Optional
 from urllib.parse import parse_qs, urlparse
 
 import requests
@@ -12,7 +14,7 @@ from starrail.utils import loggings
 logger = loggings.get_logger(__file__)
 
 
-def enter(prefix: str = '') -> Callable:
+def enter(prefix: str = '[HoyolabClient]') -> Callable:
     """
     Given a prefix string, creates a decorator that logs the function name
     with the given prefix when the decorated function is called.
@@ -42,17 +44,56 @@ def enter(prefix: str = '') -> Callable:
     return log_func
 
 
+def random_hexstring(length: int) -> str:
+    """
+    Generates a random hexadecimal string of the specified length
+    Args:
+        length (int): The desired length of the hexadecimal string.
+    Returns:
+        str: A random hexadecimal string of the specified length.
+    """
+
+    hexdigits = '0123456789abcdef'
+    return ''.join(random.choice(hexdigits) for _ in range(length))
+
+
+class ExpirableCache:
+
+    def __init__(self, expires: float):
+        self.expires = expires
+        self.cache_data: Dict[Hashable, Dict[str, Any]] = dict()
+
+    def set(self, key: Hashable, value: Any):
+        curr_time = time.time()
+        expire_time = curr_time + self.expires
+        self.cache_data[key] = dict(
+            expire_time=expire_time,
+            data=value,
+        )
+
+    def get(self, key: Hashable) -> Any:
+        if key in self.cache_data:
+            curr_time = time.time()
+            expire_time = self.cache_data[key]['expire_time']
+            if curr_time < expire_time:
+                return self.cache_data[key]['data']
+        return None
+
+
 class HoyolabClient:
 
     xrpc_version = '2.50.1'
 
     user_agent = 'Mozilla/5.0 (Windows NT 11.0; Win64; x64) miHoYoBBS/2.50.1'
 
+    device_fp_cache = ExpirableCache(expires=300.0)
+
     def request_json(
         self,
         method,
         url,
         params=None,
+        data=None,
         headers=None,
         timeout=None,
     ):
@@ -61,28 +102,13 @@ class HoyolabClient:
             method=method,
             url=url,
             params=params,
+            data=data,
             headers=headers,
             timeout=timeout,
         )
         payload = response.json()
         logger.debug(payload)
         return payload
-
-    def xrpc_headers(
-        self,
-        device_id: str,
-        extra: Dict[str, str] = {},
-        **kwargs: str,
-    ):
-        headers = {
-            'Accept': 'application/json',
-            'User-Agent': HoyolabClient.user_agent,
-            'x-rpc-app_version': HoyolabClient.xrpc_version,
-            'x-rpc-client_type': '5',
-            'x-rpc-device_id': device_id,
-        }
-        headers.update(extra, **kwargs)
-        return headers
 
     def xrpc2_headers(
         self,
@@ -104,12 +130,163 @@ class HoyolabClient:
         headers.update(extra, **kwargs)
         return headers
 
+    def xrpc5_headers(
+        self,
+        device_id: str,
+        extra: Dict[str, str] = {},
+        **kwargs: str,
+    ):
+        headers = {
+            'Accept': 'application/json',
+            'User-Agent': HoyolabClient.user_agent,
+            'x-rpc-app_version': HoyolabClient.xrpc_version,
+            'x-rpc-client_type': '5',
+            'x-rpc-device_id': device_id,
+        }
+        headers.update(extra, **kwargs)
+        return headers
+
+    def xrpc11_headers(
+        self,
+        device_id: str,
+        extra: Dict[str, str] = {},
+        **kwargs: str,
+    ):
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'User-Agent': HoyolabClient.user_agent,
+            'x-rpc-aigis': '',
+            'x-rpc-app_id': 'bll8iq97cem8',
+            'x-rpc-app_version': HoyolabClient.xrpc_version,
+            'x-rpc-client_type': '2',
+            'x-rpc-device_fp': self.get_cached_device_fp(device_id),
+            'x-rpc-device_id': device_id,
+            'x-rpc-device_model': 'Chrome 108.0.0.0',
+            'x-rpc-device_name': 'Windows 11 64-bit',
+            'x-rpc-game_biz': 'bbs_cn',
+            'x-rpc-sys_version': '11',
+        }
+        headers.update(extra, **kwargs)
+        return headers
+
+    def hoyolab_headers(
+        self, ds: str, origin: str, referer: str, cookie: str,
+        client_type: str, device_id: str, page: str,
+        extra: Dict[str, str] = {},
+        **kwargs: str,
+    ):
+        headers = {
+            'DS': ds,
+            'Origin': origin,
+            'Referer': referer,
+            'User-Agent': HoyolabClient.user_agent,
+            'cookie': cookie,
+            'x-rpc-app_version': HoyolabClient.xrpc_version,
+            'x-rpc-client_type': client_type,
+            'x-rpc-device_fp': self.get_cached_device_fp(device_id),
+            'x-rpc-device_id': device_id,
+            'x-rpc-device_model': 'Chrome 108.0.0.0',
+            'x-rpc-device_name': 'Windows 11 64-bit',
+            'x-rpc-page': page,
+            'x-rpc-sys_version': '12',
+        }
+        headers.update(extra, **kwargs)
+        return headers
+
+    def hoyolab_xrpc2_headers(
+        self, ds: str, cookie: str, device_id: str, page: str,
+        extra: Dict[str, str] = {},
+        **kwargs: str,
+    ):
+        return self.hoyolab_headers(
+            ds=ds, origin='https://app.mihoyo.com/',
+            referer='https://app.mihoyo.com/', cookie=cookie, client_type='2',
+            device_id=device_id, page=page,
+            extra=extra, **kwargs,
+        )
+
+    def hoyolab_xrpc5_headers(
+        self, ds: str, cookie: str, device_id: str, page: str,
+        extra: Dict[str, str] = {},
+        **kwargs: str,
+    ):
+        return self.hoyolab_headers(
+            ds=ds, origin='https://webstatic.mihoyo.com/',
+            referer='https://webstatic.mihoyo.com/', cookie=cookie,
+            client_type='5', device_id=device_id, page=page,
+            extra=extra, **kwargs,
+        )
+
+    def get_cached_device_fp(self, device_id: str) -> str:
+        fp = HoyolabClient.device_fp_cache.get(device_id)
+        if fp is not None:
+            return str(fp)  # for type annotation compatibility
+        fp = self.get_device_fingerprint(device_id=device_id)
+        HoyolabClient.device_fp_cache.set(device_id, fp)
+        return fp
+
+    @enter()
+    def get_device_fingerprint(self, device_id: str) -> str:
+        headers = {
+            'Origin': 'https://webstatic.mihoyo.com/',
+            'Referer': 'https://webstatic.mihoyo.com/',
+            'User-Agent': HoyolabClient.user_agent,
+            'x-rpc-app_version': HoyolabClient.xrpc_version,
+            'x-rpc-client_type': '5',
+        }
+        params = {
+            'app_name': 'account_cn',
+            'device_id': device_id,
+            'device_fp': random_hexstring(13),
+            'platform': '5',
+            'seed_id': random_hexstring(16),
+            'seed_time': str(round(time.time() * 1000)),
+            'ext_fields': (
+                '{'
+                f'"userAgent":"{HoyolabClient.user_agent}",'
+                '"browserScreenSize":329280,'
+                '"maxTouchPoints":5,'
+                '"isTouchSupported":true,'
+                '"browserLanguage":"zh-CN",'
+                '"browserPlat":"Linux i686",'
+                '"browserTimeZone":"Asia/Shanghai",'
+                '"webGlRender":"Adreno (TM) 640",'
+                '"webGlVendor":"Qualcomm",'
+                '"numOfPlugins":0,'
+                '"listOfPlugins":"unknown",'
+                '"screenRatio":3.75,'
+                '"deviceMemory":"4",'
+                '"hardwareConcurrency":"4",'
+                '"cpuClass":"unknown",'
+                '"ifNotTrack":"unknown",'
+                '"ifAdBlock":0,'
+                '"hasLiedResolution":1,'
+                '"hasLiedOs":0,'
+                '"hasLiedBrowser":0'
+                '}'
+            ),
+        }
+        try:
+            payload = self.request_json(
+                method='post',
+                url=api.device_fingerprint,
+                params=params,
+                headers=headers,
+                timeout=10,
+            )
+            return payload['data']['device_fp']
+        except Exception:
+            logger.error(traceback.format_exc())
+            return random_hexstring(13)
+
+    @enter()
     def get_multi_token_by_login_ticket(
         self,
         login_ticket: str,
         login_uid: str,
     ) -> Optional[Dict[str, str]]:
-        headers = self.xrpc_headers(device_id='')
+        headers = self.xrpc5_headers(device_id='')
         params = {
             'login_ticket': login_ticket,
             'uid': login_uid,
@@ -137,6 +314,7 @@ class HoyolabClient:
             logger.error(traceback.format_exc())
             return None
 
+    @enter()
     def get_v2token_by_stoken(
         self,
         v1stoken: str,
@@ -174,14 +352,40 @@ class HoyolabClient:
             logger.error(traceback.format_exc())
             return None
 
+    @enter()
+    def get_cookie_token_by_game_token(
+        self,
+        game_token: str,
+        aid: str,
+        device_id: str,
+    ) -> Optional[str]:
+        params = {
+            'game_token': game_token,
+            'account_id': aid,
+        }
+        headers = self.xrpc5_headers(device_id=device_id)
+        try:
+            payload = self.request_json(
+                method='get',
+                url=api.get_cookie_by_game_token,
+                headers=headers,
+                params=params,
+                timeout=10,
+            )
+            return payload['data']['cookie_token']
+        except Exception:
+            logger.error(traceback.format_exc())
+            return None
+
+    @enter()
     def get_cookie_token_by_stoken(
         self,
         v2stoken: str,
-        uid: str,
+        aid: str,
         mid: str,
         device_id: str,
     ) -> Optional[str]:
-        cookie = f'stuid={uid};stoken={v2stoken};mid={mid}'
+        cookie = f'stuid={aid};stoken={v2stoken};mid={mid}'
         ds = dynamic_secret.DynamicSecretGenerator(
             version=dynamic_secret.DynamicSecretVersion.V2,
             salt_type=dynamic_secret.SaltType.PROD,
@@ -207,7 +411,78 @@ class HoyolabClient:
             logger.error(traceback.format_exc())
             return None
 
-    @enter(prefix='[Client]')
+    @enter()
+    def get_stoken_by_game_token(
+        self,
+        game_token: str,
+        aid: str,
+        device_id: str,
+    ):
+        params = {
+            'account_id': aid,
+            'game_token': game_token,
+        }
+        ds = dynamic_secret.DynamicSecretGenerator(
+            version=dynamic_secret.DynamicSecretVersion.V2,
+            salt_type=dynamic_secret.SaltType.PROD,
+            include_chars=True,
+        ).generate(
+            content=params,
+            url=api.get_stoken_by_game_token,
+        )
+        headers = self.xrpc11_headers(
+            device_id=device_id,
+            DS=ds,
+        )
+        try:
+            payload = self.request_json(
+                method='post',
+                url=api.get_stoken_by_game_token,
+                params=params,
+                headers=headers,
+                timeout=10,
+            )
+            return {
+                'stoken': payload['data']['token']['token'],
+                'mid': payload['data']['user_info']['mid'],
+            }
+        except Exception:
+            logger.error(traceback.format_exc())
+            return None
+
+    @enter()
+    def get_game_record_card(
+        self,
+        cookie_token: str,
+        aid: str,
+        role_id: str,
+        device_id: str,
+    ):
+        cookie = f'account_id={aid};cookie_token={cookie_token}'
+        params = {'uid': aid}
+        query_str = f'uid={aid}&role_id={role_id}&server=prod_gf_cn'
+        ds = dynamic_secret.DynamicSecretGenerator(
+            version=dynamic_secret.DynamicSecretVersion.V1,
+            salt_type=dynamic_secret.SaltType.X4,
+            include_chars=False,
+        ).generate(query=query_str)
+        headers = self.hoyolab_xrpc5_headers(
+            ds=ds, cookie=cookie, device_id=device_id, page='',
+        )
+        try:
+            payload = self.request_json(
+                method='get',
+                url=api.game_record,
+                params=params,
+                headers=headers,
+                timeout=10,
+            )
+            return payload
+        except Exception:
+            logger.error(traceback.format_exc())
+            return None
+
+    @enter()
     def get_login_qrcode(self) -> Optional[Dict[str, str]]:
         device_id = str(uuid.uuid4())
         params = dict(app_id='8', device=device_id)
@@ -231,7 +506,7 @@ class HoyolabClient:
             logger.error(traceback.format_exc())
             return None
 
-    @enter(prefix='[Client]')
+    @enter()
     def check_login_qrcode(
         self,
         app_id: str,

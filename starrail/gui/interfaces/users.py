@@ -1,6 +1,7 @@
+import json
 import threading
 import time
-from typing import List
+from typing import Dict, List
 
 import qfluentwidgets as qfw
 from PySide6 import QtWidgets
@@ -17,21 +18,21 @@ from starrail.utils.accounts import account_record as ar
 
 class ConnectToHoyolabThread(StatefulThread):
 
-    def __init__(self, dialog: QrcodeLoginDialog, parent=None):
+    def __init__(self, role_id: str, dialog: QrcodeLoginDialog, parent=None):
         super().__init__(parent=parent)
+        self.role_id = role_id
         self.dialog = dialog
         self.stop_event = threading.Event()
+        self.client = HoyolabClient()
 
     def work(self):
-        client = HoyolabClient()
-
-        qrcode_response = client.get_login_qrcode()
+        qrcode_response = self.client.get_login_qrcode()
         qrcode_url = qrcode_response.pop('url')
         self.dialog.refreshQrcode(qrcode_url)
         status = QrcodeStatus.INITIAL
 
         while not self.stop_event.is_set():
-            check_status = client.check_login_qrcode(**qrcode_response)
+            check_status = self.client.check_login_qrcode(**qrcode_response)
 
             if (
                 not isinstance(check_status, dict) or
@@ -39,7 +40,7 @@ class ConnectToHoyolabThread(StatefulThread):
                 not isinstance(check_status['message'], str) or
                 check_status['message'].lower() != 'ok'
             ):  # expired
-                qrcode_response = client.get_login_qrcode()
+                qrcode_response = self.client.get_login_qrcode()
                 qrcode_url = qrcode_response.pop('url')
                 self.dialog.refreshQrcode(qrcode_url)
                 status = QrcodeStatus.INITIAL
@@ -52,15 +53,67 @@ class ConnectToHoyolabThread(StatefulThread):
             elif check_status['data']['stat'] == QrcodeStatus.CONFIRMED.value:
                 self.dialog.updateStatusSignal.emit(QrcodeStatus.CONFIRMED)
 
+                raw_payload = check_status['data']['payload']['raw']
+                userinfo = self.get_user_info(
+                    raw_payload=raw_payload,
+                    device_id=qrcode_response['device'],
+                )
+                if self.bind_user_info(userinfo=userinfo):
+                    self.dialog.connectFinishSignal.emit()
+                    return json.dumps({'retcode': 0, 'message': 'OK'})
+                else:
+                    return json.dumps({'retcode': -1, 'message': 'fail'})
+
             self.stop_event.wait(2.0)
 
-        # get cookie token by game token
-        # get stoekn by game token
-        # get cookie token by stoken
-        # get game record card
-        # bind to uid
+        return json.dumps({'retcode': 1, 'message': 'canceled'})
 
-        self.dialog.connectFinishSignal.emit()
+    def get_user_info(self, raw_payload: str, device_id: str):
+        userinfo = dict()
+        userinfo['device_id'] = device_id
+
+        payload = json.loads(raw_payload)
+        userinfo['aid'] = payload['uid']
+        userinfo['game_token'] = payload['token']
+
+        cookie_token = self.client.get_cookie_token_by_game_token(
+            game_token=userinfo['game_token'],
+            aid=userinfo['aid'],
+            device_id=userinfo['device_id'],
+        )
+        userinfo['cookie_token'] = cookie_token
+
+        stoken = self.client.get_stoken_by_game_token(
+            game_token=userinfo['game_token'],
+            aid=userinfo['aid'],
+            device_id=userinfo['device_id'],
+        )
+        userinfo['v2stoken'] = stoken['stoken']
+        userinfo['mid'] = stoken['mid']
+
+        return userinfo
+
+    def bind_user_info(self, userinfo: Dict[str, str]):
+        game_record = self.client.get_game_record_card(
+            cookie_token=userinfo['cookie_token'],
+            aid=userinfo['aid'],
+            role_id=self.role_id,
+            device_id=userinfo['device_id'],
+        )
+
+        for record_item in game_record['data']['list']:
+            if record_item['game_id'] == 6:
+                if record_item['game_role_id'] == self.role_id:
+                    ar.set_secrets(self.role_id, userinfo)
+                    return True
+                else:
+                    self.dialog.updateMessageSignal.emit(
+                        'Hoyolab account incompatible with game role',
+                    )
+                    return False
+
+        self.dialog.updateMessageSignal.emit('No starrail role')
+        return False
 
 
 class UserItemWidget(QtWidgets.QWidget):
@@ -191,7 +244,11 @@ class UserItemWidget(QtWidgets.QWidget):
     def __onConnectButtonClicked(self):
         dialog = QrcodeLoginDialog(parent=self.window())
 
-        self.connectToHoyolabThread = ConnectToHoyolabThread(dialog, self)
+        self.connectToHoyolabThread = ConnectToHoyolabThread(
+            self.uid,
+            dialog,
+            self,
+        )
         self.connectToHoyolabThread.start()
 
         dialog.worker = self.connectToHoyolabThread

@@ -158,6 +158,7 @@ class QrcodeLoginDialog(mask_dialog_base.MaskDialogBase):
 
     updateStatusSignal = Signal(QrcodeStatus)
     connectFinishSignal = Signal()
+    updateMessageSignal = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -175,17 +176,22 @@ class QrcodeLoginDialog(mask_dialog_base.MaskDialogBase):
         self.buttonGroup.setMinimumWidth(200)
         self.widget.setFixedSize(
             max(self.contentLabel.width(), self.titleLabel.width(), 150) + 48,
-            self.contentLabel.y() + self.contentLabel.height() + 105,
+            self.statusLabel.y() + self.statusLabel.height() + 105,
         )
 
         self.updateStatusSignal.connect(self.updateStatusSlot)
         self.connectFinishSignal.connect(self.connectFinishSlot)
+        self.updateMessageSignal.connect(self.updateMessageSlot)
         self.worker = None
 
     def __setupUi(self, parent):
         self.titleLabel = QLabel(babelfish.ui_connect_to_hoyolab(), parent)
         self.qrcodeLabel = QLabel(parent)
         self.contentLabel = QLabel(parent)
+        self.statusLabel = QLabel(
+            text=babelfish.ui_connect_status(babelfish.ui_waiting()),
+            parent=parent,
+        )
 
         self.buttonGroup = QtWidgets.QFrame(parent)
         self.cancelButton = QPushButton(babelfish.ui_cancel())
@@ -198,6 +204,7 @@ class QrcodeLoginDialog(mask_dialog_base.MaskDialogBase):
     def __initQss(self):
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
+        self.statusLabel.setObjectName('contentLabel')
         self.buttonGroup.setObjectName('buttonGroup')
         self.cancelButton.setObjectName('cancelButton')
 
@@ -219,6 +226,7 @@ class QrcodeLoginDialog(mask_dialog_base.MaskDialogBase):
             self.qrcodeLabel, 0, AF.AlignHCenter | AF.AlignTop,
         )
         self.textLayout.addWidget(self.contentLabel, 0, AF.AlignTop)
+        self.textLayout.addWidget(self.statusLabel, 0, AF.AlignTop)
 
         self.buttonLayout.setSpacing(12)
         self.buttonLayout.setContentsMargins(24, 24, 24, 24)
@@ -275,12 +283,11 @@ class QrcodeLoginDialog(mask_dialog_base.MaskDialogBase):
         self.contentLabel.setText(instr_text)
 
     def connectFinishSlot(self):
-        status_text = babelfish.ui_html_bold(
-            babelfish.ui_html_font_color(
-                babelfish.ui_scan_confirmed(), color='#00BB66',
-            ),
+        self.statusLabel.setText(
+            babelfish.ui_connect_status(babelfish.ui_connect_finish()),
         )
-        instr_text = babelfish.ui_scan_code_instr(status_text)
-        instr_text = instr_text + babelfish.ui_connect_finish()
         self.cancelButton.setEnabled(False)
         self.finishButton.setEnabled(True)
+
+    def updateMessageSlot(self, status: str):
+        self.statusLabel.setText(babelfish.ui_connect_status(status))

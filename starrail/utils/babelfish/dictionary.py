@@ -92,6 +92,7 @@ ui_check_update_success = _MS(
     zhs='检查更新完成',
 )
 ui_connect_finish = _MS(en='Connection done.', zhs='绑定完成。')
+ui_connect_status = _MS(en='Connection Status: {}', zhs='绑定状态：{}')
 ui_connect_to_hoyolab = _MS(en='Connect to HoyoLab', zhs='绑定米游社')
 ui_connected = _MS(en='Connected', zhs='已绑定')
 ui_copyright = _MS(
@@ -313,6 +314,7 @@ ui_wait_for_connection = _MS(
     en='Connecting to HoyoLab, please wait...',
     zhs='正在绑定，请等待...',
 )
+ui_waiting = _MS(en='Waiting', zhs='等待中')
 ui_welcome = _MS(
     en='Welcome to HKSR Toolkit!',
     zhs='欢迎登车！',

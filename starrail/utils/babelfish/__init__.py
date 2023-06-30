@@ -29,6 +29,7 @@ ui_check_update_at_start_desc = dictionary.ui_check_update_at_start_desc
 ui_check_update_fail = dictionary.ui_check_update_fail
 ui_check_update_success = dictionary.ui_check_update_success
 ui_connect_finish = dictionary.ui_connect_finish
+ui_connect_status = dictionary.ui_connect_status
 ui_connect_to_hoyolab = dictionary.ui_connect_to_hoyolab
 ui_connected = dictionary.ui_connected
 ui_copyright = dictionary.ui_copyright
@@ -128,6 +129,7 @@ ui_user_list = dictionary.ui_user_list
 ui_users = dictionary.ui_users
 ui_users_desc = dictionary.ui_users_desc
 ui_wait_for_connection = dictionary.ui_wait_for_connection
+ui_waiting = dictionary.ui_waiting
 ui_welcome = dictionary.ui_welcome
 ui_zhs = dictionary.ui_zhs
 

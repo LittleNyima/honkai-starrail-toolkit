@@ -2,7 +2,9 @@ import traceback
 
 from PySide6.QtCore import QThread, Signal
 
-from starrail.utils import babelfish
+from starrail.utils import babelfish, loggings
+
+logger = loggings.get_logger(__file__)
 
 
 class StatefulThread(QThread):
@@ -18,6 +20,7 @@ class StatefulThread(QThread):
             msg = self.work()
             self.successSignal.emit(msg)
         except Exception:
+            logger.error(traceback.format_exc())
             msg = f'{babelfish.ui_traceback()}:\n{traceback.format_exc()}'
             self.failureSignal.emit(msg)
 

@@ -31,7 +31,7 @@ class AES192:
         return iv, ciphertext
 
     @staticmethod
-    def decrypt(ciphertext: str, key: bytes, iv: bytes) -> str:
+    def decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> str:
         """
         Decrypts the given ciphertext using the provided key and IV.
 
@@ -112,6 +112,6 @@ class MD5:
 
 
 """
-The 16-bit secret key for cookie aes128 encryption and decryption.
+The 16-bit secret key for tokens aes128 encryption and decryption.
 """
-cookie_aes128_key16b = b'W3zh;FLIc94@D,ag'
+token_aes128_key16b = b'W3zh;FLIc94@D,ag'

@@ -1,11 +1,12 @@
 import json
 import os
 import time
+from typing import Dict
 
 import easydict
 
 from starrail.config import configuration as cfg
-from starrail.utils import babelfish
+from starrail.utils import babelfish, security
 
 
 def todict(d, keys):
@@ -37,6 +38,7 @@ class AccountRecord:
         cache = self.safe_load()
         self.meta = cache['meta']
         self.accounts = cache['accounts']
+        self.secrets = dict()
         self.init_keys()
 
     def init_keys(self, keys=('last_update', 'iv')):
@@ -105,6 +107,37 @@ class AccountRecord:
     def get_user_properties(self, uid: str):
         uid = str(uid)
         return easydict.EasyDict(self.accounts[uid])
+
+    def set_user_property(self, uid: str, key: str, value):
+        self.accounts[uid][key] = value
+        self.flush()
+
+    def set_secrets(self, uid: str, secrets: Dict[str, str]):
+        self.secrets[uid] = secrets
+        secret_str = json.dumps(secrets)
+        iv, encrypted = security.AES192.encrypt(
+            secret_str, security.token_aes128_key16b,
+        )
+        self.accounts[uid]['iv'] = security.Base64.encode(iv)
+        self.flush()
+        storage_path = os.path.join(cfg.user_info_dir, uid)
+        with open(storage_path, 'wb') as fout:
+            fout.write(encrypted)
+
+    def load_secrets(self, uid: str):
+        storage_path = os.path.join(cfg.user_info_dir, uid)
+        with open(storage_path, 'rb') as fin:
+            encrypted = fin.read()
+        iv = security.Base64.decode(self.accounts[uid]['iv'])
+        secret_str = security.AES192.decrypt(
+            encrypted, security.token_aes128_key16b, iv,
+        )
+        self.secrets[uid] = json.loads(secret_str)
+
+    def get_secret(self, uid: str, key: str):
+        if uid not in self.secrets:
+            self.load_secrets(uid)
+        return self.secrets[uid][key]
 
 
 account_record = AccountRecord(cfg.account_record_path)
