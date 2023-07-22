@@ -39,6 +39,6 @@ def create_qrcode_image(
     code.make(fit=True)
     stream = io.BytesIO()
     image = code.make_image(fill_color=fill_color, back_color=back_color)
-    image.save(stream, format='PNG')
+    image.save(stream)
 
     return stream.getvalue()

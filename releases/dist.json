@@ -1,8 +1,8 @@
 {
-  "version": "0.6.9",
+  "version": "0.7.4",
   "dist": {
     "GitHub_dist": "https://github.com/LittleNyima/honkai-starrail-toolkit/releases",
-    "netdisk_dist": "https://wwmg.lanzouk.com/iN7870y9o7gb"
+    "netdisk_dist": "https://wwmg.lanzouk.com/iwyHh138woih"
   },
-  "changelog": "Release v0.6.9\n * 支持抽卡记录导入\n * 支持同步抽卡记录时自定义 API URL\n * 修复了部分已知问题"
+  "changelog": "Release v0.7.4\n * 支持显示游戏公告\n * 支持登陆米游社并同步部分游戏信息\n * 适配新的游戏缓存路径\n * 修复部分已知问题"
 }
