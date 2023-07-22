@@ -34,8 +34,8 @@ def detect_game_install_path():
     return game_install_path
 
 
-def get_cache_path(game_install_path):
-    logger.info('Getting gacha query cache path')
+def get_legacy_cache_path(game_install_path):
+    logger.info('Getting legacy gacha query cache path')
     cache_path = os.path.join(
         game_install_path, 'StarRail_Data', 'webCaches',
         'Cache', 'Cache_Data', 'data_2',
@@ -47,6 +47,26 @@ def get_cache_path(game_install_path):
         )
         logger.error(error_msg)
     return cache_path
+
+
+def get_cache_path(game_install_path):
+    logger.info('Getting gacha query cache path')
+    base_cache_path = os.path.join(
+        game_install_path, 'StarRail_Data', 'webCaches',
+    )
+    versions = []
+    pattern = re.compile(r'[\d.]+$')
+    for subdir in os.listdir(base_cache_path):
+        path = os.path.join(base_cache_path, subdir)
+        if os.path.isdir(path) and re.match(pattern, subdir):
+            versions.append(subdir)
+    if not versions:
+        return get_legacy_cache_path(game_install_path)
+    versions.sort(key=lambda x: tuple(map(int, x.split('.'))))
+    latest_version = versions[-1]
+    return os.path.join(
+        base_cache_path, latest_version, 'Cache', 'Cache_Data', 'data_2',
+    )
 
 
 def get_url_from_text(text):

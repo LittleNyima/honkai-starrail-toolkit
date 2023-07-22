@@ -26,6 +26,13 @@ class ConnectToHoyolabThread(StatefulThread):
         self.client = HoyolabClient()
 
     def work(self):
+        try:
+            return self._work_impl()
+        except Exception as e:
+            self.dialog.updateMessageSignal.emit(f'error: {e.args}')
+            raise e
+
+    def _work_impl(self):
         qrcode_response = self.client.get_login_qrcode()
         qrcode_url = qrcode_response.pop('url')
         self.dialog.refreshQrcode(qrcode_url)
@@ -62,7 +69,7 @@ class ConnectToHoyolabThread(StatefulThread):
                     self.dialog.connectFinishSignal.emit()
                     return json.dumps({'retcode': 0, 'message': 'OK'})
                 else:
-                    return json.dumps({'retcode': -1, 'message': 'fail'})
+                    return json.dumps({'retcode': -1, 'message': 'Failed'})
 
             self.stop_event.wait(2.0)
 

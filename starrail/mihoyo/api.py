@@ -35,8 +35,8 @@ qrcode_query = f'{qrcode_api}/query'
 
 # honkai: star rail api
 hksr_record_api = f'{takumi_record_api}/game_record/app/hkrpg/api'
-hksr_basic_info = f'{hksr_record_api}/role/basicInfo'       # 角色基础信息
-hksr_index = f'{hksr_record_api}/index'                     # 角色橱窗信息
-hksr_avatar_info = f'{hksr_record_api}/avatar/info'         # 角色详细信息
-hksr_note = f'{hksr_record_api}/note'                       # 实时便笺
+hksr_basic_info = f'{hksr_record_api}/role/basicInfo'        # 角色基础信息
+hksr_index = f'{hksr_record_api}/index'                      # 角色橱窗信息
+hksr_avatar_info = f'{hksr_record_api}/avatar/info'          # 角色详细信息
+hksr_note = f'{hksr_record_api}/note'                        # 实时便笺
 hksr_month_info = f'{takumi_api}/event/srledger/month_info'  # 开拓月历
