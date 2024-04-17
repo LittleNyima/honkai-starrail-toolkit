@@ -1,8 +1,8 @@
 {
-  "version": "0.7.4",
+  "version": "0.7.5",
   "dist": {
     "GitHub_dist": "https://github.com/LittleNyima/honkai-starrail-toolkit/releases",
-    "netdisk_dist": "https://wwmg.lanzouk.com/iwyHh138woih"
+    "netdisk_dist": "https://wwo.lanzouj.com/iyfyP1viohtg"
   },
-  "changelog": "Release v0.7.4\n * 支持显示游戏公告\n * 支持登陆米游社并同步部分游戏信息\n * 适配新的游戏缓存路径\n * 修复部分已知问题"
+  "changelog": "Release v0.7.5\n * 支持绑定与解绑米哈游账号\n * 修复游戏运行导致文件占用，无法获取抽卡查询URL的问题\n * 修复了太久不更新导致用户以为作者跑路的问题\n * 修复部分已知问题"
 }

@@ -1,4 +1,5 @@
 import copy
+from enum import Enum
 from typing import Dict
 
 import qfluentwidgets as qfw
@@ -9,11 +10,161 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 from qfluentwidgets.components.dialog_box import mask_dialog_base
 
 from starrail.gui.common.stylesheet import StyleSheet
+from starrail.gui.widgets.button import DangerousPushButton
 from starrail.mihoyo.qrcode import QrcodeStatus
 from starrail.utils import babelfish
 from starrail.utils.misc import create_qrcode_image
 
 AF = Qt.AlignmentFlag
+
+
+class DialogMode(Enum):
+
+    OK = 'ok'
+
+    OK_CANCEL = 'ok_cancel'
+
+    DANGEROUS_OK_CANCEL = 'dangerous_ok_cancel'
+
+
+class MaskDialog(mask_dialog_base.MaskDialogBase):
+
+    okSignal = Signal()
+    cancelSignal = Signal()
+
+    def __init__(
+        self,
+        title: str,
+        content: str,
+        mode: DialogMode = DialogMode.OK_CANCEL,
+        parent: QtWidgets.QWidget = None,
+    ):
+        super().__init__(parent=parent)
+
+        self.__setupUi(title, content, self.widget)
+        self.__initButtons(mode=mode)
+        self.__initQss()
+        self.__initLayout()
+        self.__initWidget()
+
+        self.setShadowEffect(60, (0, 10), QColor(0, 0, 0, 50))
+        self.setMaskColor(QColor(0, 0, 0, 76))
+        self._hBoxLayout.removeWidget(self.widget)
+        self._hBoxLayout.addWidget(self.widget, 1, AF.AlignCenter)
+
+        self.buttonGroup.setMinimumWidth(200)
+        self.widget.setFixedSize(
+            max(self.contentLabel.width(), self.titleLabel.width(), 150) + 48,
+            self.contentLabel.y() + self.contentLabel.height() + 105,
+        )
+        self.__adjustText()
+
+    def __setupUi(self, title, content, parent):
+        self.title = title
+        self.content = content
+        self.titleLabel = QLabel(title, parent)
+        self.contentLabel = QLabel(content, parent)
+
+        self.buttonGroup = QtWidgets.QFrame(parent)
+        self.vBoxLayout = QVBoxLayout(parent)
+        self.textLayout = QVBoxLayout()
+        self.buttonLayout = QHBoxLayout(self.buttonGroup)
+
+    def __initButtons(self, mode: DialogMode):
+        if mode == DialogMode.OK:
+            self.okButton = qfw.PrimaryPushButton(
+                babelfish.ui_ok(),
+                self.buttonGroup,
+            )
+            self.cancelButton = None
+            self.buttonLayout.addWidget(self.okButton, 1, AF.AlignVCenter)
+        elif mode == DialogMode.OK_CANCEL:
+            self.okButton = qfw.PrimaryPushButton(
+                babelfish.ui_ok(),
+                self.buttonGroup,
+            )
+            self.cancelButton = QPushButton(
+                babelfish.ui_cancel(),
+                self.buttonGroup,
+            )
+            self.buttonLayout.addWidget(self.okButton, 1, AF.AlignVCenter)
+            self.buttonLayout.addWidget(self.cancelButton, 1, AF.AlignVCenter)
+        elif mode == DialogMode.DANGEROUS_OK_CANCEL:
+            self.okButton = DangerousPushButton(self.buttonGroup)
+            self.okButton.setText(babelfish.ui_ok())
+            self.cancelButton = QPushButton(
+                babelfish.ui_cancel(),
+                self.buttonGroup,
+            )
+            self.buttonLayout.addWidget(self.okButton, 1, AF.AlignVCenter)
+            self.buttonLayout.addWidget(self.cancelButton, 1, AF.AlignVCenter)
+        else:
+            raise ValueError(f'Invalid dialog mode: {mode}')
+
+    def __initQss(self):
+        self.titleLabel.setObjectName('titleLabel')
+        self.contentLabel.setObjectName('contentLabel')
+        self.buttonGroup.setObjectName('buttonGroup')
+        if self.cancelButton:
+            self.cancelButton.setObjectName('cancelButton')
+        if self.okButton:
+            self.okButton.setObjectName('okButton')
+
+        StyleSheet.MASK_DIALOG.apply(self)
+
+        if self.cancelButton:
+            self.cancelButton.adjustSize()
+        if self.okButton:
+            self.okButton.adjustSize()
+
+    def __initLayout(self):
+        self.vBoxLayout.setSpacing(0)
+        self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
+        self.vBoxLayout.addLayout(self.textLayout, 1)
+        self.vBoxLayout.addWidget(self.buttonGroup, 0, AF.AlignBottom)
+        self.vBoxLayout.setSizeConstraint(QVBoxLayout.SetMinimumSize)
+
+        self.textLayout.setSpacing(12)
+        self.textLayout.setContentsMargins(24, 24, 24, 24)
+        self.textLayout.addWidget(self.titleLabel, 0, AF.AlignTop)
+        self.textLayout.addWidget(self.contentLabel, 0, AF.AlignTop)
+
+        self.buttonLayout.setSpacing(12)
+        self.buttonLayout.setContentsMargins(24, 24, 24, 24)
+
+    def __initWidget(self):
+        if self.cancelButton:
+            self.cancelButton.setFocus()
+        elif self.okButton:
+            self.okButton.setFocus()
+
+        if self.cancelButton:
+            self.cancelButton.setAttribute(
+                Qt.WidgetAttribute.WA_LayoutUsesWidgetRect,
+            )
+            self.cancelButton.clicked.connect(self.onCancelClicked)
+        if self.okButton:
+            self.okButton.clicked.connect(self.onOkClicked)
+        self.buttonGroup.setFixedHeight(81)
+        self.__adjustText()
+
+    def onOkClicked(self):
+        self.okSignal.emit()
+        self.accept()
+
+    def onCancelClicked(self):
+        self.cancelSignal.emit()
+        self.reject()
+
+    def __adjustText(self):
+        pass
+
+    def eventFilter(self, obj, e: QEvent):
+        if obj is self.window():
+            if e.type() == QEvent.Resize:
+                self.__adjustText()
+
+        return super().eventFilter(obj, e)
 
 
 class CheckUpdateDialog(mask_dialog_base.MaskDialogBase):
@@ -72,20 +223,17 @@ class CheckUpdateDialog(mask_dialog_base.MaskDialogBase):
         self.textLayout = QVBoxLayout()
         self.buttonLayout = QHBoxLayout(self.buttonGroup)
 
-    def __initWidget(self):
-        self.cancelButton.setAttribute(
-            Qt.WidgetAttribute.WA_LayoutUsesWidgetRect,
-        )
-        self.ndButton.setAttribute(Qt.WidgetAttribute.WA_LayoutUsesWidgetRect)
-        self.ghButton.setAttribute(Qt.WidgetAttribute.WA_LayoutUsesWidgetRect)
+    def __initQss(self):
+        self.titleLabel.setObjectName('titleLabel')
+        self.contentLabel.setObjectName('contentLabel')
+        self.buttonGroup.setObjectName('buttonGroup')
+        self.cancelButton.setObjectName('cancelButton')
 
-        self.cancelButton.setFocus()
-        self.buttonGroup.setFixedHeight(81)
-        self.__adjustText()
+        StyleSheet.MASK_DIALOG.apply(self)
 
-        self.cancelButton.clicked.connect(self.onCancelClicked)
-        self.ndButton.clicked.connect(self.onNdClicked)
-        self.ghButton.clicked.connect(self.onGhClicked)
+        self.cancelButton.adjustSize()
+        self.ghButton.adjustSize()
+        self.ndButton.adjustSize()
 
     def __initLayout(self):
         self.vBoxLayout.setSpacing(0)
@@ -105,17 +253,20 @@ class CheckUpdateDialog(mask_dialog_base.MaskDialogBase):
         self.buttonLayout.addWidget(self.ndButton, 1, AF.AlignVCenter)
         self.buttonLayout.addWidget(self.ghButton, 1, AF.AlignVCenter)
 
-    def __initQss(self):
-        self.titleLabel.setObjectName('titleLabel')
-        self.contentLabel.setObjectName('contentLabel')
-        self.buttonGroup.setObjectName('buttonGroup')
-        self.cancelButton.setObjectName('cancelButton')
+    def __initWidget(self):
+        self.cancelButton.setAttribute(
+            Qt.WidgetAttribute.WA_LayoutUsesWidgetRect,
+        )
+        self.ndButton.setAttribute(Qt.WidgetAttribute.WA_LayoutUsesWidgetRect)
+        self.ghButton.setAttribute(Qt.WidgetAttribute.WA_LayoutUsesWidgetRect)
 
-        StyleSheet.MASK_DIALOG.apply(self)
+        self.cancelButton.setFocus()
+        self.buttonGroup.setFixedHeight(81)
+        self.__adjustText()
 
-        self.cancelButton.adjustSize()
-        self.ghButton.adjustSize()
-        self.ndButton.adjustSize()
+        self.cancelButton.clicked.connect(self.onCancelClicked)
+        self.ndButton.clicked.connect(self.onNdClicked)
+        self.ghButton.clicked.connect(self.onGhClicked)
 
     def __adjustText(self):
         # if self.isWindow():

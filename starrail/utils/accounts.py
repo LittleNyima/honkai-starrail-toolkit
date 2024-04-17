@@ -124,6 +124,14 @@ class AccountRecord:
         with open(storage_path, 'wb') as fout:
             fout.write(encrypted)
 
+    def unset_secrets(self, uid: str):
+        if uid in self.secrets:
+            del self.secrets[uid]
+        self.set_user_property(uid, 'iv', '')
+        storage_path = os.path.join(cfg.user_info_dir, uid)
+        if os.path.isfile(storage_path):
+            os.unlink(storage_path)
+
     def load_secrets(self, uid: str):
         storage_path = os.path.join(cfg.user_info_dir, uid)
         with open(storage_path, 'rb') as fin:

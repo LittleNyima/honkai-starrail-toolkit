@@ -17,13 +17,13 @@ class DynamicSecretVersion(Enum):
 
 
 class SaltType(Enum):
-    """Hoyolab salt types. (v2.50.1)"""
+    """Hoyolab salt types. (v2.67.1)"""
 
     NONE = ''
 
-    K2 = 'A4lPYtN0KGRVwE5M5Fm0DqQiC5VVMVM3'
+    K2 = 'yajbb9O8TgQYOW7JVZYfUJhXN7mAeZPE'
 
-    LK2 = 'kkFiNdhyHqZ1VnDRHnU1podIvO4eiHcs'
+    LK2 = 'LyD1rXqMv2GJhnwdvCBjFOKGiKuLY3aO'
 
     X4 = 'xV8v4Qu54lUKrEYFZkJhB8cuOh9Asafs'
 

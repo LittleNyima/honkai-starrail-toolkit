@@ -1,6 +1,7 @@
 import json
 import threading
 import time
+from functools import partial
 from typing import Dict, List
 
 import qfluentwidgets as qfw
@@ -9,7 +10,9 @@ from PySide6.QtGui import QPaintEvent
 
 from starrail.gui.common.thread import StatefulThread
 from starrail.gui.interfaces.base import BaseInterface
-from starrail.gui.widgets.dialog import QrcodeLoginDialog
+from starrail.gui.widgets.dialog import (
+    DialogMode, MaskDialog, QrcodeLoginDialog,
+)
 from starrail.mihoyo.client import HoyolabClient
 from starrail.mihoyo.qrcode import QrcodeStatus
 from starrail.utils import babelfish
@@ -264,7 +267,17 @@ class UserItemWidget(QtWidgets.QWidget):
         dialog.raise_()
 
     def __onUnconnectButtonClicked(self):
-        pass
+        dialog = MaskDialog(
+            babelfish.ui_hoyolab_unconnect_title(),
+            babelfish.ui_hoyolab_unconnect_msg(),
+            mode=DialogMode.DANGEROUS_OK_CANCEL,
+            parent=self.window(),
+        )
+
+        dialog.okSignal.connect(partial(ar.unset_secrets, self.uid))
+
+        dialog.show()
+        dialog.raise_()
 
     def paintEvent(self, event: QPaintEvent):
         self.refreshUserInfo()

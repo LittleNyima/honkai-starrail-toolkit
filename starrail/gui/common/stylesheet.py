@@ -8,6 +8,7 @@ class StyleSheet(StyleSheetBase, Enum):
 
     ANNOUNCEMENT = 'announcement'
     BASE_INTERFACE = 'base_interface'
+    BUTTON = 'button'
     GACHA_RECORD = 'gacha_record'
     HOME_INTERFACE = 'home_interface'
     LINK_CARD = 'link_card'

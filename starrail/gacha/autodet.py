@@ -2,6 +2,7 @@ import configparser
 import os
 import platform
 import re
+import tempfile
 from urllib.parse import parse_qsl, urlparse
 
 from starrail.utils import loggings
@@ -106,8 +107,27 @@ def get_latest_url(url_list):
 # (under MIT license)
 def get_api_from_cache(cache_path):
     logger.info('Getting api URL from cache')
-    with open(cache_path, 'rb') as f_cache:
-        cache = f_cache.read()
+    if os.system('where robocopy') == 0:  # robocopy is available
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src_dir = os.path.dirname(cache_path)
+            basename = os.path.basename(cache_path)
+            tgt_path = os.path.join(tmpdir, basename)
+            cmd = f'robocopy "{src_dir}" "{tmpdir}" "{basename}" 2>&1'
+            msg = os.popen(cmd, 'r').read()
+            if os.path.isfile(tgt_path):
+                with open(tgt_path, 'rb') as f_cache:
+                    cache = f_cache.read()
+            else:
+                logger.error(
+                    'Fail to copy cache file with robocopy. Please try to '
+                    'stop the game and run this command again. This is the '
+                    'output of robocopy:\n'
+                    f'{msg}',
+                )
+                return ''
+    else:  # robocopy is unavailable, read the original file
+        with open(cache_path, 'rb') as f_cache:
+            cache = f_cache.read()
     parts = cache.split(b'1/0/')
     parts = [part.split(b'\x00')[0].decode(errors='ignore') for part in parts]
     parts = map(get_url_from_text, parts)

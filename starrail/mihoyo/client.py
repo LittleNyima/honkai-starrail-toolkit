@@ -82,9 +82,9 @@ class ExpirableCache:
 
 class HoyolabClient:
 
-    xrpc_version = '2.50.1'
+    xrpc_version = '2.67.1'
 
-    user_agent = 'Mozilla/5.0 (Windows NT 11.0; Win64; x64) miHoYoBBS/2.50.1'
+    user_agent = 'Mozilla/5.0 (Windows NT 11.0; Win64; x64) miHoYoBBS/2.67.1'
 
     device_fp_cache = ExpirableCache(expires=300.0)
 

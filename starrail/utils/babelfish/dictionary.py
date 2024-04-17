@@ -172,6 +172,14 @@ ui_github_repo_desc = _MS(
     zhs='本项目代码开源，以 GPLv3 分发。点此查看源代码。',
 )
 ui_hoyolab_connect_status = _MS(en='HoyoLab Connection: {}', zhs='米游社绑定：{}')
+ui_hoyolab_unconnect_msg = _MS(
+    en='Caution: This operation is irreversible!',
+    zhs='注意：这一操作不可撤销！',
+)
+ui_hoyolab_unconnect_title = _MS(
+    en='Unconnect?',
+    zhs='确认取消绑定？',
+)
 ui_html_bold = _MS(en='<b>{}</b>', zhs='<b>{}</b>')
 ui_html_font_color = _MS(
     en='<font color="{color}">{}</font>',
@@ -194,6 +202,7 @@ ui_locale_setting_desc = _MS(en='Changing the display language', zhs='改变显�
 ui_no_data = _MS(en='No Data', zhs='暂无数据')
 ui_not_connected = _MS(en='Not Connected', zhs='未绑定')
 ui_not_good = _MS(en='No', zhs='不好')
+ui_ok = _MS(en='OK', zhs='确认')
 ui_ooops = _MS(en='OOOPS!', zhs='出错了！')
 ui_open_docs = _MS(en='Open Documentations', zhs='打开帮助页面')
 ui_open_issues = _MS(en='Open Issue Page', zhs='打开反馈页面')

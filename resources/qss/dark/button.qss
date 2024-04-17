@@ -1,0 +1,24 @@
+DangerousPushButton {
+    color: black;
+    background-color: #DD0000;
+    border: 1px solid #E80000;
+    border-bottom: 1px solid #E83A3A;
+}
+
+DangerousPushButton:hover {
+    background-color: #A60000;
+    border: 1px solid #E80000;
+    border-bottom: 1px solid #E83A3A;
+}
+
+DangerousPushButton:pressed {
+    color: rgba(0, 0, 0, 0.63);
+    background-color: #6F0000;
+    border: 1px solid #6F0000;
+}
+
+DangerousPushButton:disabled {
+    color: rgba(255, 255, 255, 0.43);
+    background-color: rgb(52, 52, 52);
+    border: 1px solid rgb(52, 52, 52);
+}
