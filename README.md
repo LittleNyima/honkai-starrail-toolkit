@@ -8,12 +8,11 @@
 
 | 主分支版本 | 开发分支版本 | PyPI 版本 | 发行版版本 |
 | :--------: | :----------: | :-------: | :--------: |
-|   0.7.4    |    0.7.4     |   0.7.0   |   0.7.4    |
+|   0.7.5    |    0.7.5     |   0.7.5   |   0.7.5    |
 
 目前大部分计划中的 feature 已实现完成，历史开发计划见[该页面](docs/history-dev-plan.md)。
 
 - [x] 获取官方公告
-- [ ] ~~支持配置 SToken 用于抽卡导出~~（目前api不支持）
 - [ ] 支持 UP 池计算
 - [ ] 开拓月历
 - [ ] 米游社信息相关
@@ -26,7 +25,7 @@
 
 ### 下载可执行程序
 
-目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwmg.lanzouk.com/iwyHh138woih)，两种途径的内容相同，可以自行选择下载方式。
+目前提供两种分发途径：[GitHub Release](https://github.com/LittleNyima/honkai-starrail-toolkit/releases) 和 [蓝奏云](https://wwo.lanzouj.com/iyfyP1viohtg)，两种途径的内容相同，可以自行选择下载方式。
 
 ![gui preview gacha](https://s1.ax1x.com/2023/06/01/p9xxdXj.png)
 
@@ -90,8 +89,6 @@ hksr gacha
 - `--request-interval`：（可选）请求间隔。两次请求之间的最小间隔，默认为 `0.1`。若某些情况下因请求过于频繁导致 IP 被 ban，可以适度把这个值调大一点。
 
 **如果想要进一步了解命令行使用方法，请参考[命令行使用指南](docs/cli-guidance.md)。**
-
-本项目目前正处于快速迭代阶段，使用方式可能会发生改变，请及时更新程序，更新时请留意本部分关于使用方式的说明。
 
 ## 导出结果示例
 
