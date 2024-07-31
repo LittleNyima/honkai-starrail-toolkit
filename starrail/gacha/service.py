@@ -128,10 +128,11 @@ def export_gacha_from_api(api_url, export, request_interval):
         json=fileio.export_as_json,
         md=fileio.export_as_md,
         srgf=fileio.export_as_srgf,
+        uigf=fileio.export_as_uigf,
         xlsx=fileio.export_as_xlsx,
     )
     if 'all' in export:
-        export = ['csv', 'html', 'json', 'md', 'srgf', 'xlsx']
+        export = ['csv', 'html', 'json', 'md', 'srgf', 'uigf', 'xlsx']
 
     timestamp = time.strftime('%Y%m%d%H%M%S')
 

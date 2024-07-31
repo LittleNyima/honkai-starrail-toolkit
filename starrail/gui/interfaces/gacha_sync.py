@@ -15,6 +15,7 @@ from starrail.gui.common.icon import Icon
 from starrail.gui.common.stylesheet import StyleSheet
 from starrail.gui.common.thread import StatefulThread
 from starrail.gui.interfaces.base import BaseInterface, CardWidget
+from starrail.gui.widgets.dialog import ExporTypeSettingDialog
 from starrail.gui.widgets.pie_chart import SmartPieChart
 from starrail.utils import babelfish, loggings
 from starrail.utils.accounts import account_record, get_latest_uid
@@ -119,9 +120,7 @@ class RecordImportThread(StatefulThread):
         super().__init__(parent=parent)
         self.path = path
 
-    def work(self):
-        with open(self.path, encoding='utf-8') as f:
-            data = json.load(f)
+    def import_srgf_v1_0(self, data):
         info = data['info']
         uid = info['uid']
         update_info = dict(
@@ -158,13 +157,66 @@ class RecordImportThread(StatefulThread):
         # return msg: {uid: uid, msg: msg}
         return json.dumps(dict(uid=uid, msg=msg), ensure_ascii=False)
 
+    def import_uigf_v4_0(self, data):
+        total = 0
+        uid_list = []
+        for group in data['hkrpg']:
+            uid = group['uid']
+            update_info = dict(
+                uid=uid,
+                lang=group.get('lang', ''),
+                region='',  # unused
+                region_time_zone=str(group['timezone']),
+            )
+            record_cache = defaultdict(list)
+            for item in group['list']:
+                item.update(update_info)
+                record_cache[int(item['gacha_type'])].append(item)
+
+            manager = service.GachaDataManager(uid=uid)
+            logger.info(f'Successfully connected to cache of uid {uid}')
+            manager.log_stats()
+
+            for k, v in record_cache.items():
+                manager.add_records(k, v)
+                manager.gacha[k].sort()
+                total += len(v)
+
+            service.fileio.export_as_sql(manager, manager.cache_path)
+
+            timestamp = data['info']['export_timestamp']
+            timestruct = time.localtime(timestamp)
+            timestr = time.strftime(babelfish.constants.TIME_FMT, timestruct)
+            account_record.update_timestamp(uid, timestr)
+
+            logger.info(f'Successfully load gacha data from {self.path}')
+
+            uid_list.append(str(uid))
+
+        uid_str = ', '.join(uid_list)
+        msg = babelfish.ui_load_success_msg(uid=uid_str, cnt=total)
+        # return msg: {uid: uid, msg: msg}
+        return json.dumps(dict(uid=uid, msg=msg), ensure_ascii=False)
+
+    def work(self):
+        with open(self.path, encoding='utf-8') as f:
+            data = json.load(f)
+
+        if data.get('info', {}).get('srgf_version', 'NOT_FOUND') == 'v1.0':
+            return self.import_srgf_v1_0(data=data)
+        elif data.get('info', {}).get('version', 'NOT_FOUND') == 'v4.0':
+            return self.import_uigf_v4_0(data=data)
+        else:
+            raise ValueError(babelfish.ui_unsupported_json())
+
 
 class RecordExportThread(StatefulThread):
 
-    def __init__(self, uid, path, parent=None):
+    def __init__(self, uid, path, export_types, parent=None):
         super().__init__(parent=parent)
         self.uid = uid
         self.path = path
+        self.export_types = export_types
 
     def work(self):
         manager = service.GachaDataManager(self.uid)
@@ -174,15 +226,20 @@ class RecordExportThread(StatefulThread):
             json=service.fileio.export_as_json,
             md=service.fileio.export_as_md,
             srgf=service.fileio.export_as_srgf,
+            uigf=service.fileio.export_as_uigf,
             xlsx=service.fileio.export_as_xlsx,
         )
         timestamp = time.strftime('%Y%m%d%H%M%S')
-        for format, hook in export_hooks.items():
-            if format == 'srgf':
-                format = 'srgf.json'
-            filename = f'HKSR-export-{self.uid}-{timestamp}.{format}'
-            export_path = os.path.join(self.path, filename)
-            hook(manager, export_path)
+        for format, export in self.export_types:
+            if export:
+                hook = export_hooks[format]
+                if format == 'srgf':
+                    format = 'srgf.json'
+                elif format == 'uigf':
+                    format = 'uigf.json'
+                filename = f'HKSR-export-{self.uid}-{timestamp}.{format}'
+                export_path = os.path.join(self.path, filename)
+                hook(manager, export_path)
 
         return self.path
 
@@ -433,12 +490,24 @@ class GachaSyncInterface(BaseInterface):
         )
         self.saveButton.clicked.connect(self.onSaveButtonClicked)
         self.saveButton.setDisabled(True)
+        self.saveTypeButton = qfw.PrimaryPushButton(
+            text=babelfish.ui_set_export_type(),
+            parent=self,
+            icon=qfw.FluentIcon.CHECKBOX,
+        )
+        self.saveTypeButton.clicked.connect(self.onSaveTypeButtonClicked)
         self.loadButton = qfw.PrimaryPushButton(
             text=babelfish.ui_load_gacha(),
             parent=self,
             icon=Icon.FILE_IMPORT,
         )
         self.loadButton.clicked.connect(self.onLoadButtonClicked)
+        self.uigfLinkButton = qfw.HyperlinkButton(
+            url='https://uigf.org/',
+            text=babelfish.ui_learn_uigf(),
+            parent=self,
+            icon=qfw.FluentIcon.LINK,
+        )
         self.urlCard = self.addCard(babelfish.ui_customize_url())
         self.urlCheckbox = qfw.CheckBox(
             text=babelfish.ui_use_customize_url(),
@@ -465,6 +534,11 @@ class GachaSyncInterface(BaseInterface):
             self.saveButton.setEnabled(True)
             self.updateRecordDisplay()
 
+        self.export_types = [
+            ('csv', False), ('html', False), ('json', False), ('md', False),
+            ('srgf', False), ('uigf', True), ('xlsx', False),
+        ]
+
         self.__initWidget()
 
     def __initWidget(self):
@@ -472,7 +546,11 @@ class GachaSyncInterface(BaseInterface):
         self.buttonsCard.addSpacing(10)
         self.buttonsCard.addWidget(self.saveButton)
         self.buttonsCard.addSpacing(10)
+        self.buttonsCard.addWidget(self.saveTypeButton)
+        self.buttonsCard.addSpacing(10)
         self.buttonsCard.addWidget(self.loadButton)
+        self.buttonsCard.addSpacing(10)
+        self.buttonsCard.addWidget(self.uigfLinkButton)
         self.buttonsCard.addStretch(1)
 
         self.urlCard.addWidget(self.urlCheckbox)
@@ -535,11 +613,13 @@ class GachaSyncInterface(BaseInterface):
     def disableButtons(self):
         self.syncButton.setDisabled(True)
         self.saveButton.setDisabled(True)
+        self.saveTypeButton.setDisabled(True)
         self.loadButton.setDisabled(True)
 
     def enableButtons(self):
         self.syncButton.setEnabled(True)
         self.saveButton.setEnabled(True)
+        self.saveTypeButton.setEnabled(True)
         self.loadButton.setEnabled(True)
 
     # == HOOKS ==
@@ -583,12 +663,33 @@ class GachaSyncInterface(BaseInterface):
             self, 'Select Export Folder', os.path.expanduser('~'),
         )
         if path:
-            self.saveThread = RecordExportThread(self.uid, path, self)
+            self.saveThread = RecordExportThread(
+                self.uid, path, self.export_types, self,
+            )
             self.saveThread.successSignal.connect(self.saveSuccessSlot)
             self.saveThread.failureSignal.connect(self.saveFailureSlot)
             self.saveThread.start()
         else:
             self.enableButtons()
+
+    def onSaveTypeButtonClicked(self):
+        logger.info('[GUI] Start save type setting')
+
+        self.disableButtons()
+        dialog = ExporTypeSettingDialog(
+            export_types=self.export_types,
+            parent=self,
+        )
+        if dialog.exec():
+            self.export_types = [
+                (
+                    export_type,
+                    checkbox.checkState() == Qt.CheckState.Checked,
+                )
+                for (export_type, _), checkbox in
+                zip(dialog.export_types, dialog.checkboxes)
+            ]
+        self.enableButtons()
 
     def onLoadButtonClicked(self):
         logger.info('[GUI] Trying to load gacha data')

@@ -3,12 +3,28 @@ from starrail.utils.babelfish.multilingual import MultilingualString as _MS
 # Lookup table - used by dictionary
 
 lookup_table = dict(
+    # Gacha types
     STELLAR=_MS(en='Stellar Warp', zhs='群星跃迁'),
     DEPARTURE=_MS(en='Departure Warp', zhs='始发跃迁'),
     CHARACTER=_MS(en='Character Event Warp', zhs='角色跃迁'),
     LIGHT_CONE=_MS(en='Light Cone Event Warp', zhs='光锥跃迁'),
+    # Distribution sources
     GitHub_dist=_MS(en='GitHub Distribution', zhs='GitHub下载'),
     netdisk_dist=_MS(en='Net Disk Distribution', zhs='网盘下载'),
+    # Export types
+    EXPORT_CSV=_MS(en='Table (CSV)', zhs='表格 (CSV)'),
+    EXPORT_HTML=_MS(en='Web Page (HTML)', zhs='网页 (HTML)'),
+    EXPORT_JSON=_MS(en='JSON', zhs='JSON'),
+    EXPORT_MD=_MS(en='Markdown (MD)', zhs='文本标记文件 (MD)'),
+    EXPORT_SRGF=_MS(
+        en='JSON (SRGF v1.0 Compatible)',
+        zhs='与 SRGF v1.0 标准兼容的 JSON 文件',
+    ),
+    EXPORT_UIGF=_MS(
+        en='JSON (UIGF v4.0 Compatible)',
+        zhs='与 UIGF v4.0 标准兼容的 JSON 文件',
+    ),
+    EXPORT_XLSX=_MS(en='Table (ELSX)', zhs='表格 (XLSX)'),
 )
 
 record_type_mapping = {
@@ -190,6 +206,10 @@ ui_is_latest_version = _MS(
     zhs='已经是最新版本啦',
 )
 ui_last_update_at = _MS(en='Last Update: {}', zhs='上一次更新于：{}')
+ui_learn_uigf = _MS(
+    en='Learn More about UIGF',
+    zhs='了解 UIGF 标准',
+)
 ui_load_failure = _MS(en='Record Load Failed', zhs='加载失败')
 ui_load_gacha = _MS(en='Import from JSON', zhs='导入数据')
 ui_load_success = _MS(en='Record Load Success', zhs='加载成功')
@@ -230,6 +250,10 @@ ui_send_feedback = _MS(en='Send Feedback', zhs='提交反馈')
 ui_send_feedback_desc = _MS(
     en='Feedback is welcome if you encounter problems or have suggestions.',
     zhs='如果你遇到问题，或对本项目有更多建议，欢迎提交反馈。',
+)
+ui_set_export_type = _MS(
+    en='Set Export Type',
+    zhs='设置导出类型',
 )
 ui_set_fps_fail_with_msg = _MS(
     en='Setting FPS failed. Failed with: {}',
@@ -299,6 +323,10 @@ ui_unlock_fps_desc = _MS(
     ),
     zhs='首先至少在游戏中设置一次帧率，再使用本页面中的功能。',
 )
+ui_unsupported_json = _MS(
+    en='JSON is not valid. Only UIGF v4.0 and SRGF v1.0 are compatible.',
+    zhs='不支持的 JSON 格式，请提供符合 UIGF v4.0 或 SRGF v1.0 的 JSON 文件。',
+)
 ui_update_available = _MS(
     en='New Version is Available',
     zhs='检查到新版本',
@@ -316,7 +344,12 @@ ui_update_desc = _MS(
     ),
 )
 ui_use_customize_url = _MS(en='Use Customize URL', zhs='使用自定义URL')
-ui_user_list = _MS(en='Users List', zhs='用户列表')
+ui_user_list = _MS(
+    en=(
+        'Users List (Notice: Logging in with QRCode is currently unavailable)'
+    ),
+    zhs='用户列表（注意：目前扫码登陆暂不可用）',
+)
 ui_users = _MS(en='Users', zhs='用户管理')
 ui_users_desc = _MS(en='Multi-user management', zhs='如果有多个账号可以用这个切换')
 ui_wait_for_connection = _MS(

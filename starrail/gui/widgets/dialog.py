@@ -1,6 +1,6 @@
 import copy
 from enum import Enum
-from typing import Dict
+from typing import Dict, List, Tuple
 
 import qfluentwidgets as qfw
 from PySide6 import QtWidgets
@@ -442,3 +442,39 @@ class QrcodeLoginDialog(mask_dialog_base.MaskDialogBase):
 
     def updateMessageSlot(self, status: str):
         self.statusLabel.setText(babelfish.ui_connect_status(status))
+
+
+class ExporTypeSettingDialog(qfw.MessageBoxBase):
+
+    updateSignal = Signal(str)
+
+    def __init__(self, export_types: List[Tuple[str, bool]], parent=None):
+        super().__init__(parent=parent)
+        self.titleLabel = qfw.SubtitleLabel(
+            text=babelfish.ui_set_export_type(),
+            parent=self,
+        )
+        self.export_types = export_types
+        self.checkboxes: List[qfw.CheckBox] = []
+
+        self.__initCheckbox()
+        self.__initWidget()
+
+    def __initCheckbox(self):
+        for export_type, checked in self.export_types:
+            translate_text = ('export_' + export_type).upper()
+            checkbox = qfw.CheckBox(
+                text=babelfish.translate(translate_text),
+                parent=self,
+            )
+            checkbox.setCheckState(
+                Qt.CheckState.Checked if checked else Qt.CheckState.Unchecked,
+            )
+            self.checkboxes.append(checkbox)
+
+    def __initWidget(self):
+        self.widget.setMinimumWidth(360)
+        self.viewLayout.addWidget(self.titleLabel)
+
+        for checkbox in self.checkboxes:
+            self.viewLayout.addWidget(checkbox)

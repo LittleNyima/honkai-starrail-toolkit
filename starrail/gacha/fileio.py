@@ -163,3 +163,45 @@ def export_as_srgf(manager: GachaDataManager, output_path: str) -> None:
     )
     with open(output_path, 'w', encoding='utf-8') as fout:
         json.dump(data, fout, indent=2, ensure_ascii=False)
+
+
+def export_as_uigf(manager: GachaDataManager, output_path: str) -> None:
+    gacha_list = []
+    for gacha_type in GachaType:
+        gacha_list.extend(manager.gacha[gacha_type.value].tolist())
+    gacha_list.sort(key=lambda x: x['id'])
+    uid = gacha_list[-1]['uid'] if gacha_list else manager.uid
+    lang = gacha_list[-1]['lang'] if gacha_list else 'zh-cn'
+    timezone = gacha_list[-1]['region_time_zone'] if gacha_list else '8'
+    timezone = int(timezone)
+    timestamp = int(time.time())
+    data = dict(
+        info=dict(
+            export_timestamp=timestamp,
+            export_app='StarRailToolkit',
+            export_app_version=starrail.__version__,
+            version='v4.0',
+        ),
+        hkrpg=[
+            dict(
+                uid=uid,
+                timezone=timezone,
+                lang=lang,
+                list=[
+                    dict(
+                        gacha_id=item['gacha_id'],
+                        gacha_type=item['gacha_type'],
+                        item_id=item['item_id'],
+                        count=item['count'],
+                        time=item['time'],
+                        name=item['name'],
+                        item_type=item['item_type'],
+                        rank_type=item['rank_type'],
+                        id=item['id'],
+                    ) for item in gacha_list
+                ],
+            ),
+        ],
+    )
+    with open(output_path, 'w', encoding='utf-8') as fout:
+        json.dump(data, fout, indent=2, ensure_ascii=False)

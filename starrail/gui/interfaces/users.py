@@ -242,7 +242,7 @@ class UserItemWidget(QtWidgets.QWidget):
                             babelfish.ui_not_connected(),
                         ),
                     )
-                    self.connectButton.setEnabled(True)
+                    self.connectButton.setEnabled(False)
                     self.unconnectButton.setEnabled(False)
             self.userinfo = userinfo
             self.infoExpires = time.time() + 1.0
