@@ -177,7 +177,7 @@ def import_srgf_data(filename):
 
         fileio.export_as_sql(manager, manager.cache_path)
 
-        timestamp = info['export_timestamp']
+        timestamp = int(info['export_timestamp'])
         timestruct = time.localtime(timestamp)
         timestr = time.strftime(babelfish.constants.TIME_FMT, timestruct)
         account_record.update_timestamp(uid, timestr)

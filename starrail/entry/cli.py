@@ -91,6 +91,10 @@ def cli_check_update():
 
 
 def cli_entry():
+    logger.warn(
+        'CLI is currently out of date. Please use GUI to avoid '
+        'unexpected behaviours.',
+    )
     parser = get_parser()
     args = parser.parse_args()
     setup(log_level=args.log_level, locale=args.locale)
